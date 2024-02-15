@@ -1,6 +1,4 @@
-import engine.ActiveGameState
-import engine.Card
-import engine.CardDeck
+import engine.*
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val STARTING_COINS = 10
@@ -164,10 +162,6 @@ class Round(
 
 @JvmInline
 value class PlayerId(val value: Int)
-
-sealed class Bet
-class CoinBet(val coins: Int) : Bet()
-data object Pass : Bet()
 
 class Player(
     val id: PlayerId,
