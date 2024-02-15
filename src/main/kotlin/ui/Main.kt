@@ -1,3 +1,6 @@
+package ui
+
+import Game
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,11 +14,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import engine.*
 import kotlinx.coroutines.flow.asStateFlow
+
+sealed class Screen() {
+    data object Menu : Screen()
+    data object Game : Screen()
+}
 
 @Composable
 @Preview
 fun App() {
+
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.Menu) }
+
+    when (currentScreen) {
+        is Screen.Menu -> MenuScreen { currentScreen = Screen.Game }
+        is Screen.Game -> GameScreen { currentScreen = Screen.Game }
+    }
+}
+
+@Composable
+fun MenuScreen(onNavigate: () -> Unit) {
+    MaterialTheme {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Button(
+                onClick = onNavigate,
+                modifier = Modifier.align(Alignment.Center)
+            ) {
+                Text("Start game!")
+            }
+        }
+    }
+}
+
+@Composable
+private fun GameScreen(onNavigate: () -> Unit) {
     val game = Game("Maca")
     val state = game.state.asStateFlow().collectAsState()
     println(state)
