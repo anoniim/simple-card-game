@@ -1,7 +1,8 @@
 import engine.*
 import engine.Player.Companion.createAiPlayer
 import engine.Player.Companion.createHumanPlayer
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 
 const val STARTING_COINS = 10
 const val STARTING_POINTS = 0
@@ -17,9 +18,11 @@ class Game(
     private val cardDeck = CardDeck(NUM_OF_CARD_DECKS)
     private val humanPlayerId = PlayerId(AI_PLAYER_COUNT)
 
-    val state = MutableStateFlow(initialGameState())
+    private val _state = MutableStateFlow(initialGameState())
+    val state: Flow<ActiveGameState> = _state.asStateFlow()
+        .onEach { delay(3000) }
 
-    private val players = state.value.players
+    private val players = _state.value.players
 
     private fun initialGameState(): ActiveGameState {
         val allPlayers = generatePlayers()
@@ -40,20 +43,20 @@ class Game(
     }
 
     private fun executeAiPlayerMoves() {
-        while (players[state.value.currentPlayerIndex].id != humanPlayerId) {
+        while (players[_state.value.currentPlayerIndex].id != humanPlayerId) {
             placeBetForAiPlayer()
             updateGameState()
         }
     }
 
     private fun placeBetForAiPlayer() {
-        val currentAiPlayer = players[state.value.currentPlayerIndex]
+        val currentAiPlayer = players[_state.value.currentPlayerIndex]
         val aiPlayerBet = generateBet(currentAiPlayer)
         placeBet(currentAiPlayer.id, aiPlayerBet)
     }
 
     private fun generateBet(aiPlayer: Player): Bet {
-        val currentRound = state.value.currentRound
+        val currentRound = _state.value.currentRound
         val cardValue = currentRound.card.points
         val currentScore = aiPlayer.score
         val coins = aiPlayer.coins
@@ -72,7 +75,7 @@ class Game(
 
     private fun placeBet(playerId: PlayerId, bet: Bet) {
         validateBet(playerId, bet)
-        state.value.currentRound.bets[playerId] = bet
+        _state.value.currentRound.bets[playerId] = bet
     }
 
     private fun validateBet(playerId: PlayerId, bet: Bet) {
@@ -84,9 +87,9 @@ class Game(
     }
 
     private fun updateGameState() {
-        val firstPlayerIndex = state.value.currentRound.firstPlayerIndex
-        val nextPlayerIndex = state.value.currentPlayerIndex.nextPlayerIndex()
-        state.value = if (nextPlayerIndex != firstPlayerIndex) {
+        val firstPlayerIndex = _state.value.currentRound.firstPlayerIndex
+        val nextPlayerIndex = _state.value.currentPlayerIndex.nextPlayerIndex()
+        _state.value = if (nextPlayerIndex != firstPlayerIndex) {
             // Set next player who hasn't played yet in this round
             progressToNextPlayer(nextPlayerIndex)
         } else {
@@ -97,10 +100,10 @@ class Game(
         }
     }
 
-    private fun setWinner(winner: Player?) = state.value.copy(winner = winner)
+    private fun setWinner(winner: Player?) = _state.value.copy(winner = winner)
 
     private fun evaluateRound() {
-        val currentRound = state.value.currentRound
+        val currentRound = _state.value.currentRound
         val winningPlayer = players.getById(currentRound.winnerId())
         val winningPoints = currentRound.card.points
         winningPlayer.coins -= currentRound.highestBet()
@@ -114,10 +117,10 @@ class Game(
     private fun progressToNextRound(firstPlayerIndex: Int): ActiveGameState {
         val newFirstPlayerIndex = firstPlayerIndex.nextPlayerIndex()
         val newRound = generateNewRound(newFirstPlayerIndex)
-        return state.value.copy(currentRound = newRound, currentPlayerIndex = newFirstPlayerIndex)
+        return _state.value.copy(currentRound = newRound, currentPlayerIndex = newFirstPlayerIndex)
     }
 
-    private fun progressToNextPlayer(nextPlayerIndex: Int) = state.value.copy(currentPlayerIndex = nextPlayerIndex)
+    private fun progressToNextPlayer(nextPlayerIndex: Int) = _state.value.copy(currentPlayerIndex = nextPlayerIndex)
 
     private fun Int.nextPlayerIndex(): Int {
         return (this + 1) % players.size

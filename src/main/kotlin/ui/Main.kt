@@ -15,7 +15,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import engine.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 
 sealed class Screen() {
     data object Menu : Screen()
@@ -50,10 +53,22 @@ fun MenuScreen(onNavigate: () -> Unit) {
 
 @Composable
 private fun GameScreen(onNavigate: () -> Unit) {
-    val game = Game("Maca")
-    val state = game.state.asStateFlow().collectAsState()
-    println(state)
+    val game = remember { Game("Maca") }
+    var state by remember { mutableStateOf<ActiveGameState?>(null) }
 
+    LaunchedEffect(game) {
+        state = game.state.first()
+    }
+
+    state?.let { nonNullState ->
+        val state = game.state.collectAsState(initial = nonNullState)
+        println(state)
+        GameContent(game, state)
+    }
+}
+
+@Composable
+fun GameContent(game: Game, state: State<ActiveGameState>) {
     MaterialTheme {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(32.dp))
