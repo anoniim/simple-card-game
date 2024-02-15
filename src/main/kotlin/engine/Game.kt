@@ -1,3 +1,4 @@
+import engine.ActiveGameState
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val STARTING_COINS = 10
@@ -134,18 +135,6 @@ class Game(
         return Round(firstPlayerIndex = firstPlayerIndex, cardDeck.drawCard(), HashMap())
     }
 }
-
-sealed class GameState
-
-data class ActiveGameState(
-    val players: List<Player>,
-    val currentRound: Round,
-    val currentPlayerIndex: Int,
-    val winner: Player? = null,
-) : GameState()
-
-data object MenuGameState : GameState() // TODO
-data object GameOverState : GameState()
 
 class Round(
     val firstPlayerIndex: Int,
