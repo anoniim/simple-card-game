@@ -1,11 +1,13 @@
 import engine.*
+import engine.Player.Companion.createAiPlayer
+import engine.Player.Companion.createHumanPlayer
 import kotlinx.coroutines.flow.MutableStateFlow
 
-private const val STARTING_COINS = 10
-private const val STARTING_POINTS = 0
-private const val NUM_OF_CARD_DECKS = 1
-private const val AI_PLAYER_COUNT = 3
-private const val GOAL_SCORE = 30
+const val STARTING_COINS = 10
+const val STARTING_POINTS = 0
+const val NUM_OF_CARD_DECKS = 1
+const val AI_PLAYER_COUNT = 3
+const val GOAL_SCORE = 30
 
 class Game(
     private val playerName: String,
@@ -26,18 +28,8 @@ class Game(
     }
 
     private fun generatePlayers(): List<Player> {
-        return createAiPlayer() + createHumanPlayer()
+        return createAiPlayer(aiPlayerCount) + createHumanPlayer(aiPlayerCount, playerName) // Human is the last player in the first round
     }
-
-    private fun createAiPlayer(): List<Player> {
-        val names = aiPlayerNames.shuffled().take(aiPlayerCount)
-        return List(aiPlayerCount) { Player(PlayerId(it), names[it], STARTING_COINS, STARTING_POINTS) }
-    }
-
-    private fun createHumanPlayer() = Player(
-        PlayerId(aiPlayerCount), // Human is the last player in the first round
-        playerName, STARTING_COINS, STARTING_POINTS
-    )
 
     private fun generateFirstRound(): Round {
         return generateNewRound(0)
@@ -135,20 +127,3 @@ class Game(
         return Round(firstPlayerIndex = firstPlayerIndex, cardDeck.drawCard(), HashMap())
     }
 }
-
-private val aiPlayerNames = listOf(
-    "John",
-    "Thomas",
-    "Debbie",
-    "Camila",
-    "Bob",
-    "Lucy",
-    "Diana",
-    "Charlie",
-    "Meghan",
-    "Cedric",
-    "Mike",
-    "Bart",
-    "Lisa",
-)
-
