@@ -87,7 +87,7 @@ class Game(
         if (bet is CoinBet) {
             val playerCoins = players.getById(playerId).coins
             if (bet.coins > playerCoins)
-                throw IllegalStateException("Player (ID: $playerId) doesn't have ${bet.coins} (has only $playerCoins)")
+                throw IllegalStateException("engine.Player (ID: $playerId) doesn't have ${bet.coins} (has only $playerCoins)")
         }
     }
 
@@ -116,7 +116,7 @@ class Game(
     }
 
     private fun List<Player>.getById(playerId: PlayerId): Player {
-        return find { it.id == playerId } ?: throw IllegalArgumentException("Player ID $playerId not found")
+        return find { it.id == playerId } ?: throw IllegalArgumentException("engine.Player ID $playerId not found")
     }
 
     private fun progressToNextRound(firstPlayerIndex: Int): ActiveGameState {
@@ -135,40 +135,6 @@ class Game(
         return Round(firstPlayerIndex = firstPlayerIndex, cardDeck.drawCard(), HashMap())
     }
 }
-
-class Round(
-    val firstPlayerIndex: Int,
-    val card: Card,
-    val bets: MutableMap<PlayerId, Bet?>,
-) {
-    fun highestBet(): Int {
-        return if (bets.isNotEmpty()) {
-            bets.maxOf {
-                when (val bet = it.value) {
-                    is CoinBet -> bet.coins
-                    else -> 0
-                }
-            }
-        } else 0
-    }
-
-    fun winnerId() = bets.maxByOrNull {
-        when (val bet = it.value) {
-            is CoinBet -> bet.coins
-            else -> 0
-        }
-    }?.key ?: throw IllegalStateException("Request for the winner while no bets have been placed")
-}
-
-@JvmInline
-value class PlayerId(val value: Int)
-
-class Player(
-    val id: PlayerId,
-    val name: String,
-    var coins: Int,
-    var score: Int,
-)
 
 private val aiPlayerNames = listOf(
     "John",
