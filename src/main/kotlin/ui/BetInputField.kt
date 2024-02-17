@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
+// TODO change from Input field to up and down buttons (do not allow lower than minimum bet and higher than player's coins)
+
 @Composable
 internal fun BetInputField(
     state: BetInputStateHolder = rememberBetInputStateHolder(),
@@ -31,13 +33,16 @@ internal fun BetInputField(
         Spacer(Modifier.width(16.dp))
         Button(onClick = {
             state.resetBet()
-            onBetConfirmed(state.bet) }
+            onBetConfirmed(state.bet)
+        }
         ) {
             Text(text = "Confirm")
         }
         Spacer(Modifier.width(16.dp))
-        Button(onClick = playerPassed) {
+        Button(onClick = {
             state.resetBet()
+            playerPassed()
+        }) {
             Text(text = "Pass")
         }
     }
