@@ -15,10 +15,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import engine.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 
 sealed class Screen() {
     data object Menu : Screen()
@@ -54,17 +50,9 @@ fun MenuScreen(onNavigate: () -> Unit) {
 @Composable
 private fun GameScreen(onNavigate: () -> Unit) {
     val game = remember { Game("Maca") }
-    var state by remember { mutableStateOf<ActiveGameState?>(null) }
-
-    LaunchedEffect(game) {
-        state = game.state.first()
-    }
-
-    state?.let { nonNullState ->
-        val state = game.state.collectAsState(initial = nonNullState)
-        println(state)
-        GameContent(game, state)
-    }
+    val state = game.state.collectAsState()
+    println(state)
+    GameContent(game, state)
 }
 
 @Composable
@@ -78,10 +66,26 @@ fun GameContent(game: Game, state: State<ActiveGameState>) {
             Spacer(Modifier.height(32.dp))
             CardView(state)
             Spacer(Modifier.height(32.dp))
-            BetInputField(game, state)
+
+            BettingSection(
+                onPlayerBet = { game.placeBetForHumanPlayer(CoinBet(it)) },
+                onPlayerPass = { game.placeBetForHumanPlayer(Pass) }
+            )
         }
     }
 }
+
+@Composable
+private fun BettingSection(
+    onPlayerBet: (Int) -> Unit,
+    onPlayerPass: () -> Unit
+) {
+    BetInputField(
+        onBetConfirmed = onPlayerBet,
+        playerPassed = onPlayerPass,
+    )
+}
+
 
 @Composable
 private fun StartGameButton(game: Game, state: State<ActiveGameState>) {
@@ -148,35 +152,6 @@ fun CardView(state: State<ActiveGameState>) {
                     .padding(4.dp),
                 fontSize = 20.sp
             )
-        }
-    }
-}
-
-@Composable
-private fun BetInputField(game: Game, state: State<ActiveGameState>) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        var betInput by remember { mutableStateOf("") }
-        Text(text = "Your bet: ")
-        TextField(
-            modifier = Modifier.height(48.dp)
-                .width(64.dp),
-            value = betInput,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            onValueChange = {
-                betInput = it
-                println("Human bet: $betInput")
-            })
-        Spacer(Modifier.width(16.dp))
-        Button(onClick = {
-            try {
-                val bet = betInput.toInt()
-                game.placeBetForHumanPlayer(CoinBet(bet))
-            } catch (e: NumberFormatException) {
-                println("Invalid input: $betInput")
-            }
-            println(state)
-        }) {
-            Text(text = "Confirm")
         }
     }
 }

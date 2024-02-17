@@ -19,8 +19,7 @@ class Game(
     private val humanPlayerId = PlayerId(AI_PLAYER_COUNT)
 
     private val _state = MutableStateFlow(initialGameState())
-    val state: Flow<ActiveGameState> = _state.asStateFlow()
-        .onEach { delay(3000) }
+    val state: StateFlow<ActiveGameState> = _state.asStateFlow()
 
     private val players = _state.value.players
 
