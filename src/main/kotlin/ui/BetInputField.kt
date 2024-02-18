@@ -32,8 +32,8 @@ internal fun BetInputField(
             onValueChange = { state.updateBet(it) })
         Spacer(Modifier.width(16.dp))
         Button(onClick = {
-            state.resetBet()
             onBetConfirmed(state.bet)
+            state.resetBet()
         }
         ) {
             Text(text = "Confirm")

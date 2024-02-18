@@ -1,6 +1,6 @@
 package engine
 
-class Round(
+data class Round(
     val firstPlayerIndex: Int,
     val card: Card,
     val bets: MutableMap<PlayerId, Bet?>,

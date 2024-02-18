@@ -1,8 +1,11 @@
 import engine.*
 import engine.Player.Companion.createAiPlayer
 import engine.Player.Companion.createHumanPlayer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 const val STARTING_COINS = 10
 const val STARTING_POINTS = 0
@@ -13,7 +16,6 @@ const val GOAL_SCORE = 30
 class Game(
     private val playerName: String,
 ) {
-
     private val aiPlayerCount = AI_PLAYER_COUNT
     private val cardDeck = CardDeck(NUM_OF_CARD_DECKS)
     private val humanPlayerId = PlayerId(AI_PLAYER_COUNT)
@@ -22,6 +24,12 @@ class Game(
     val state: StateFlow<ActiveGameState> = _state.asStateFlow()
 
     private val players = _state.value.players
+
+    init {
+        GlobalScope.launch(Dispatchers.IO) {
+            state.collect { println("State changed: $it") }
+        }
+    }
 
     private fun initialGameState(): ActiveGameState {
         val allPlayers = generatePlayers()
@@ -37,18 +45,18 @@ class Game(
         return generateNewRound(0)
     }
 
-    fun startGame() {
+    suspend fun startGame() {
         executeAiPlayerMoves()
     }
 
-    private fun executeAiPlayerMoves() {
+    private suspend fun executeAiPlayerMoves() {
         while (players[_state.value.currentPlayerIndex].id != humanPlayerId) {
             placeBetForAiPlayer()
             updateGameState()
         }
     }
 
-    private fun placeBetForAiPlayer() {
+    private suspend fun placeBetForAiPlayer() {
         val currentAiPlayer = players[_state.value.currentPlayerIndex]
         val aiPlayerBet = generateBet(currentAiPlayer)
         placeBet(currentAiPlayer.id, aiPlayerBet)
@@ -66,7 +74,7 @@ class Game(
         } else Pass
     }
 
-    fun placeBetForHumanPlayer(bet: Bet) {
+    suspend fun placeBetForHumanPlayer(bet: Bet) {
         placeBet(humanPlayerId, bet)
         updateGameState()
         executeAiPlayerMoves()
@@ -75,6 +83,7 @@ class Game(
     private fun placeBet(playerId: PlayerId, bet: Bet) {
         validateBet(playerId, bet)
         _state.value.currentRound.bets[playerId] = bet
+//        _state.value = state.value.copy().apply { currentRound.bets[playerId] = bet }
     }
 
     private fun validateBet(playerId: PlayerId, bet: Bet) {
@@ -85,7 +94,7 @@ class Game(
         }
     }
 
-    private fun updateGameState() {
+    private suspend fun updateGameState() {
         val firstPlayerIndex = _state.value.currentRound.firstPlayerIndex
         val nextPlayerIndex = _state.value.currentPlayerIndex.nextPlayerIndex()
         _state.value = if (nextPlayerIndex != firstPlayerIndex) {
@@ -97,6 +106,7 @@ class Game(
             val winner = players.find { it.score >= GOAL_SCORE }
             if (winner != null) setWinner(winner) else progressToNextRound(firstPlayerIndex)
         }
+        delay(1000)
     }
 
     private fun setWinner(winner: Player?) = _state.value.copy(winner = winner)

@@ -3,18 +3,18 @@ package ui
 import Game
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import engine.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 sealed class Screen() {
     data object Menu : Screen()
@@ -49,29 +49,43 @@ fun MenuScreen(onNavigate: () -> Unit) {
 
 @Composable
 private fun GameScreen(onNavigate: () -> Unit) {
-    val game = remember { Game("Maca") }
-    val state = game.state.collectAsState()
-    println(state)
-    GameContent(game, state)
+    MaterialTheme {
+        val game = remember { Game("Maca") }
+        GameContent(game)
+    }
 }
 
 @Composable
-fun GameContent(game: Game, state: State<ActiveGameState>) {
-    MaterialTheme {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(Modifier.height(32.dp))
-            StartGameButton(game, state)
-            Spacer(Modifier.height(32.dp))
-            PlayerOverview(state)
-            Spacer(Modifier.height(32.dp))
-            CardView(state)
-            Spacer(Modifier.height(32.dp))
+fun GameContent(game: Game) {
+    val state = game.state.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(Modifier.height(32.dp))
+        PlayerOverview(state)
+        Spacer(Modifier.height(32.dp))
+        CardSection(game, state, coroutineScope)
+        Spacer(Modifier.height(32.dp))
 
+        println(state.value)
+        if (state.value.isHumanPlayerTurn()) {
             BettingSection(
-                onPlayerBet = { game.placeBetForHumanPlayer(CoinBet(it)) },
-                onPlayerPass = { game.placeBetForHumanPlayer(Pass) }
+                onPlayerBet = { coroutineScope.launch { game.placeBetForHumanPlayer(CoinBet(it)) } },
+                onPlayerPass = { coroutineScope.launch { game.placeBetForHumanPlayer(Pass) } }
             )
         }
+    }
+}
+
+@Composable
+private fun CardSection(game: Game, state: State<ActiveGameState>, coroutineScope: CoroutineScope) {
+    var firstCardDrawn by remember { mutableStateOf(false) }
+    if (!firstCardDrawn) {
+        DrawFirstCardButton {
+            firstCardDrawn = true
+            coroutineScope.launch { game.startGame() }
+        }
+    } else {
+        CardView(state)
     }
 }
 
@@ -86,18 +100,10 @@ private fun BettingSection(
     )
 }
 
-
 @Composable
-private fun StartGameButton(game: Game, state: State<ActiveGameState>) {
-    var text by remember { mutableStateOf("Start game!") }
-    var enabled by remember { mutableStateOf(true) }
-    Button(enabled = enabled, onClick = {
-        text = "Game started"
-        game.startGame()
-        println(state)
-        enabled = false
-    }) {
-        Text(text)
+private fun DrawFirstCardButton(onClick: () -> Unit) {
+    Button(onClick = onClick) {
+        Text("Draw first card!")
     }
 }
 
@@ -134,7 +140,7 @@ private fun Player(modifier: Modifier, player: Player, bet: Bet?, isFirst: Boole
 fun CardView(state: State<ActiveGameState>) {
     val card = state.value.currentRound.card
     Card(
-        Modifier.height(256.dp)
+        Modifier.height(236.dp)
             .width(194.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -143,7 +149,7 @@ fun CardView(state: State<ActiveGameState>) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
                     .weight(1f),
-                fontSize = 180.sp
+                fontSize = 160.sp
             )
             Text(
                 text = "Points: ${card.points}",
