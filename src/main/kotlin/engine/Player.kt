@@ -22,7 +22,6 @@ class Player(
     }
 }
 
-
 @JvmInline
 value class PlayerId(val value: Int)
 

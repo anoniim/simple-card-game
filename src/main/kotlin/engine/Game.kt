@@ -19,6 +19,7 @@ class Game(
     private val aiPlayerCount = AI_PLAYER_COUNT
     private val cardDeck = CardDeck(NUM_OF_CARD_DECKS)
     private val humanPlayerId = PlayerId(AI_PLAYER_COUNT)
+    private val betGenerator = BetGenerator()
 
     private val _state = MutableStateFlow(initialGameState())
     val state: StateFlow<ActiveGameState> = _state.asStateFlow()
@@ -56,22 +57,10 @@ class Game(
         }
     }
 
-    private suspend fun placeBetForAiPlayer() {
+    private fun placeBetForAiPlayer() {
         val currentAiPlayer = players[_state.value.currentPlayerIndex]
-        val aiPlayerBet = generateBet(currentAiPlayer)
+        val aiPlayerBet = betGenerator.generateBet(currentAiPlayer, _state.value.currentRound)
         placeBet(currentAiPlayer.id, aiPlayerBet)
-    }
-
-    private fun generateBet(aiPlayer: Player): Bet {
-        val currentRound = _state.value.currentRound
-        val cardValue = currentRound.card.points
-        val currentScore = aiPlayer.score
-        val coins = aiPlayer.coins
-        val highestBet = currentRound.highestBet()
-        val desiredBet = highestBet + 1
-        return if (desiredBet <= coins) {
-            CoinBet(desiredBet)
-        } else Pass
     }
 
     suspend fun placeBetForHumanPlayer(bet: Bet) {
