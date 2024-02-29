@@ -5,7 +5,13 @@ import engine.GameSettings
 class PlayerFactory(
     private val settings: GameSettings
 ) {
-    fun createAiPlayer(aiPlayerCount: Int): List<Player> {
+
+    fun createPlayers(playerName: String): List<Player> {
+        return createAiPlayer(settings.aiPlayerCount) +
+                createHumanPlayer(settings.aiPlayerCount, playerName)
+    }
+
+    private fun createAiPlayer(aiPlayerCount: Int): List<Player> {
         val names = aiPlayerNames.shuffled().take(aiPlayerCount)
         return List(aiPlayerCount) {
             Player(
@@ -17,7 +23,7 @@ class PlayerFactory(
         }
     }
 
-    fun createHumanPlayer(humanPlayerId: Int, playerName: String) = Player(
+    private fun createHumanPlayer(humanPlayerId: Int, playerName: String) = Player(
         PlayerId(humanPlayerId),
         playerName,
         settings.startingCoins,

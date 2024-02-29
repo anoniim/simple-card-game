@@ -61,8 +61,7 @@ private fun createGame(): Game {
     val settings = GameSettings.DEFAULT
     val playerFactory = PlayerFactory(settings)
     val playerName = "Maca"
-    val players = playerFactory.createAiPlayer(settings.aiPlayerCount) +
-            playerFactory.createHumanPlayer(settings.aiPlayerCount, playerName)
+    val players = playerFactory.createPlayers(playerName)
     return Game(players)
 }
 
