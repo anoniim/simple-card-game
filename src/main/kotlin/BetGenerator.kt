@@ -1,4 +1,5 @@
 import engine.*
+import engine.player.Player
 
 class BetGenerator {
 

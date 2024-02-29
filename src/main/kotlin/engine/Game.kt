@@ -1,30 +1,23 @@
 import engine.*
-import engine.Player.Companion.createAiPlayer
-import engine.Player.Companion.createHumanPlayer
+import engine.player.Player
+import engine.player.PlayerId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-const val STARTING_COINS = 10
-const val STARTING_POINTS = 0
-const val NUM_OF_CARD_DECKS = 1
-const val AI_PLAYER_COUNT = 3
-const val GOAL_SCORE = 30
 
 class Game(
-    private val playerName: String,
+    private val players: List<Player>,
 ) {
     private val aiPlayerCount = AI_PLAYER_COUNT
     private val cardDeck = CardDeck(NUM_OF_CARD_DECKS)
     private val humanPlayerId = PlayerId(AI_PLAYER_COUNT)
     private val betGenerator = BetGenerator()
 
-    private val _state = MutableStateFlow(initialGameState())
+    private val _state = MutableStateFlow(initialGameState(players))
     val state: StateFlow<ActiveGameState> = _state.asStateFlow()
-
-    private val players = _state.value.players
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
@@ -32,14 +25,9 @@ class Game(
         }
     }
 
-    private fun initialGameState(): ActiveGameState {
-        val allPlayers = generatePlayers()
-        val firstPlayerId = allPlayers.first().id.value
-        return ActiveGameState(allPlayers, generateFirstRound(), firstPlayerId)
-    }
-
-    private fun generatePlayers(): List<Player> {
-        return createAiPlayer(aiPlayerCount) + createHumanPlayer(aiPlayerCount, playerName) // Human is the last player in the first round
+    private fun initialGameState(players: List<Player>): ActiveGameState {
+        val firstPlayerId = players.first().id.value
+        return ActiveGameState(players, generateFirstRound(), firstPlayerId)
     }
 
     private fun generateFirstRound(): Round {

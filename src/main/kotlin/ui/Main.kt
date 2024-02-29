@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import engine.*
+import engine.player.Player
+import engine.player.PlayerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -50,9 +52,18 @@ fun MenuScreen(onNavigate: () -> Unit) {
 @Composable
 private fun GameScreen(onNavigate: () -> Unit) {
     MaterialTheme {
-        val game = remember { Game("Maca") }
+        val game = remember { createGame() }
         GameContent(game)
     }
+}
+
+private fun createGame(): Game {
+    val settings = GameSettings.DEFAULT
+    val playerFactory = PlayerFactory(settings)
+    val playerName = "Maca"
+    val players = playerFactory.createAiPlayer(settings.aiPlayerCount) +
+            playerFactory.createHumanPlayer(settings.aiPlayerCount, playerName)
+    return Game(players)
 }
 
 @Composable

@@ -1,5 +1,8 @@
 package engine
 
+import engine.player.Player
+import engine.player.PlayerId
+
 sealed class GameState
 data class ActiveGameState(
     val players: List<Player>,
