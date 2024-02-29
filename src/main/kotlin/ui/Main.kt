@@ -3,7 +3,10 @@ package ui
 import Game
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,13 +15,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import engine.*
+import appModule
+import engine.ActiveGameState
+import engine.Bet
+import engine.CoinBet
+import engine.Pass
 import engine.player.Player
 import engine.player.PlayerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.core.context.startKoin
+import org.koin.java.KoinJavaComponent.inject
 
-sealed class Screen() {
+sealed class Screen {
     data object Menu : Screen()
     data object Game : Screen()
 }
@@ -58,8 +67,8 @@ private fun GameScreen(onNavigate: () -> Unit) {
 }
 
 private fun createGame(): Game {
-    val settings = GameSettings.DEFAULT
-    val playerFactory = PlayerFactory(settings)
+    // Get playerFactory from Koin
+    val playerFactory: PlayerFactory by inject(PlayerFactory::class.java) // FIXME Why is only the Java variant available?
     val playerName = "Maca"
     val players = playerFactory.createPlayers(playerName)
     return Game(players)
@@ -173,6 +182,9 @@ fun CardView(state: State<ActiveGameState>) {
 }
 
 fun main() = application {
+    startKoin {
+        modules(appModule)
+    }
     Window(onCloseRequest = ::exitApplication) {
         App()
     }

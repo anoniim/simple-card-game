@@ -20,6 +20,10 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
+
+    val koinVersion = "3.5.3"
+    implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
+    implementation("io.insert-koin:koin-core")
 }
 
 compose.desktop {
