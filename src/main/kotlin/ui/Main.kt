@@ -21,11 +21,11 @@ import engine.Bet
 import engine.CoinBet
 import engine.Pass
 import engine.player.Player
-import engine.player.PlayerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.core.context.startKoin
-import org.koin.java.KoinJavaComponent.inject
+import org.koin.core.parameter.parametersOf
+import org.koin.java.KoinJavaComponent.get
 
 sealed class Screen {
     data object Menu : Screen()
@@ -61,17 +61,9 @@ fun MenuScreen(onNavigate: () -> Unit) {
 @Composable
 private fun GameScreen(onNavigate: () -> Unit) {
     MaterialTheme {
-        val game = remember { createGame() }
+        val game = remember { get<Game>(Game::class.java) { parametersOf("Maca") } }
         GameContent(game)
     }
-}
-
-private fun createGame(): Game {
-    // Get playerFactory from Koin
-    val playerFactory: PlayerFactory by inject(PlayerFactory::class.java) // FIXME Why is only the Java variant available?
-    val playerName = "Maca"
-    val players = playerFactory.createPlayers(playerName)
-    return Game(players)
 }
 
 @Composable
