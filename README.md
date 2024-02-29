@@ -25,7 +25,29 @@ The player with the highest bid gets the number of points equal to the value of 
 The player can skip the bid if he doesn't want to bid (or can't bid higher).
 This is called "passing".
 
-## Technologies
+## Design
+
+### Technologies
 Project is created with:
 * Kotlin Compose for Desktop
 * Kotlin Coroutines
+
+### Structure
+PlantUML class diagram of the main components:
+```plantuml
+@startuml
+
+Player --o Game
+Game -l-> GameState
+Game --> PlayerAction
+
+Deck -o GameState
+Card -u-* Deck
+
+GameState *-- Round
+
+Card --o Round
+PlayerAction --o Round
+
+@enduml
+```
