@@ -37,31 +37,18 @@ sealed class Screen {
 fun App() {
 
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Menu) }
+    val playerName = remember { mutableStateOf("") }
 
     when (currentScreen) {
-        is Screen.Menu -> MenuScreen { currentScreen = Screen.Game }
-        is Screen.Game -> GameScreen { currentScreen = Screen.Game }
+        is Screen.Menu -> MenuScreen(playerName) { currentScreen = Screen.Game }
+        is Screen.Game -> GameScreen(playerName) { currentScreen = Screen.Game }
     }
 }
 
 @Composable
-fun MenuScreen(onNavigate: () -> Unit) {
+private fun GameScreen(playerName: MutableState<String>, onNavigate: () -> Unit) {
     MaterialTheme {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Button(
-                onClick = onNavigate,
-                modifier = Modifier.align(Alignment.Center)
-            ) {
-                Text("Start game!")
-            }
-        }
-    }
-}
-
-@Composable
-private fun GameScreen(onNavigate: () -> Unit) {
-    MaterialTheme {
-        val game = remember { get<Game>(Game::class.java) { parametersOf("Maca") } }
+        val game = remember { get<Game>(Game::class.java) { parametersOf(playerName.value) } }
         GameContent(game)
     }
 }
