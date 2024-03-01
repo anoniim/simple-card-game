@@ -2,9 +2,10 @@ import engine.GameSettings
 import engine.player.PlayerFactory
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import org.koin.java.KoinJavaComponent
+import engine.GamePrefs
 
 val appModule = module {
+    singleOf(::GamePrefs)
     single { GameSettings.DEFAULT }
     singleOf(::PlayerFactory)
 
