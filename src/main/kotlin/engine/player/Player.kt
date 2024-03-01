@@ -6,8 +6,10 @@ class Player(
     val name: String,
     var coins: Int, // TODO Move to GameState
     var score: Int, // TODO Move to GameState
-    // TODO add isHuman flag
-)
+    val isHuman: Boolean,
+) {
+    val isNotHuman: Boolean = !isHuman
+}
 
 @JvmInline
 value class PlayerId(val value: Int)

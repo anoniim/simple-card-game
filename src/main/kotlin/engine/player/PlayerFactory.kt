@@ -18,7 +18,8 @@ class PlayerFactory(
                 PlayerId(it),
                 names[it],
                 settings.startingCoins,
-                settings.startingPoints
+                settings.startingPoints,
+                isHuman = false,
             )
         }
     }
@@ -27,7 +28,8 @@ class PlayerFactory(
         PlayerId(humanPlayerId),
         playerName,
         settings.startingCoins,
-        settings.startingPoints
+        settings.startingPoints,
+        isHuman = true,
     )
 }
 

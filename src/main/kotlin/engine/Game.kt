@@ -12,7 +12,6 @@ class Game(
     private val players: List<Player>,
 ) {
     private val cardDeck = CardDeck(NUM_OF_CARD_DECKS) // TODO Move to Koin module
-    private val humanPlayerId = PlayerId(AI_PLAYER_COUNT) // TODO once isHuman flag is added, remove this
     private val betGenerator = BetGenerator() // TODO Move to Koin module
 
     private val _state = MutableStateFlow(initialGameState(players))
@@ -38,7 +37,7 @@ class Game(
     }
 
     private suspend fun executeAiPlayerMoves() {
-        while (players[_state.value.currentPlayerIndex].id != humanPlayerId) {
+        while (players[_state.value.currentPlayerIndex].isNotHuman) {
             placeBetForAiPlayer()
             updateGameState()
         }
@@ -51,7 +50,7 @@ class Game(
     }
 
     suspend fun placeBetForHumanPlayer(bet: Bet) {
-        placeBet(humanPlayerId, bet)
+        placeBet(players[_state.value.currentPlayerIndex].id, bet)
         updateGameState()
         executeAiPlayerMoves()
     }
