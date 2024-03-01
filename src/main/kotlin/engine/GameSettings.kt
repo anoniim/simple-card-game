@@ -1,10 +1,10 @@
 package engine
 
-const val STARTING_COINS = 10
-const val STARTING_POINTS = 0
-const val NUM_OF_CARD_DECKS = 1
-const val AI_PLAYER_COUNT = 3
-const val GOAL_SCORE = 30
+private const val STARTING_COINS = 10
+private const val STARTING_POINTS = 0
+private const val NUM_OF_CARD_DECKS = 1
+private const val AI_PLAYER_COUNT = 3
+private const val GOAL_SCORE = 30
 
 class GameSettings(
     val startingCoins: Int,

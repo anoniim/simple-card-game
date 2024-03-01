@@ -10,9 +10,10 @@ import kotlinx.coroutines.launch
 
 class Game(
     private val players: List<Player>,
+    private val cardDeck: CardDeck,
+    private val betGenerator: BetGenerator,
+    private val settings: GameSettings,
 ) {
-    private val cardDeck = CardDeck(NUM_OF_CARD_DECKS) // TODO Move to Koin module
-    private val betGenerator = BetGenerator() // TODO Move to Koin module
 
     private val _state = MutableStateFlow(initialGameState(players))
     val state: StateFlow<ActiveGameState> = _state.asStateFlow()
@@ -78,7 +79,7 @@ class Game(
         } else {
             // All players have played in this round, evaluate this round
             evaluateRound()
-            val winner = players.find { it.score >= GOAL_SCORE }
+            val winner = players.find { it.score >= settings.goalScore }
             if (winner != null) setWinner(winner) else progressToNextRound(firstPlayerIndex)
         }
         delay(1000)
