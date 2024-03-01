@@ -23,7 +23,7 @@ fun App() {
     var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.MenuScreen) }
     val playerName = remember { mutableStateOf(prefs.getPlayerName()) }
 
-    when (navigationState) {
+    when (val currentNavigationState = navigationState) {
         is NavigationState.MenuScreen -> MenuScreen(playerName, startGame = {
             // Save player name
             prefs.setPlayerName(playerName.value)
@@ -31,7 +31,7 @@ fun App() {
             navigationState = NavigationState.GameScreen(newGame(playerName))
         })
 
-        is NavigationState.GameScreen -> GameScreen((navigationState as NavigationState.GameScreen).game, startOver = {
+        is NavigationState.GameScreen -> GameScreen(currentNavigationState.game, startOver = {
             // Restart game
             navigationState = NavigationState.GameScreen(newGame(playerName))
         })

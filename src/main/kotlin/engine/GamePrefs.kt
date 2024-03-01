@@ -9,5 +9,5 @@ class GamePrefs {
 
     fun setPlayerName(playerName: String) = prefs.put(PLAYER_NAME, playerName )
 
-    fun getPlayerName() = prefs.get(PLAYER_NAME, "")
+    fun getPlayerName(): String = prefs.get(PLAYER_NAME, "")
 }

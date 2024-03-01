@@ -11,10 +11,9 @@ import kotlinx.coroutines.launch
 class Game(
     private val players: List<Player>,
 ) {
-    private val aiPlayerCount = AI_PLAYER_COUNT
-    private val cardDeck = CardDeck(NUM_OF_CARD_DECKS)
-    private val humanPlayerId = PlayerId(AI_PLAYER_COUNT)
-    private val betGenerator = BetGenerator()
+    private val cardDeck = CardDeck(NUM_OF_CARD_DECKS) // TODO Move to Koin module
+    private val humanPlayerId = PlayerId(AI_PLAYER_COUNT) // TODO once isHuman flag is added, remove this
+    private val betGenerator = BetGenerator() // TODO Move to Koin module
 
     private val _state = MutableStateFlow(initialGameState(players))
     val state: StateFlow<ActiveGameState> = _state.asStateFlow()
