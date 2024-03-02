@@ -51,3 +51,50 @@ PlayerAction --o Round
 
 @enduml
 ```
+
+### Flow diagram
+PlantUML flow diagram of the game flow:
+```plantuml
+@startuml
+start
+:start game;
+repeat :draw card;
+#pink:update state;
+note left: updated card
+while (have all players played this round?) is (no)
+    :progress to next player;
+    #pink:update state; 
+    note left: updated current player
+    if (is current player human?) then (yes)
+        :wait for input;
+    else (no)
+        :generate bet;
+    endif
+    :place bet;
+    #pink:update state;
+    note left: updated bet
+end while
+->yes;
+:determine round winner;
+:progress to next round;
+#pink:update state;
+note left 
+    updated 
+    * scores and coins
+    * first player
+    * current player
+end note
+if (any player has 30 points or more?) then (yes)
+    :determine overall winner;
+    #pink:update state;
+    note left: updated winner
+    :game over;
+    end
+else (no)
+    :next round;
+    #pink:update state;
+    note left: updated round
+endif
+ 
+@enduml
+```
