@@ -4,8 +4,6 @@ package engine.player
 class Player(
     val id: PlayerId,
     val name: String,
-    var coins: Int, // TODO Move to GameState
-    var score: Int, // TODO Move to GameState
     val isHuman: Boolean,
 ) {
     val isNotHuman: Boolean = !isHuman
@@ -14,3 +12,4 @@ class Player(
 @JvmInline
 value class PlayerId(val value: Int)
 
+operator fun List<Player>.get(playerId: PlayerId) = get(playerId.value)

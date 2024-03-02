@@ -17,6 +17,7 @@ import engine.Bet
 import engine.CoinBet
 import engine.Pass
 import engine.player.Player
+import engine.player.PlayerId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -40,13 +41,12 @@ fun GameContent(game: Game, firstCardDrawn: MutableState<Boolean>) {
     val coroutineScope = rememberCoroutineScope()
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.height(32.dp))
-        PlayerOverview(state)
+        PlayerOverview(game, state)
         Spacer(Modifier.height(32.dp))
         CardSection(game, state, firstCardDrawn, coroutineScope)
         Spacer(Modifier.height(32.dp))
 
-        println(state.value)
-        if (state.value.isHumanPlayerTurn()) {
+        if (game.isCurrentPlayerHuman()) {
             BettingSection(
                 onPlayerBet = { coroutineScope.launch { game.placeBetForHumanPlayer(CoinBet(it)) } },
                 onPlayerPass = { coroutineScope.launch { game.placeBetForHumanPlayer(Pass) } }
@@ -86,25 +86,42 @@ private fun DrawFirstCardButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun PlayerOverview(state: State<ActiveGameState>) {
+private fun PlayerOverview(game: Game, state: State<ActiveGameState>) {
     Row(Modifier.fillMaxWidth()) {
-        val firstPlayerIndex = state.value.currentRound.firstPlayerIndex
-        val bets = state.value.currentRound.bets
-        state.value.players.forEachIndexed { index: Int, player: Player ->
-            Player(Modifier.weight(1f), player, bets[player.id], index == firstPlayerIndex)
+        val currentState = state.value
+        val players = game.players
+        val bets = currentState.bets
+        val coins = currentState.coins
+        val score = currentState.score
+        players.forEach { playerEntry: Map.Entry<PlayerId, Player> ->
+            val player = playerEntry.value
+            Player(
+                Modifier.weight(1f),
+                player.name,
+                coins.getOrElse(player.id) { -1 },
+                score.getOrElse(player.id) { -1 },
+                bets[player.id],
+                game.isPlayerFirst(player.id))
         }
     }
 }
 
 @Composable
-private fun Player(modifier: Modifier, player: Player, bet: Bet?, isFirst: Boolean) {
+private fun Player(
+    modifier: Modifier,
+    playerName: String,
+    coins: Int,
+    score: Int,
+    bet: Bet?,
+    isFirst: Boolean
+) {
     Column(
         modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "${player.name}${if (isFirst) "*" else ""}")
-        Text(text = "Coins: ${player.coins}")
-        Text(text = "Score: ${player.score}")
+        Text(text = "$playerName${if (isFirst) "*" else ""}")
+        Text(text = "Coins: $coins")
+        Text(text = "Score: $score")
         Spacer(Modifier.height(16.dp))
         when (bet) {
             is CoinBet -> Text(text = "Current bet: ${bet.coins}")
@@ -116,7 +133,7 @@ private fun Player(modifier: Modifier, player: Player, bet: Bet?, isFirst: Boole
 
 @Composable
 fun CardView(state: State<ActiveGameState>) {
-    val card = state.value.currentRound.card
+    val card = state.value.card
     Card(
         Modifier.height(236.dp)
             .width(194.dp)

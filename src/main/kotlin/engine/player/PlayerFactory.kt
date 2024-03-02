@@ -6,31 +6,32 @@ class PlayerFactory(
     private val settings: GameSettings
 ) {
 
-    fun createPlayers(playerName: String): List<Player> {
+    fun createPlayers(playerName: String): Map<PlayerId, Player> {
         return createAiPlayer(settings.aiPlayerCount) +
                 createHumanPlayer(settings.aiPlayerCount, playerName)
     }
 
-    private fun createAiPlayer(aiPlayerCount: Int): List<Player> {
+    private fun createAiPlayer(aiPlayerCount: Int): Map<PlayerId, Player> {
         val names = aiPlayerNames.shuffled().take(aiPlayerCount)
-        return List(aiPlayerCount) {
-            Player(
-                PlayerId(it),
-                names[it],
-                settings.startingCoins,
-                settings.startingPoints,
+        return names.mapIndexed { index, name ->
+            val playerId = index + 1
+            PlayerId(playerId) to Player(
+                PlayerId(playerId),
+                name,
                 isHuman = false,
             )
-        }
+        }.toMap()
     }
 
-    private fun createHumanPlayer(humanPlayerId: Int, playerName: String) = Player(
-        PlayerId(humanPlayerId),
-        playerName,
-        settings.startingCoins,
-        settings.startingPoints,
-        isHuman = true,
-    )
+    private fun createHumanPlayer(humanPlayerId: Int, playerName: String): Map<PlayerId, Player> {
+        return mapOf(
+            PlayerId(humanPlayerId) to Player(
+                PlayerId(humanPlayerId),
+                playerName,
+                isHuman = true,
+            )
+        )
+    }
 }
 
 private val aiPlayerNames = listOf(
