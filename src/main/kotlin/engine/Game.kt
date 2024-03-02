@@ -20,9 +20,8 @@ class Game(
     private val _state = MutableStateFlow(initialGameState(players))
     val state: StateFlow<ActiveGameState> = _state.asStateFlow()
 
-    private var currentRound = Round.initial(players.keys.toList())
-    fun isCurrentPlayerHuman() = players[currentRound.currentPlayerId]!!.isHuman
-    fun isPlayerFirst(playerId: PlayerId) = currentRound.firstPlayerId == playerId
+    fun isCurrentPlayerHuman() = players[state.value.currentPlayerId]!!.isHuman
+    fun isPlayerFirst(playerId: PlayerId) = state.value.firstPlayerId == playerId
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
@@ -41,14 +40,14 @@ class Game(
     }
 
     private suspend fun executeAiPlayerMoves() {
-        while (players[currentRound.currentPlayerId]!!.isNotHuman) {
+        while (players[state.value.currentPlayerId]!!.isNotHuman) {
             placeBetForAiPlayer()
             progress()
         }
     }
 
     private fun placeBetForAiPlayer() {
-        val currentAiPlayerId = currentRound.currentPlayerId
+        val currentAiPlayerId = state.value.currentPlayerId
         val coins = state.value.coins[currentAiPlayerId]!!
         val score = state.value.score[currentAiPlayerId]!!
         val highestBet = (state.value.getHighestBet()?.value as CoinBet?)?.coins ?: 0
@@ -57,7 +56,7 @@ class Game(
     }
 
     suspend fun placeBetForHumanPlayer(bet: Bet) {
-        _state.value = placeBet(currentRound.currentPlayerId, bet)
+        _state.value = placeBet(state.value.currentPlayerId, bet)
         progress()
         executeAiPlayerMoves()
     }
@@ -78,81 +77,21 @@ class Game(
 
     private suspend fun progress() {
         delay(ACTION_DELAY)
-        if (currentRound.haveAllPlayersPlayed()) {
+        _state.value = if (state.value.haveAllPlayersPlayed()) {
             // All players have played in this round, evaluate this round
-            _state.value = evaluateRound()
+            _state.value = state.value.evaluateRound()
             val overallWinner = state.value.score.filter { it.value >= settings.goalScore }.keys.firstOrNull()
-            _state.value = if (overallWinner != null) setWinner(players[overallWinner]) else progressToNextRound()
+            if (overallWinner != null) {
+                // Game over
+                state.value.setWinner(players[overallWinner])
+            } else {
+                // Start next round
+                state.value.progressToNextRound(cardDeck.drawCard())
+            }
         } else {
             // Set next player who hasn't played yet in this round
-            currentRound = currentRound.progressToNextPlayer()
-            _state.value = state.value
+            state.value.progressToNextPlayer()
         }
         delay(ACTION_DELAY)
-    }
-
-    private fun setWinner(winner: Player?) = _state.value.copy(winner = winner)
-
-    private fun evaluateRound(): ActiveGameState {
-        val highestBetInfo = state.value.getHighestBet() ?: throw IllegalStateException("No bets placed")
-        val playerId = highestBetInfo.key
-        val highestBet = (highestBetInfo.value as CoinBet).coins
-        val winningPoints = state.value.card.points
-        val updatedCoins = state.value.coins.toMutableMap().apply { this[playerId] = this[playerId]!! - highestBet }
-        val updatedScore = state.value.score.toMutableMap().apply { this[playerId] = this[playerId]!! + winningPoints }
-        return state.value.copy(
-            coins = updatedCoins,
-            score = updatedScore,
-        )
-    }
-
-    private fun List<Player>.getById(playerId: PlayerId): Player {
-        return find { it.id == playerId } ?: throw IllegalArgumentException("Player ID $playerId not found")
-    }
-
-    private fun progressToNextRound(): ActiveGameState {
-        return state.value.copy(
-            card = cardDeck.drawCard(),
-            bets = HashMap(),
-        )
-    }
-
-    data class Round private constructor(
-        private val playerIds: List<PlayerId>,
-        val firstPlayerId: PlayerId,
-        val currentPlayerId: PlayerId,
-    ) {
-
-        private val currentPlayerIndex = playerIds.indexOf(currentPlayerId)
-
-        fun progressToNextPlayer(): Round {
-            val nextPlayerIndex = currentPlayerIndex.next()
-            return copy(currentPlayerId = playerIds[nextPlayerIndex])
-        }
-
-        fun progressToNextRound(): Round {
-            val newFirstPlayerIndex = currentPlayerIndex.next().next()
-            return copy(
-                firstPlayerId = playerIds[newFirstPlayerIndex],
-                currentPlayerId = playerIds[newFirstPlayerIndex]
-            )
-        }
-
-        fun haveAllPlayersPlayed(): Boolean {
-            val nextPlayerIndex = currentPlayerIndex.next()
-            return playerIds[nextPlayerIndex] == firstPlayerId
-        }
-
-        private fun Int.next(): Int {
-            return (this + 1) % playerIds.size
-        }
-
-        companion object {
-            fun initial(playerIds: List<PlayerId>) = Round(
-                playerIds,
-                firstPlayerId = playerIds.first(),
-                currentPlayerId = playerIds.first()
-            )
-        }
     }
 }
