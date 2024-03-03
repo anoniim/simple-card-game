@@ -62,13 +62,24 @@ fun GameContent(game: Game, firstCardDrawn: MutableState<Boolean>) {
 
 @Composable
 private fun CardSection(game: Game, state: State<ActiveGameState>, firstCardDrawn: MutableState<Boolean>, coroutineScope: CoroutineScope) {
+    val sizeModifier = Modifier.height(236.dp)
+        .width(194.dp)
     if (!firstCardDrawn.value) {
-        DrawFirstCardButton {
-            firstCardDrawn.value = true
-            coroutineScope.launch { game.startGame() }
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            DrawFirstCardButton(
+                modifier = sizeModifier,
+            ) {
+                firstCardDrawn.value = true
+                coroutineScope.launch { game.startGame() }
+            }
+            Spacer(modifier = Modifier.weight(0.5f))
         }
     } else {
-        CardView(state)
+        CardView(sizeModifier, state)
     }
 }
 
@@ -84,8 +95,8 @@ private fun BettingSection(
 }
 
 @Composable
-private fun DrawFirstCardButton(onClick: () -> Unit) {
-    Button(onClick = onClick) {
+private fun DrawFirstCardButton(modifier: Modifier, onClick: () -> Unit) {
+    Button(onClick = onClick, modifier = modifier) {
         Text("Draw first card!")
     }
 }
@@ -106,7 +117,8 @@ private fun PlayerOverview(game: Game, state: State<ActiveGameState>) {
                 coins.getOrElse(player.id) { -1 },
                 score.getOrElse(player.id) { -1 },
                 bets[player.id],
-                state.value.isPlayerFirst(player.id))
+                state.value.isPlayerFirst(player.id)
+            )
         }
     }
 }
@@ -137,11 +149,10 @@ private fun Player(
 }
 
 @Composable
-fun CardView(state: State<ActiveGameState>) {
+fun CardView(sizeModifier: Modifier, state: State<ActiveGameState>) {
     val card = state.value.card
     Card(
-        Modifier.height(236.dp)
-            .width(194.dp)
+        modifier = sizeModifier
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Text(

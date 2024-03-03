@@ -36,6 +36,7 @@ class Game(
     )
 
     suspend fun startGame() {
+        delay(ACTION_DELAY)
         executeAiPlayerMoves()
     }
 
@@ -77,22 +78,22 @@ class Game(
 
     private suspend fun progress() {
         delay(ACTION_DELAY)
-        _state.value = if (state.value.haveAllPlayersPlayed()) {
+        if (state.value.haveAllPlayersPlayed()) {
             // All players have played in this round, evaluate this round
             _state.value = state.value.evaluateRound()
             val overallWinner = state.value.score.filter { it.value >= settings.goalScore }.keys.firstOrNull()
             if (overallWinner != null) {
                 // Game over
                 _winner.value = players[overallWinner]
-                return
             } else {
                 // Start next round
-                state.value.progressToNextRound(cardDeck.drawCard())
+                delay(ACTION_DELAY)
+                _state.value = state.value.progressToNextRound(cardDeck.drawCard())
+                delay(ACTION_DELAY)
             }
         } else {
             // Set next player who hasn't played yet in this round
-            state.value.progressToNextPlayer()
+            _state.value = state.value.progressToNextPlayer()
         }
-        delay(ACTION_DELAY)
     }
 }
