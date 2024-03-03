@@ -7,6 +7,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import appModule
 import engine.GamePrefs
+import engine.player.Player
 import org.koin.core.context.startKoin
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
@@ -14,6 +15,7 @@ import org.koin.java.KoinJavaComponent.get
 sealed class NavigationState {
     data object MenuScreen : NavigationState()
     data class GameScreen(val game: Game) : NavigationState()
+    data class WinnerScreen(val winner: Player) : NavigationState()
 }
 
 @Composable
@@ -24,17 +26,26 @@ fun App() {
     val playerName = remember { mutableStateOf(prefs.getPlayerName()) }
 
     when (val currentNavigationState = navigationState) {
-        is NavigationState.MenuScreen -> MenuScreen(playerName, startGame = {
-            // Save player name
-            prefs.setPlayerName(playerName.value)
-            // Start a new game
-            navigationState = NavigationState.GameScreen(newGame(playerName))
-        })
+        is NavigationState.MenuScreen -> MenuScreen(playerName,
+            startGame = {
+                // Save player name
+                prefs.setPlayerName(playerName.value)
+                // Start a new game
+                navigationState = NavigationState.GameScreen(newGame(playerName))
+            })
 
-        is NavigationState.GameScreen -> GameScreen(currentNavigationState.game, startOver = {
-            // Restart game
-            navigationState = NavigationState.GameScreen(newGame(playerName))
-        })
+        is NavigationState.GameScreen -> GameScreen(currentNavigationState.game,
+            startOver = {
+                navigationState = NavigationState.GameScreen(newGame(playerName))
+            }, announceWinner = {
+                println("WINNER: ${it.name}")
+                navigationState = NavigationState.WinnerScreen(it)
+            })
+
+        is NavigationState.WinnerScreen -> WinnerScreen(currentNavigationState.winner.name,
+            playAgain = {
+                navigationState = NavigationState.GameScreen(newGame(playerName))
+            })
     }
 }
 

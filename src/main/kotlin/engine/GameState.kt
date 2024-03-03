@@ -11,7 +11,6 @@ data class ActiveGameState(
     val score: Map<PlayerId, Int>,
     val bets: Map<PlayerId, Bet?>,
     val card: Card,
-    val winner: Player? = null,
     val currentRound: Round = Round.initial(players.keys.toList())
 ) : GameState() {
 
@@ -60,8 +59,6 @@ data class ActiveGameState(
         is CoinBet -> bet.coins
         else -> 0
     }
-
-    fun setWinner(winner: Player?) = copy(winner = winner)
 
     fun evaluateRound(): ActiveGameState {
         return if (bets.values.all { it is Pass }) {

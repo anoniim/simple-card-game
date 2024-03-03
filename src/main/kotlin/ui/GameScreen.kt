@@ -22,7 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun GameScreen(game: Game, startOver: () -> Unit) {
+fun GameScreen(game: Game, startOver: () -> Unit, announceWinner: (Player) -> Unit) {
     MaterialTheme {
         val firstCardDrawn = remember { mutableStateOf(false) }
 //        Button(onClick = {
@@ -32,6 +32,11 @@ fun GameScreen(game: Game, startOver: () -> Unit) {
 //            Text("Start over")
 //        }
         GameContent(game, firstCardDrawn)
+
+        val winner = game.winner.collectAsState()
+        if (winner.value != null) {
+            announceWinner(game.winner.value!!)
+        }
     }
 }
 
@@ -46,14 +51,12 @@ fun GameContent(game: Game, firstCardDrawn: MutableState<Boolean>) {
         CardSection(game, state, firstCardDrawn, coroutineScope)
         Spacer(Modifier.height(32.dp))
 
-        println("evaluating isCurrentPlayerHuman")
         if (state.value.isCurrentPlayerHuman()) {
-            println("- yes")
             BettingSection(
                 onPlayerBet = { coroutineScope.launch { game.placeBetForHumanPlayer(CoinBet(it)) } },
                 onPlayerPass = { coroutineScope.launch { game.placeBetForHumanPlayer(Pass) } }
             )
-        } else println("- no")
+        }
     }
 }
 

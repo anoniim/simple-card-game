@@ -20,6 +20,9 @@ class Game(
     private val _state = MutableStateFlow(initialGameState(players))
     val state: StateFlow<ActiveGameState> = _state.asStateFlow()
 
+    private val _winner = MutableStateFlow<Player?>(null)
+    val winner: StateFlow<Player?> = _winner.asStateFlow()
+
     init {
         GlobalScope.launch(Dispatchers.IO) {
             state.collect { println("State changed: $it") }
@@ -80,7 +83,8 @@ class Game(
             val overallWinner = state.value.score.filter { it.value >= settings.goalScore }.keys.firstOrNull()
             if (overallWinner != null) {
                 // Game over
-                state.value.setWinner(players[overallWinner])
+                _winner.value = players[overallWinner]
+                return
             } else {
                 // Start next round
                 state.value.progressToNextRound(cardDeck.drawCard())
