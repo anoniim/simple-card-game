@@ -1,6 +1,6 @@
 import engine.*
 import engine.player.Player
-import engine.player.PlayerId
+import engine.player.updateBet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 private const val ACTION_DELAY = 1000L
 
 class Game(
-    val players: Map<PlayerId, Player>,
+    val players: List<Player>,
     private val cardDeck: CardDeck,
     private val betGenerator: BetGenerator,
     private val settings: GameSettings,
@@ -29,8 +29,7 @@ class Game(
         }
     }
 
-    private fun initialGameState(players: Map<PlayerId, Player>) = ActiveGameState.initialState(
-        settings,
+    private fun initialGameState(players: List<Player>) = ActiveGameState.initialState(
         players,
         cardDeck.drawCard()
     )
@@ -48,32 +47,20 @@ class Game(
     }
 
     private fun placeBetForAiPlayer() {
-        val currentAiPlayerId = state.value.currentRound.currentPlayerId
-        val coins = state.value.coins[currentAiPlayerId]!!
-        val score = state.value.score[currentAiPlayerId]!!
+        val currentAiPlayer = players[state.value.currentRound.currentPlayer]
         val highestBet = state.value.getHighestBetInCoins()
-        val aiPlayerBet = betGenerator.generateBet(state.value.card.points, coins, score, highestBet)
-        _state.value = placeBet(currentAiPlayerId, aiPlayerBet)
+        val aiPlayerBet = betGenerator.generateBet(state.value.card.points, currentAiPlayer, highestBet)
+        _state.value = placeBet(currentAiPlayer, aiPlayerBet)
     }
 
     suspend fun placeBetForHumanPlayer(bet: Bet) {
-        _state.value = placeBet(state.value.currentRound.currentPlayerId, bet)
+        _state.value = placeBet(players[state.value.currentRound.currentPlayer], bet)
         progress()
         executeAiPlayerMoves()
     }
 
-    private fun placeBet(playerId: PlayerId, bet: Bet): ActiveGameState {
-        validateBet(playerId, bet)
-        val updatedBets = state.value.bets.toMutableMap().apply { this[playerId] = bet }
-        return state.value.copy(bets = updatedBets)
-    }
-
-    private fun validateBet(playerId: PlayerId, bet: Bet) {
-        if (bet is CoinBet) {
-            val playerCoins = state.value.coins[playerId]!!
-            if (bet.coins > playerCoins)
-                throw IllegalStateException("engine.Player (ID: $playerId) doesn't have ${bet.coins} (has only $playerCoins)")
-        }
+    private fun placeBet(player: Player, bet: Bet): ActiveGameState {
+        return state.value.copy(players = players.updateBet(player, bet))
     }
 
     private suspend fun progress() {
@@ -81,10 +68,9 @@ class Game(
         if (state.value.haveAllPlayersPlayed()) {
             // All players have played in this round, evaluate this round
             _state.value = state.value.evaluateRound()
-            val overallWinner = state.value.score.filter { it.value >= settings.goalScore }.keys.firstOrNull()
+            val overallWinner = players.find { it.score >= settings.goalScore }
             if (overallWinner != null) {
-                // Game over
-                _winner.value = players[overallWinner]
+                _winner.value = overallWinner
             } else {
                 // Start next round
                 delay(ACTION_DELAY)

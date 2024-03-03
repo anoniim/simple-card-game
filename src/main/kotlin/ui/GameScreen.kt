@@ -17,7 +17,6 @@ import engine.Bet
 import engine.CoinBet
 import engine.Pass
 import engine.player.Player
-import engine.player.PlayerId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -104,20 +103,15 @@ private fun DrawFirstCardButton(modifier: Modifier, onClick: () -> Unit) {
 @Composable
 private fun PlayerOverview(game: Game, state: State<ActiveGameState>) {
     Row(Modifier.fillMaxWidth()) {
-        val currentState = state.value
         val players = game.players
-        val bets = currentState.bets
-        val coins = currentState.coins
-        val score = currentState.score
-        players.forEach { playerEntry: Map.Entry<PlayerId, Player> ->
-            val player = playerEntry.value
+        players.forEachIndexed { index, player ->
             Player(
                 Modifier.weight(1f),
                 player.name,
-                coins.getOrElse(player.id) { -1 },
-                score.getOrElse(player.id) { -1 },
-                bets[player.id],
-                state.value.isPlayerFirst(player.id)
+                player.coins,
+                player.score,
+                player.bet,
+                state.value.isPlayerFirst(index)
             )
         }
     }

@@ -1,21 +1,18 @@
 package engine
 
 import engine.player.Player
-import engine.player.PlayerId
+import engine.player.updateScore
 
 sealed class GameState
 
 data class ActiveGameState(
-    val players: Map<PlayerId, Player>,
-    val coins: Map<PlayerId, Int>,
-    val score: Map<PlayerId, Int>,
-    val bets: Map<PlayerId, Bet?>,
+    val players: List<Player>,
     val card: Card,
-    val currentRound: Round = Round.initial(players.keys.toList())
+    val currentRound: Round = Round.initial(players.size),
 ) : GameState() {
 
-    fun isCurrentPlayerHuman() = players[currentRound.currentPlayerId]!!.isHuman.also { println("isCurrentPlayerHuman: $it") }
-    fun isPlayerFirst(playerId: PlayerId) = currentRound.firstPlayerId == playerId
+    fun isCurrentPlayerHuman() = players[currentRound.currentPlayer].isHuman.also { println("isCurrentPlayerHuman: $it") }
+    fun isPlayerFirst(playerIndex: Int) = currentRound.firstPlayer == playerIndex
 
     fun progressToNextPlayer(): ActiveGameState {
         return copy(currentRound = currentRound.progressToNextPlayer())
@@ -23,10 +20,12 @@ data class ActiveGameState(
 
     fun progressToNextRound(newCard: Card): ActiveGameState {
         val newRound = currentRound.progressToNextRound()
+        // remove bets from previous round
+        val playersWithoutBets = players.map { player -> player.copy(bet = null) }
         return copy(
             currentRound = newRound,
             card = newCard,
-            bets = HashMap(),
+            players = playersWithoutBets,
         )
     }
 
@@ -34,107 +33,83 @@ data class ActiveGameState(
         return currentRound.haveAllPlayersPlayed()
     }
 
-    fun getPlayerInfo(playerId: PlayerId): PlayerInfo {
-        return PlayerInfo(
-            score.getValue(playerId),
-            coins.getValue(playerId),
-            bets.getValue(playerId),
-        )
-    }
-
-    private fun getHighestBet() = bets.maxByOrNull(::betToCoins)
+    private fun getRoundWinner(): Player? = players.maxByOrNull(::betToCoins)
 
     fun getHighestBetInCoins(): Int {
+        val bets = players.map(Player::bet)
         return if (bets.isNotEmpty()) {
             bets.maxOf {
-                when (val bet = it.value) {
-                    is CoinBet -> bet.coins
+                when (it) {
+                    is CoinBet -> it.coins
                     else -> 0
                 }
             }
         } else 0
     }
 
-    private fun betToCoins(it: Map.Entry<PlayerId, Bet?>) = when (val bet = it.value) {
+    private fun betToCoins(player: Player) = when (val bet = player.bet) {
         is CoinBet -> bet.coins
         else -> 0
     }
 
     fun evaluateRound(): ActiveGameState {
-        return if (bets.values.all { it is Pass }) {
+        return if (players.map(Player::bet).all { it is Pass }) {
             // No bets placed, no winner, no need to update scores
             this
         } else {
-            val highestBetInfo = getHighestBet() ?: throw IllegalStateException("No bets placed")
-            val playerId = highestBetInfo.key
-            val highestBet = (highestBetInfo.value as CoinBet).coins
+            val roundWinner = getRoundWinner() ?: throw IllegalStateException("No bets placed")
+            val winningBet = (roundWinner.bet as CoinBet).coins
             val winningPoints = card.points
-            val updatedCoins = coins.toMutableMap().apply { this[playerId] = this[playerId]!! - highestBet }
-            val updatedScore = score.toMutableMap().apply { this[playerId] = this[playerId]!! + winningPoints }
-            copy(
-                coins = updatedCoins,
-                score = updatedScore,
-            )
+            val updatedCoins = roundWinner.coins - winningBet
+            val updatedScore = roundWinner.score + winningPoints
+            val updatedPlayers = players.updateScore(roundWinner, updatedCoins, updatedScore)
+            copy(players = updatedPlayers)
         }
     }
 
     companion object {
-        fun initialState(settings: GameSettings, players: Map<PlayerId, Player>, card: Card): ActiveGameState {
-            val coins = players.mapValues { settings.startingCoins }
-            val score = players.mapValues { settings.startingPoints }
-            val bets = players.mapValues { null }
+        fun initialState(players: List<Player>, card: Card): ActiveGameState {
             return ActiveGameState(
                 players = players,
-                coins = coins,
-                score = score,
                 card = card,
-                bets = bets,
             )
         }
     }
 
     data class Round(
-        private val playerIds: List<PlayerId>,
-        val firstPlayerId: PlayerId,
-        val currentPlayerId: PlayerId,
+        val playerCount: Int,
+        val firstPlayer: Int,
+        val currentPlayer: Int,
     ) {
 
-        private val currentPlayerIndex = playerIds.indexOf(currentPlayerId)
-
         fun progressToNextPlayer(): Round {
-            val nextPlayerIndex = currentPlayerIndex.next()
-            return copy(currentPlayerId = playerIds[nextPlayerIndex])
+            val nextPlayerIndex = currentPlayer.next()
+            return copy(currentPlayer = nextPlayerIndex)
         }
 
         fun progressToNextRound(): Round {
-            val newFirstPlayerIndex = currentPlayerIndex.next().next()
+            val newFirstPlayer = currentPlayer.next().next()
             return copy(
-                firstPlayerId = playerIds[newFirstPlayerIndex],
-                currentPlayerId = playerIds[newFirstPlayerIndex]
+                firstPlayer = newFirstPlayer,
+                currentPlayer = newFirstPlayer
             )
         }
 
         fun haveAllPlayersPlayed(): Boolean {
-            val nextPlayerIndex = currentPlayerIndex.next()
-            return playerIds[nextPlayerIndex] == firstPlayerId
+            val nextPlayer = currentPlayer.next()
+            return nextPlayer == firstPlayer
         }
 
         private fun Int.next(): Int {
-            return (this + 1) % playerIds.size
+            return (this + 1) % playerCount
         }
 
         companion object {
-            fun initial(playerIds: List<PlayerId>) = Round(
-                playerIds,
-                firstPlayerId = playerIds.first(),
-                currentPlayerId = playerIds.first()
+            fun initial(playerCount: Int) = Round(
+                playerCount,
+                firstPlayer = 0,
+                currentPlayer = 0
             )
         }
     }
 }
-
-
-class PlayerInfo(val score: Int, val coins: Int, val bet: Bet?)
-
-data object MenuGameState : GameState() // TODO
-data object GameOverState : GameState()
