@@ -12,15 +12,11 @@ data class ActiveGameState(
     val bets: Map<PlayerId, Bet?>,
     val card: Card,
     val winner: Player? = null,
-    private val currentRound: Round = Round.initial(players.keys.toList())
+    val currentRound: Round = Round.initial(players.keys.toList())
 ) : GameState() {
 
-
-    val currentPlayerId: PlayerId
-        get() = currentRound.currentPlayerId
-    val firstPlayerId: PlayerId
-        get() = currentRound.firstPlayerId
-
+    fun isCurrentPlayerHuman() = players[currentRound.currentPlayerId]!!.isHuman.also { println("isCurrentPlayerHuman: $it") }
+    fun isPlayerFirst(playerId: PlayerId) = currentRound.firstPlayerId == playerId
 
     fun progressToNextPlayer(): ActiveGameState {
         return copy(currentRound = currentRound.progressToNextPlayer())
@@ -47,7 +43,18 @@ data class ActiveGameState(
         )
     }
 
-    fun getHighestBet() = bets.maxByOrNull(::betToCoins)
+    private fun getHighestBet() = bets.maxByOrNull(::betToCoins)
+
+    fun getHighestBetInCoins(): Int {
+        return if (bets.isNotEmpty()) {
+            bets.maxOf {
+                when (val bet = it.value) {
+                    is CoinBet -> bet.coins
+                    else -> 0
+                }
+            }
+        } else 0
+    }
 
     private fun betToCoins(it: Map.Entry<PlayerId, Bet?>) = when (val bet = it.value) {
         is CoinBet -> bet.coins
@@ -57,16 +64,21 @@ data class ActiveGameState(
     fun setWinner(winner: Player?) = copy(winner = winner)
 
     fun evaluateRound(): ActiveGameState {
-        val highestBetInfo = getHighestBet() ?: throw IllegalStateException("No bets placed")
-        val playerId = highestBetInfo.key
-        val highestBet = (highestBetInfo.value as CoinBet).coins
-        val winningPoints = card.points
-        val updatedCoins = coins.toMutableMap().apply { this[playerId] = this[playerId]!! - highestBet }
-        val updatedScore = score.toMutableMap().apply { this[playerId] = this[playerId]!! + winningPoints }
-        return copy(
-            coins = updatedCoins,
-            score = updatedScore,
-        )
+        return if (bets.values.all { it is Pass }) {
+            // No bets placed, no winner, no need to update scores
+            this
+        } else {
+            val highestBetInfo = getHighestBet() ?: throw IllegalStateException("No bets placed")
+            val playerId = highestBetInfo.key
+            val highestBet = (highestBetInfo.value as CoinBet).coins
+            val winningPoints = card.points
+            val updatedCoins = coins.toMutableMap().apply { this[playerId] = this[playerId]!! - highestBet }
+            val updatedScore = score.toMutableMap().apply { this[playerId] = this[playerId]!! + winningPoints }
+            copy(
+                coins = updatedCoins,
+                score = updatedScore,
+            )
+        }
     }
 
     companion object {

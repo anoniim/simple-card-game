@@ -14,9 +14,8 @@ class PlayerFactory(
     private fun createAiPlayer(aiPlayerCount: Int): Map<PlayerId, Player> {
         val names = aiPlayerNames.shuffled().take(aiPlayerCount)
         return names.mapIndexed { index, name ->
-            val playerId = index + 1
-            PlayerId(playerId) to Player(
-                PlayerId(playerId),
+            PlayerId(index) to Player(
+                PlayerId(index),
                 name,
                 isHuman = false,
             )

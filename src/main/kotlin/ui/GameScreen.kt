@@ -46,12 +46,14 @@ fun GameContent(game: Game, firstCardDrawn: MutableState<Boolean>) {
         CardSection(game, state, firstCardDrawn, coroutineScope)
         Spacer(Modifier.height(32.dp))
 
-        if (game.isCurrentPlayerHuman()) {
+        println("evaluating isCurrentPlayerHuman")
+        if (state.value.isCurrentPlayerHuman()) {
+            println("- yes")
             BettingSection(
                 onPlayerBet = { coroutineScope.launch { game.placeBetForHumanPlayer(CoinBet(it)) } },
                 onPlayerPass = { coroutineScope.launch { game.placeBetForHumanPlayer(Pass) } }
             )
-        }
+        } else println("- no")
     }
 }
 
@@ -101,7 +103,7 @@ private fun PlayerOverview(game: Game, state: State<ActiveGameState>) {
                 coins.getOrElse(player.id) { -1 },
                 score.getOrElse(player.id) { -1 },
                 bets[player.id],
-                game.isPlayerFirst(player.id))
+                state.value.isPlayerFirst(player.id))
         }
     }
 }

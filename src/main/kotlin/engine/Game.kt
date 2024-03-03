@@ -20,9 +20,6 @@ class Game(
     private val _state = MutableStateFlow(initialGameState(players))
     val state: StateFlow<ActiveGameState> = _state.asStateFlow()
 
-    fun isCurrentPlayerHuman() = players[state.value.currentPlayerId]!!.isHuman
-    fun isPlayerFirst(playerId: PlayerId) = state.value.firstPlayerId == playerId
-
     init {
         GlobalScope.launch(Dispatchers.IO) {
             state.collect { println("State changed: $it") }
@@ -40,23 +37,23 @@ class Game(
     }
 
     private suspend fun executeAiPlayerMoves() {
-        while (players[state.value.currentPlayerId]!!.isNotHuman) {
+        while (!state.value.isCurrentPlayerHuman()) {
             placeBetForAiPlayer()
             progress()
         }
     }
 
     private fun placeBetForAiPlayer() {
-        val currentAiPlayerId = state.value.currentPlayerId
+        val currentAiPlayerId = state.value.currentRound.currentPlayerId
         val coins = state.value.coins[currentAiPlayerId]!!
         val score = state.value.score[currentAiPlayerId]!!
-        val highestBet = (state.value.getHighestBet()?.value as CoinBet?)?.coins ?: 0
+        val highestBet = state.value.getHighestBetInCoins()
         val aiPlayerBet = betGenerator.generateBet(state.value.card.points, coins, score, highestBet)
         _state.value = placeBet(currentAiPlayerId, aiPlayerBet)
     }
 
     suspend fun placeBetForHumanPlayer(bet: Bet) {
-        _state.value = placeBet(state.value.currentPlayerId, bet)
+        _state.value = placeBet(state.value.currentRound.currentPlayerId, bet)
         progress()
         executeAiPlayerMoves()
     }
