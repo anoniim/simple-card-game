@@ -1,14 +1,21 @@
 package engine.player
 
 import engine.GameSettings
+import kotlin.random.Random
 
 class PlayerFactory(
     private val settings: GameSettings
 ) {
 
     fun createPlayers(playerName: String): List<Player> {
-        return createAiPlayer(settings.aiPlayerCount) +
-                createHumanPlayer(settings.aiPlayerCount, playerName)
+        val allPlayers = createAiPlayer(settings.aiPlayerCount) + createHumanPlayer(settings.aiPlayerCount, playerName)
+        return allPlayers.setFirstPlayer(getFirstPlayer())
+    }
+
+    private fun getFirstPlayer(): Int {
+        return if (settings.randomizeFirstPlayer) {
+            Random.nextInt(settings.aiPlayerCount + 1)
+        } else 0
     }
 
     private fun createAiPlayer(aiPlayerCount: Int): List<Player> {
@@ -26,7 +33,6 @@ class PlayerFactory(
         isHuman = isHuman,
         settings.startingCoins,
         settings.startingPoints,
-        null,
     )
 }
 

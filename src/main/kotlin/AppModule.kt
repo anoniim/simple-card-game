@@ -18,6 +18,6 @@ val appModule = module {
     factory { (playerName: String) ->
         val playerFactory = get<PlayerFactory>()
         val players = playerFactory.createPlayers(playerName)
-        Game(players, get(), get(), get())
+        GameEngine(players, get(), get(), get())
     }
 }

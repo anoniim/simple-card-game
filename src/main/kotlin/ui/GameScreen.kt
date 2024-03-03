@@ -1,6 +1,6 @@
 package ui
 
-import Game
+import GameEngine
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Card
@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import engine.ActiveGameState
 import engine.Bet
+import engine.Card
 import engine.CoinBet
 import engine.Pass
 import engine.player.Player
@@ -21,16 +21,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun GameScreen(game: Game, startOver: () -> Unit, announceWinner: (Player) -> Unit) {
+fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (Player) -> Unit) {
     MaterialTheme {
-        val firstCardDrawn = remember { mutableStateOf(false) }
 //        Button(onClick = {
 //            startOver()
 //            firstCardDrawn.value = false
 //        }) {
 //            Text("Start over")
 //        }
-        GameContent(game, firstCardDrawn)
+        GameContent(game)
 
         val winner = game.winner.collectAsState()
         if (winner.value != null) {
@@ -40,29 +39,30 @@ fun GameScreen(game: Game, startOver: () -> Unit, announceWinner: (Player) -> Un
 }
 
 @Composable
-fun GameContent(game: Game, firstCardDrawn: MutableState<Boolean>) {
-    val state = game.state.collectAsState()
+fun GameContent(game: GameEngine) {
+    val players = game.players.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(Modifier.height(16.dp))
+        PlayerOverview(players.value)
         Spacer(Modifier.height(32.dp))
-        PlayerOverview(game, state)
-        Spacer(Modifier.height(32.dp))
-        CardSection(game, state, firstCardDrawn, coroutineScope)
+        CardSection(game, coroutineScope)
         Spacer(Modifier.height(32.dp))
 
-        if (state.value.isCurrentPlayerHuman()) {
-            BettingSection(
-                onPlayerBet = { coroutineScope.launch { game.placeBetForHumanPlayer(CoinBet(it)) } },
-                onPlayerPass = { coroutineScope.launch { game.placeBetForHumanPlayer(Pass) } }
-            )
-        }
+        BettingSection(players,
+            onPlayerBet = { coroutineScope.launch { game.placeBetForHumanPlayer(CoinBet(it)) } },
+            onPlayerPass = { coroutineScope.launch { game.placeBetForHumanPlayer(Pass) } }
+        )
     }
 }
 
 @Composable
-private fun CardSection(game: Game, state: State<ActiveGameState>, firstCardDrawn: MutableState<Boolean>, coroutineScope: CoroutineScope) {
+private fun CardSection(game: GameEngine, coroutineScope: CoroutineScope) {
+    val cardState = game.card.collectAsState()
+    val firstCardDrawn = remember { mutableStateOf(false) }
     val sizeModifier = Modifier.height(236.dp)
         .width(194.dp)
+    val card = cardState.value
     if (!firstCardDrawn.value) {
         Column(
             modifier = Modifier.fillMaxHeight(),
@@ -77,20 +77,30 @@ private fun CardSection(game: Game, state: State<ActiveGameState>, firstCardDraw
             }
             Spacer(modifier = Modifier.weight(0.5f))
         }
-    } else {
-        CardView(sizeModifier, state)
+    } else if (card != null) {
+        CardView(sizeModifier, card)
     }
 }
 
 @Composable
 private fun BettingSection(
+    players: State<List<Player>>,
     onPlayerBet: (Int) -> Unit,
     onPlayerPass: () -> Unit
 ) {
-    BetInputField(
-        onBetConfirmed = onPlayerBet,
-        playerPassed = onPlayerPass,
-    )
+    println(players.value)
+    // Show betting section only if it's human player's turn
+    val humanPlayer = players.value.find { it.isCurrentPlayer && it.isHuman }
+    if (humanPlayer != null && humanPlayer.bet == null) {
+        BetInputField(
+            onBetConfirmed = {
+                onPlayerBet(it)
+            },
+            playerPassed = {
+                onPlayerPass()
+            },
+        )
+    }
 }
 
 @Composable
@@ -101,17 +111,16 @@ private fun DrawFirstCardButton(modifier: Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-private fun PlayerOverview(game: Game, state: State<ActiveGameState>) {
+private fun PlayerOverview(players: List<Player>) {
     Row(Modifier.fillMaxWidth()) {
-        val players = game.players
-        players.forEachIndexed { index, player ->
+        players.forEach { player ->
             Player(
                 Modifier.weight(1f),
                 player.name,
                 player.coins,
                 player.score,
                 player.bet,
-                state.value.isPlayerFirst(index)
+                player.isFirstInThisRound
             )
         }
     }
@@ -130,7 +139,8 @@ private fun Player(
         modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "$playerName${if (isFirst) "*" else ""}")
+        if (isFirst) Text(text = "*") else Text(text = "")
+        Text(text = playerName)
         Text(text = "Coins: $coins")
         Text(text = "Score: $score")
         Spacer(Modifier.height(16.dp))
@@ -143,8 +153,7 @@ private fun Player(
 }
 
 @Composable
-fun CardView(sizeModifier: Modifier, state: State<ActiveGameState>) {
-    val card = state.value.card
+fun CardView(sizeModifier: Modifier, card: Card) {
     Card(
         modifier = sizeModifier
     ) {

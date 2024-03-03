@@ -1,6 +1,6 @@
 package ui
 
-import Game
+import GameEngine
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
 import androidx.compose.ui.window.Window
@@ -14,7 +14,7 @@ import org.koin.java.KoinJavaComponent.get
 
 sealed class NavigationState {
     data object MenuScreen : NavigationState()
-    data class GameScreen(val game: Game) : NavigationState()
+    data class GameScreen(val game: GameEngine) : NavigationState()
     data class WinnerScreen(val winner: Player) : NavigationState()
 }
 
@@ -50,7 +50,7 @@ fun App() {
 }
 
 private fun newGame(playerName: MutableState<String>) =
-    get<Game>(Game::class.java) { parametersOf(playerName.value) }
+    get<GameEngine>(GameEngine::class.java) { parametersOf(playerName.value) }
 
 fun main() = application {
     startKoin {
