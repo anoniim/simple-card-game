@@ -54,7 +54,7 @@ jobs:
       uses: actions/upload-artifact@v4.3.1
       with:
         # Artifact name
-        name: simple-card-game
+        name: simple-card-game-${{matrix.os}}
         # A file, directory or wildcard pattern that describes what to upload
         path: build/compose/binaries/main/**
         # The desired behavior if no files are found using the provided path.
