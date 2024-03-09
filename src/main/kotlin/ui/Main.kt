@@ -3,6 +3,7 @@ package ui
 import GameEngine
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import appModule
@@ -11,6 +12,9 @@ import engine.player.Player
 import org.koin.core.context.startKoin
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
+import java.awt.Image
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 
 sealed class NavigationState {
     data object MenuScreen : NavigationState()
@@ -56,7 +60,10 @@ fun main() = application {
     startKoin {
         modules(appModule)
     }
-    Window(onCloseRequest = ::exitApplication) {
+    Window(
+        title = "Simple card game",
+        onCloseRequest = ::exitApplication
+    ) {
         App()
     }
 }

@@ -8,6 +8,19 @@ plugins {
 group = "net.solvetheriddle.cardgame"
 version = "1.0-SNAPSHOT"
 
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
+            packageName = "simple-card-game"
+            packageVersion = "0.1.0"
+//            icon("src/main/resources/icon.png") // Not supported by Compose yet
+        }
+    }
+}
+
 repositories {
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
@@ -24,16 +37,4 @@ dependencies {
     val koinVersion = "3.5.3"
     implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
     implementation("io.insert-koin:koin-core")
-}
-
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "simple-card-game"
-            packageVersion = "1.0.0"
-        }
-    }
 }
