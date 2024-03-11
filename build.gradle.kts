@@ -15,7 +15,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
             packageName = "simple-card-game"
-            packageVersion = "0.1.0"
+            packageVersion = "1.0.0"
 //            icon("src/main/resources/icon.png") // Not supported by Compose yet
         }
     }
