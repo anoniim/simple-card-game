@@ -13,6 +13,7 @@ data class Player(
     val bet: Bet? = null,
     val isFirstInThisRound: Boolean = false,
     val isCurrentPlayer: Boolean = false,
+    val isRoundWinner: Boolean = false,
 )
 
 @JvmInline
@@ -36,10 +37,13 @@ fun List<Player>.updateCurrentPlayer(nextPlayerIndex: Int): List<Player> {
     }
 }
 
-fun List<Player>.updateFirstPlayer(newFirstPlayerIndex: Int): List<Player> {
+fun List<Player>.updateFirstPlayer(lastWinnerIndex: Int, newFirstPlayerIndex: Int): List<Player> {
     val currentPlayerIndex = indexOfFirst(Player::isCurrentPlayer)
     val currentFirstPlayerIndex = indexOfFirst(Player::isFirstInThisRound)
     return toMutableList().apply {
+        if (lastWinnerIndex >= 0) {
+            set(lastWinnerIndex, get(lastWinnerIndex).copy(isRoundWinner = false))
+        }
         set(currentPlayerIndex, get(currentPlayerIndex).copy(isCurrentPlayer = false))
         set(currentFirstPlayerIndex, get(currentFirstPlayerIndex).copy(isFirstInThisRound = false))
         set(newFirstPlayerIndex, get(newFirstPlayerIndex).copy(isCurrentPlayer = true, isFirstInThisRound = true))
@@ -48,7 +52,7 @@ fun List<Player>.updateFirstPlayer(newFirstPlayerIndex: Int): List<Player> {
 
 fun List<Player>.updateScore(player: Player, updatedCoins: Int, updatedScore: Int) =
     toMutableList().apply {
-        set(indexOf(player), player.copy(coins = updatedCoins, score = updatedScore))
+        set(indexOf(player), player.copy(coins = updatedCoins, score = updatedScore, isRoundWinner = true))
     }
 
 fun List<Player>.placeBet(player: Player, bet: Bet): MutableList<Player> {

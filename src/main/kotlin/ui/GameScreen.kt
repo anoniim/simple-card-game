@@ -1,6 +1,7 @@
 package ui
 
 import GameEngine
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Card
@@ -9,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,6 +81,8 @@ private fun CardSection(game: GameEngine, coroutineScope: CoroutineScope) {
         }
     } else if (card != null) {
         CardView(sizeModifier, card)
+    } else {
+        Spacer(modifier = sizeModifier)
     }
 }
 
@@ -114,13 +118,17 @@ private fun DrawFirstCardButton(modifier: Modifier, onClick: () -> Unit) {
 private fun PlayerOverview(players: List<Player>) {
     Row(Modifier.fillMaxWidth()) {
         players.forEach { player ->
+            var modifier = Modifier.weight(1f)
+            if (player.isRoundWinner) {
+                modifier = modifier.background(Color.Yellow)
+            }
             Player(
-                Modifier.weight(1f),
+                modifier,
                 player.name,
                 player.coins,
                 player.score,
                 player.bet,
-                player.isFirstInThisRound
+                player.isFirstInThisRound,
             )
         }
     }
@@ -133,7 +141,7 @@ private fun Player(
     coins: Int,
     score: Int,
     bet: Bet?,
-    isFirst: Boolean
+    isFirst: Boolean,
 ) {
     Column(
         modifier,

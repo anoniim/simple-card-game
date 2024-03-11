@@ -98,8 +98,9 @@ class GameEngine(
     }
 
     private fun setNewFirstPlayer() {
+        val lastWinnerIndex = currentRound.roundWinner
         val newFirstPlayerIndex = currentRound.progressToNextRound()
-        _players.value = players.value.updateFirstPlayer(newFirstPlayerIndex)
+        _players.value = players.value.updateFirstPlayer(lastWinnerIndex, newFirstPlayerIndex)
     }
 
     private fun resetBets() {
@@ -136,6 +137,7 @@ class GameEngine(
             val updatedCoins = roundWinner.coins - winningBet
             val updatedScore = roundWinner.score + winningPoints
             val updatedPlayers = players.value.updateScore(roundWinner, updatedCoins, updatedScore)
+            currentRound.roundWinner = players.value.indexOf(roundWinner)
             _players.value = updatedPlayers
         }
     }
@@ -144,6 +146,7 @@ class GameEngine(
         private val playerCount: Int,
         private var firstPlayer: Int,
         private var currentPlayer: Int,
+        var roundWinner: Int,
     ) {
 
         fun progressToNextPlayer(): Int {
@@ -152,10 +155,15 @@ class GameEngine(
             return nextPlayerIndex
         }
 
+        /**
+         * Progresses to the next round by setting a new first and current player.
+         * Returns the new first player index.
+         */
         fun progressToNextRound(): Int {
             val newFirstPlayer = currentPlayer.next().next()
             firstPlayer = newFirstPlayer
             currentPlayer = newFirstPlayer
+            roundWinner = -1
             return newFirstPlayer
         }
 
@@ -172,7 +180,8 @@ class GameEngine(
             fun initial(playerCount: Int) = Round(
                 playerCount,
                 firstPlayer = 0,
-                currentPlayer = 0
+                currentPlayer = 0,
+                roundWinner = -1,
             )
         }
     }
