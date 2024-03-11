@@ -50,10 +50,13 @@ class GameEngine(
 
     suspend fun placeBetForHumanPlayer(bet: Bet) {
         val player: Player = players.value.getCurrentPlayer()
-        _players.value = players.value.placeBet(player, bet)
-        delay(ACTION_DELAY)
-        progress()
-        executeAiPlayerMoves()
+        val updatedPlayers = players.value.placeBet(player, bet)
+        if (updatedPlayers.isNotEmpty()) {
+            _players.value = updatedPlayers
+            delay(ACTION_DELAY)
+            progress()
+            executeAiPlayerMoves()
+        }
     }
 
     private suspend fun progress() {

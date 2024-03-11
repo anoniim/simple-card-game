@@ -2,6 +2,7 @@ package engine.player
 
 import engine.Bet
 import engine.CoinBet
+import engine.Pass
 
 
 data class Player(
@@ -55,14 +56,17 @@ fun List<Player>.updateScore(player: Player, updatedCoins: Int, updatedScore: In
         set(indexOf(player), player.copy(coins = updatedCoins, score = updatedScore, isRoundWinner = true))
     }
 
-fun List<Player>.placeBet(player: Player, bet: Bet): MutableList<Player> {
-    player.validate(bet)
-    return toMutableList().apply {
-        set(indexOf(player), player.copy(bet = bet))
+fun List<Player>.placeBet(player: Player, bet: Bet): List<Player> {
+    return if (player.isValid(bet)) {
+        toMutableList().apply {
+            set(indexOf(player), player.copy(bet = bet))
+        }
+    } else {
+        println("! Player ${player.name} tried to bet $bet but has only ${player.coins})")
+        emptyList()
     }
 }
 
-private fun Player.validate(bet: Bet) {
-    if (bet is CoinBet && bet.coins > coins)
-        throw IllegalStateException("Player $name doesn't have ${bet.coins} (has only ${coins})")
+private fun Player.isValid(bet: Bet): Boolean {
+    return (bet is Pass) || (bet is CoinBet && bet.coins <= coins)
 }
