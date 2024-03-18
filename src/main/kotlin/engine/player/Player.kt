@@ -51,10 +51,19 @@ fun List<Player>.updateFirstPlayer(lastWinnerIndex: Int, newFirstPlayerIndex: In
     }
 }
 
-fun List<Player>.updateScore(player: Player, updatedCoins: Int, updatedScore: Int) =
-    toMutableList().apply {
+fun List<Player>.updateScore(player: Player, updatedCoins: Int, updatedScore: Int): MutableList<Player> {
+    return toMutableList().apply {
         set(indexOf(player), player.copy(coins = updatedCoins, score = updatedScore, isRoundWinner = true))
     }
+}
+
+fun List<Player>.allPlusOneCoin() : MutableList<Player> {
+    return toMutableList().apply {
+        forEach { player ->
+            set(indexOf(player), player.copy(coins = player.coins + 1))
+        }
+    }
+}
 
 fun List<Player>.placeBet(player: Player, bet: Bet): List<Player> {
     return if (player.isValid(bet)) {

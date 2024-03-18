@@ -139,7 +139,8 @@ class GameEngine(
             val winningPoints = card.value!!.points
             val updatedCoins = roundWinner.coins - winningBet
             val updatedScore = roundWinner.score + winningPoints
-            val updatedPlayers = players.value.updateScore(roundWinner, updatedCoins, updatedScore)
+            val playersWithScore = players.value.updateScore(roundWinner, updatedCoins, updatedScore)
+            val updatedPlayers = playersWithScore.allPlusOneCoin()
             currentRound.roundWinner = players.value.indexOf(roundWinner)
             _players.value = updatedPlayers
         }
