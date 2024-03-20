@@ -51,6 +51,7 @@ class AiPlayer(
 
 private val aiPlayerNames = listOf(
     AiPlayer("John", PlusOneBettingStrategy()),
+    AiPlayer("Paul", PlusOneBettingStrategy()),
     AiPlayer("Debbie", RandomBettingStrategy()),
     AiPlayer("Camila", StandardBettingStrategy(1.0)),
     AiPlayer("Lucy", StandardBettingStrategy(0.95)),
