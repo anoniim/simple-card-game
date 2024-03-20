@@ -1,15 +1,18 @@
 package engine
 
 class CardDeck(
-    numOfDecks: Int
+    private val numOfDecks: Int
 ) {
-    private val deck = generateDeck(numOfDecks).shuffled().toMutableList()
+    private val deck = generateShuffledDeck(numOfDecks)
+
+    private fun generateShuffledDeck(numOfDecks: Int) = generateDeck(numOfDecks).shuffled().toMutableList()
 
     private fun generateDeck(numOfDecks: Int): List<Card> {
         return List(numOfDecks) { Card.entries }.flatten()
     }
 
     fun drawCard(): Card {
+        if (deck.isEmpty()) deck.addAll(generateShuffledDeck(numOfDecks))
         return deck.removeAt(0)
     }
 }
