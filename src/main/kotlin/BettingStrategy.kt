@@ -1,5 +1,6 @@
 import engine.*
 import engine.player.Player
+import kotlin.math.ceil
 import kotlin.random.Random
 
 interface BettingStrategy {
@@ -8,9 +9,9 @@ interface BettingStrategy {
 
 class PlusOneBettingStrategy : BettingStrategy {
     override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
-        val desiredBet = highestBet + 1
-        return if (desiredBet <= player.coins) {
-            CoinBet(desiredBet)
+        val requiredBet = highestBet + 1
+        return if (requiredBet <= player.coins) {
+            CoinBet(requiredBet)
         } else Pass
     }
 }
@@ -30,5 +31,21 @@ class ManualBettingStrategy : BettingStrategy {
     override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
         return Pass
     }
+}
 
+class StandardBettingStrategy(
+    private val takeFactor: Double,
+) : BettingStrategy {
+    override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
+        val idealBet = ceil(cardValue * takeFactor).toInt()
+        val coins = player.coins
+        if (highestBet == 0) {
+            return if (idealBet <= coins) CoinBet(idealBet) else CoinBet(coins)
+        }
+        val requiredBet = highestBet + 1
+        val take = requiredBet <= idealBet
+        return if (requiredBet <= coins && take) {
+            CoinBet(requiredBet)
+        } else Pass
+    }
 }
