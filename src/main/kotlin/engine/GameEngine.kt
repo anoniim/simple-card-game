@@ -8,7 +8,6 @@ private const val ACTION_DELAY = 1000L
 class GameEngine(
     players: List<Player>,
     private val cardDeck: CardDeck,
-    private val betGenerator: BetGenerator,
     private val settings: GameSettings,
 ) {
 
@@ -44,7 +43,7 @@ class GameEngine(
 
     private fun placeBetForAiPlayer(currentAiPlayer: Player) {
         val highestBet = getHighestBetInCoins()
-        val aiPlayerBet = betGenerator.generateBet(card.value!!.points, currentAiPlayer, highestBet)
+        val aiPlayerBet = currentAiPlayer.generateBet(card.value!!.points, highestBet)
         _players.value = players.value.placeBet(currentAiPlayer, aiPlayerBet)
     }
 

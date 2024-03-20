@@ -1,5 +1,8 @@
 package engine.player
 
+import BettingStrategy
+import ManualBettingStrategy
+import PlusOneBettingStrategy
 import engine.GameSettings
 import kotlin.random.Random
 
@@ -20,19 +23,22 @@ class PlayerFactory(
 
     private fun createAiPlayer(aiPlayerCount: Int): List<Player> {
         val names = aiPlayerNames.shuffled().take(aiPlayerCount)
-        return names.mapIndexed { index, name -> createPlayer(index, name, false) }
+        return names.mapIndexed { index, name ->
+            createPlayer(index, name, false, PlusOneBettingStrategy())
+        }
     }
 
     private fun createHumanPlayer(humanPlayerId: Int, playerName: String): List<Player> {
-        return listOf(createPlayer(humanPlayerId, playerName, true))
+        return listOf(createPlayer(humanPlayerId, playerName, true, ManualBettingStrategy()))
     }
 
-    private fun createPlayer(index: Int, name: String, isHuman: Boolean) = Player(
+    private fun createPlayer(index: Int, name: String, isHuman: Boolean, bettingStrategy: BettingStrategy) = Player(
         PlayerId(index),
         name,
         isHuman = isHuman,
         settings.startingCoins,
         settings.startingPoints,
+        bettingStrategy = bettingStrategy,
     )
 }
 

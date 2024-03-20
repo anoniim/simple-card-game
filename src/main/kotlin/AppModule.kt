@@ -9,7 +9,7 @@ val appModule = module {
     singleOf(::GamePrefs)
     single { GameSettings.DEFAULT }
     singleOf(::PlayerFactory)
-    singleOf<BetGenerator>(::RandomBetGenerator)
+    singleOf<BettingStrategy>(::RandomBettingStrategy)
 
     factory {
         val settings = get<GameSettings>()
@@ -18,6 +18,6 @@ val appModule = module {
     factory { (playerName: String) ->
         val playerFactory = get<PlayerFactory>()
         val players = playerFactory.createPlayers(playerName)
-        GameEngine(players, get(), get(), get())
+        GameEngine(players, get(), get())
     }
 }

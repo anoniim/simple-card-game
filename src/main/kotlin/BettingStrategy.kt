@@ -2,11 +2,11 @@ import engine.*
 import engine.player.Player
 import kotlin.random.Random
 
-interface BetGenerator {
+interface BettingStrategy {
     fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet
 }
 
-class PlusOneBetGenerator : BetGenerator {
+class PlusOneBettingStrategy : BettingStrategy {
     override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
         val desiredBet = highestBet + 1
         return if (desiredBet <= player.coins) {
@@ -15,7 +15,7 @@ class PlusOneBetGenerator : BetGenerator {
     }
 }
 
-class RandomBetGenerator : BetGenerator {
+class RandomBettingStrategy : BettingStrategy {
     override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
         val lowestPossibleBet = highestBet + 1
         val highestPossibleBet = player.coins
@@ -24,4 +24,11 @@ class RandomBetGenerator : BetGenerator {
             CoinBet(randomBet)
         } else Pass
     }
+}
+
+class ManualBettingStrategy : BettingStrategy {
+    override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
+        return Pass
+    }
+
 }

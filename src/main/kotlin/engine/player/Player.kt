@@ -1,9 +1,9 @@
 package engine.player
 
+import BettingStrategy
 import engine.Bet
 import engine.CoinBet
 import engine.Pass
-
 
 data class Player(
     val id: PlayerId,
@@ -15,7 +15,13 @@ data class Player(
     val isFirstInThisRound: Boolean = false,
     val isCurrentPlayer: Boolean = false,
     val isRoundWinner: Boolean = false,
-)
+    val bettingStrategy: BettingStrategy,
+) {
+    fun generateBet(points: Int, highestBet: Int): Bet {
+        return bettingStrategy.generateBet(points, this, highestBet)
+    }
+}
+
 
 @JvmInline
 value class PlayerId(val value: Int)
@@ -57,7 +63,7 @@ fun List<Player>.updateScore(player: Player, updatedCoins: Int, updatedScore: In
     }
 }
 
-fun List<Player>.allPlusOneCoin() : MutableList<Player> {
+fun List<Player>.allPlusOneCoin(): MutableList<Player> {
     return toMutableList().apply {
         forEach { player ->
             set(indexOf(player), player.copy(coins = player.coins + 1))
