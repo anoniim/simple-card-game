@@ -1,34 +1,56 @@
 package ui
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun MenuScreen(playerName: MutableState<String>, startGame: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        TextField(
-            value = playerName.value,
-            onValueChange = { playerName.value = it },
-            label = { Text("Enter your name") }
+
+        Image(
+            painter = painterResource("img/menu.png"),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
-        Spacer(Modifier.height(16.dp))
-        Button(
-            onClick = { startGame() },
+        Column(
+            modifier = Modifier.fillMaxSize(0.3f)
+                .clip(RoundedCornerShape(16.dp))
+                .shadow(16.dp)
+                .background(Color.Gray.copy(alpha = 0.9f))
+                .align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text("Start game!")
+            OutlinedTextField(
+                value = playerName.value,
+                onValueChange = { playerName.value = it },
+                label = { Text("Enter your name") },
+                modifier = Modifier.padding(horizontal = 32.dp)
+            )
+            Spacer(Modifier.height(16.dp))
+            Button(
+                onClick = { startGame() },
+            ) {
+                Text("Start game!")
+            }
         }
     }
-
 }
