@@ -1,62 +1,101 @@
 package ui
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 // TODO change from Input field to up and down buttons (do not allow lower than minimum bet and higher than player's coins)
 
 @Composable
 internal fun BetInputField(
-    state: BetInputStateHolder = rememberBetInputStateHolder(),
+    state: BetInputStateHolder,
     onBetConfirmed: (Int) -> Unit,
     playerPassed: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "Your bet: ")
-        TextField(
-            value = state.betInput,
-            modifier = Modifier.height(48.dp)
-                .width(64.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            onValueChange = { state.updateBet(it) })
-        Spacer(Modifier.width(16.dp))
-        Button(onClick = {
-            onBetConfirmed(state.bet)
-            state.resetBet()
+        if (state.canBet) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TextButton(onClick = { state.increase() }) {
+                    IconText("⬆")
+                }
+                IconText(text = state.betInput)
+                TextButton(onClick = { state.decrease() }) {
+                    IconText("⬇")
+                }
+            }
         }
-        ) {
-            Text(text = "Confirm")
-        }
-        Spacer(Modifier.width(16.dp))
-        Button(onClick = {
-            state.resetBet()
-            playerPassed()
-        }) {
-            Text(text = "Pass")
+        if (state.canBet) {
+            Column {
+                Button(onClick = {
+                    onBetConfirmed(state.bet)
+                    state.resetBet()
+                }) {
+                    Text(
+                        text = "BET",
+                        fontSize = 12.sp
+                    )
+                }
+                Spacer(Modifier.width(16.dp))
+                PassButton(state = state, playerPassed = playerPassed)
+            }
+        } else {
+            PassButton(modifier = Modifier.padding(vertical = 32.dp), state, playerPassed)
         }
     }
 }
 
 @Composable
-fun rememberBetInputStateHolder() = remember { BetInputStateHolder() }
+private fun PassButton(modifier: Modifier = Modifier, state: BetInputStateHolder, playerPassed: () -> Unit) {
+    Button(onClick = {
+        state.resetBet()
+        playerPassed()
+    }, modifier = modifier) {
+        Text(
+            text = "PASS",
+            fontSize = 12.sp
+        )
+    }
+}
 
-class BetInputStateHolder {
-    var betInput by mutableStateOf("")
+@Composable
+fun IconText(text: String) {
+    // White text
+    Text(
+        text = text,
+        fontSize = 20.sp,
+        fontWeight = FontWeight.ExtraBold,
+        color = Color.White,
+    )
+}
+
+@Composable
+fun rememberBetInputStateHolder(minBet: Int, maxBet: Int) = remember {
+    BetInputStateHolder(minBet, maxBet)
+}
+
+class BetInputStateHolder(
+    private var minBet: Int,
+    private var maxBet: Int
+) {
+
+    val canBet: Boolean
+        get() = minBet <= maxBet
+
+    var betInput by mutableStateOf("${if (minBet <= maxBet) minBet else ""}")
         private set
 
-    var bet: Int = 0
+    var bet: Int = minBet
         private set
+
 
     fun updateBet(input: String) {
         if (input.isBlank()) {
@@ -77,5 +116,20 @@ class BetInputStateHolder {
     fun resetBet() {
         betInput = ""
         bet = 0
+        maxBet = 0
+    }
+
+    fun increase() {
+        if (bet < maxBet) {
+            bet++
+            betInput = bet.toString()
+        }
+    }
+
+    fun decrease() {
+        if (bet > minBet && bet > 0) {
+            bet--
+            betInput = bet.toString()
+        }
     }
 }

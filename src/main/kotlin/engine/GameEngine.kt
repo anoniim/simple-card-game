@@ -113,15 +113,7 @@ class GameEngine(
     private fun getRoundWinner(): Player? = players.value.maxByOrNull(::betToCoins)
 
     private fun getHighestBetInCoins(): Int {
-        val bets = players.value.map(Player::bet)
-        return if (bets.isNotEmpty()) {
-            bets.maxOf {
-                when (it) {
-                    is CoinBet -> it.coins
-                    else -> 0
-                }
-            }
-        } else 0
+        return getHighestBetInCoins(players.value)
     }
 
     private fun betToCoins(player: Player) = when (val bet = player.bet) {
@@ -188,4 +180,16 @@ class GameEngine(
             )
         }
     }
+}
+
+public fun getHighestBetInCoins(players: List<Player>): Int {
+    val bets = players.map(Player::bet)
+    return if (bets.isNotEmpty()) {
+        bets.maxOf {
+            when (it) {
+                is CoinBet -> it.coins
+                else -> 0
+            }
+        }
+    } else 0
 }

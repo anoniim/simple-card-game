@@ -23,7 +23,6 @@ fun MenuScreen(playerName: MutableState<String>, startGame: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-
         Image(
             painter = painterResource("img/menu.png"),
             contentDescription = null,
