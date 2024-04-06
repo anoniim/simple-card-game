@@ -1,16 +1,35 @@
 package engine.player
 
-import BettingStrategy
-import ManualBettingStrategy
-import PlusOneBettingStrategy
-import RandomBettingStrategy
-import StandardBettingStrategy
+import engine.BettingStrategy
+import engine.ManualBettingStrategy
+import engine.PlusOneBettingStrategy
+import engine.RandomBettingStrategy
+import engine.StandardBettingStrategy
 import engine.GameSettings
 import kotlin.random.Random
 
 class PlayerFactory(
     private val settings: GameSettings
 ) {
+
+    private val aiPlayers = listOf(
+        AiPlayer("John", PlusOneBettingStrategy(settings.goalScore)),
+        AiPlayer("Paul", PlusOneBettingStrategy(settings.goalScore)),
+        AiPlayer("Debbie", RandomBettingStrategy(settings.goalScore)),
+        AiPlayer("Camila", StandardBettingStrategy(1.0, settings.goalScore)),
+        AiPlayer("Lucy", StandardBettingStrategy(0.95, settings.goalScore)),
+        AiPlayer("Bob", StandardBettingStrategy(0.85, settings.goalScore)),
+        AiPlayer("Thomas", StandardBettingStrategy(0.75, settings.goalScore)),
+        AiPlayer("Diana", StandardBettingStrategy(0.65, settings.goalScore)),
+        AiPlayer("Lisa", StandardBettingStrategy(0.55, settings.goalScore)),
+        AiPlayer("Charlie", StandardBettingStrategy(0.50, settings.goalScore)),
+        AiPlayer("Clair", StandardBettingStrategy(0.45, settings.goalScore)),
+        AiPlayer("Bart", StandardBettingStrategy(0.40, settings.goalScore)),
+        AiPlayer("Meghan", StandardBettingStrategy(0.35, settings.goalScore)),
+        AiPlayer("Mike", StandardBettingStrategy(0.30, settings.goalScore)),
+        AiPlayer("Cedric", StandardBettingStrategy(0.25, settings.goalScore)),
+    )
+
 
     fun createPlayers(playerName: String): List<Player> {
         val allPlayers = createAiPlayer(settings.aiPlayerCount) + createHumanPlayer(settings.aiPlayerCount, playerName)
@@ -24,7 +43,7 @@ class PlayerFactory(
     }
 
     private fun createAiPlayer(aiPlayerCount: Int): List<Player> {
-        val names = aiPlayerNames.shuffled().take(aiPlayerCount)
+        val names = aiPlayers.shuffled().take(aiPlayerCount)
         return names.mapIndexed { index, player ->
             createPlayer(index, player.name, false, player.bettingStrategy)
         }
@@ -49,20 +68,3 @@ class AiPlayer(
     val bettingStrategy: BettingStrategy,
 )
 
-private val aiPlayerNames = listOf(
-    AiPlayer("John", PlusOneBettingStrategy()),
-    AiPlayer("Paul", PlusOneBettingStrategy()),
-    AiPlayer("Debbie", RandomBettingStrategy()),
-    AiPlayer("Camila", StandardBettingStrategy(1.0)),
-    AiPlayer("Lucy", StandardBettingStrategy(0.95)),
-    AiPlayer("Bob", StandardBettingStrategy(0.85)),
-    AiPlayer("Thomas", StandardBettingStrategy(0.75)),
-    AiPlayer("Diana", StandardBettingStrategy(0.65)),
-    AiPlayer("Lisa", StandardBettingStrategy(0.55)),
-    AiPlayer("Charlie", StandardBettingStrategy(0.50)),
-    AiPlayer("Clair", StandardBettingStrategy(0.45)),
-    AiPlayer("Bart", StandardBettingStrategy(0.40)),
-    AiPlayer("Meghan", StandardBettingStrategy(0.35)),
-    AiPlayer("Mike", StandardBettingStrategy(0.30)),
-    AiPlayer("Cedric", StandardBettingStrategy(0.25)),
-)

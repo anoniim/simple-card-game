@@ -1,4 +1,5 @@
-import engine.*
+package engine
+
 import engine.player.Player
 import kotlin.math.ceil
 import kotlin.random.Random
@@ -7,8 +8,14 @@ interface BettingStrategy {
     fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet
 }
 
-class PlusOneBettingStrategy : BettingStrategy {
+class PlusOneBettingStrategy(
+    private val goalScore: Int
+) : BettingStrategy {
     override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
+        // If the card value is what the player needs to win, bet everything
+        if (cardValue >= goalScore - player.score) {
+            return CoinBet(player.coins)
+        }
         val requiredBet = highestBet + 1
         return if (requiredBet <= player.coins) {
             CoinBet(requiredBet)
@@ -16,10 +23,16 @@ class PlusOneBettingStrategy : BettingStrategy {
     }
 }
 
-class RandomBettingStrategy : BettingStrategy {
+class RandomBettingStrategy(
+    private val goalScore: Int
+) : BettingStrategy {
     override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
         val lowestPossibleBet = highestBet + 1
         val highestPossibleBet = player.coins
+        // If the card value is what the player needs to win, bet everything
+        if (cardValue >= goalScore - player.score) {
+            return CoinBet(highestPossibleBet)
+        }
         return if (lowestPossibleBet < highestPossibleBet) {
             val randomBet = Random.nextInt(lowestPossibleBet, highestPossibleBet + 1)
             CoinBet(randomBet)
@@ -35,10 +48,16 @@ class ManualBettingStrategy : BettingStrategy {
 
 class StandardBettingStrategy(
     private val takeFactor: Double,
+    private val goalScore: Int,
 ) : BettingStrategy {
     override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
         val idealBet = ceil(cardValue * takeFactor).toInt()
         val coins = player.coins
+        // If the card value is what the player needs to win, bet everything
+        if (cardValue >= goalScore - player.score) {
+            return CoinBet(coins)
+        }
+        // If no one has bet yet, bet the ideal bet if possible
         if (highestBet == 0) {
             return if (idealBet <= coins) CoinBet(idealBet) else CoinBet(coins)
         }

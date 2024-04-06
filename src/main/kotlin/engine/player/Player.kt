@@ -1,6 +1,6 @@
 package engine.player
 
-import BettingStrategy
+import engine.BettingStrategy
 import engine.Bet
 import engine.CoinBet
 import engine.Pass
