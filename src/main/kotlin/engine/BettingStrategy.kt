@@ -13,7 +13,7 @@ class PlusOneBettingStrategy(
 ) : BettingStrategy {
     override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
         // If the card value is what the player needs to win, bet everything
-        if (cardValue >= goalScore - player.score) {
+        if (cardValue >= goalScore - player.score && player.coins > highestBet) {
             return CoinBet(player.coins)
         }
         val requiredBet = highestBet + 1
@@ -30,7 +30,7 @@ class RandomBettingStrategy(
         val lowestPossibleBet = highestBet + 1
         val highestPossibleBet = player.coins
         // If the card value is what the player needs to win, bet everything
-        if (cardValue >= goalScore - player.score) {
+        if (cardValue >= goalScore - player.score && highestPossibleBet > highestBet) {
             return CoinBet(highestPossibleBet)
         }
         return if (lowestPossibleBet < highestPossibleBet) {
@@ -54,7 +54,7 @@ class StandardBettingStrategy(
         val idealBet = ceil(cardValue * takeFactor).toInt()
         val coins = player.coins
         // If the card value is what the player needs to win, bet everything
-        if (cardValue >= goalScore - player.score) {
+        if (cardValue >= goalScore - player.score && coins > highestBet) {
             return CoinBet(coins)
         }
         // If no one has bet yet, bet the ideal bet if possible

@@ -2,7 +2,6 @@ package ui
 
 import GameEngine
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -155,27 +154,28 @@ private fun PlayerView(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val modifier = if (player.isRoundWinner) Modifier.background(Color.Yellow) else Modifier
             if (player.isFirstInThisRound) Text(text = "1️⃣") else Text(text = "")
-            PlayerText(text = player.name)
-            PlayerText(text = "Coins: ${player.coins}")
-            PlayerText(text = "Score: ${player.score}")
+            val isRoundWinner = player.isRoundWinner
+            PlayerText(text = player.name, 22.sp, isRoundWinner)
+            PlayerText(text = "Coins: ${player.coins}", isRoundWinner = isRoundWinner)
+            PlayerText(text = "Score: ${player.score}", isRoundWinner = isRoundWinner)
             Spacer(Modifier.height(16.dp))
             when (player.bet) {
-                is CoinBet -> PlayerText(text = "Current bet: ${player.bet.coins}")
-                is Pass -> PlayerText(text = "Pass")
-                else -> PlayerText(text = "-")
+                is CoinBet -> PlayerText(text = "Current bet: ${player.bet.coins}", isRoundWinner = isRoundWinner)
+                is Pass -> PlayerText(text = "Pass", isRoundWinner = isRoundWinner)
+                else -> PlayerText(text = "-", isRoundWinner = isRoundWinner)
             }
         }
     }
 }
 
 @Composable
-private fun PlayerText(text: String, fontSize: TextUnit = 20.sp) {
+private fun PlayerText(text: String, fontSize: TextUnit = 18.sp, isRoundWinner: Boolean) {
+    val textColor = if (isRoundWinner) Color.Green else MaterialTheme.colorScheme.errorContainer
     Text(
         text = text,
         fontSize = fontSize,
-        color = MaterialTheme.colorScheme.errorContainer,
+        color = textColor,
         fontWeight = FontWeight.Bold,
     )
 }
