@@ -12,28 +12,27 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun WinnerScreen(winnerName: String, playAgain: () -> Unit) {
-    MaterialTheme {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "The winner is",
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = winnerName,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            fontSize = 80.sp,
+        )
+        Spacer(Modifier.height(72.dp))
+        Button(
+            onClick = { playAgain() },
         ) {
-            Text(
-                text = "The winner is",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = winnerName,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                fontSize = 80.sp,
-            )
-            Spacer(Modifier.height(72.dp))
-            Button(
-                onClick = { playAgain() },
-            ) {
-                Text("Play again!")
-            }
+            Text("Play again!")
         }
     }
+
 }

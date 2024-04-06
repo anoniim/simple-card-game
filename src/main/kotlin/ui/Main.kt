@@ -2,8 +2,16 @@ package ui
 
 import GameEngine
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import appModule
@@ -25,31 +33,37 @@ sealed class NavigationState {
 @Composable
 @Preview
 fun App() {
-    val prefs = get<GamePrefs>(GamePrefs::class.java)
-    var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.MenuScreen) }
-    val playerName = remember { mutableStateOf(prefs.getPlayerName()) }
 
-    when (val currentNavigationState = navigationState) {
-        is NavigationState.MenuScreen -> MenuScreen(playerName,
-            startGame = {
-                // Save player name
-                prefs.setPlayerName(playerName.value)
-                // Start a new game
-                navigationState = NavigationState.GameScreen(newGame(playerName))
-            })
+    MaterialTheme {
+        Surface() {
+            Image(modifier = Modifier.fillMaxSize().background(painterResource("assets/background.jpg")))
+        }
+        val prefs = get<GamePrefs>(GamePrefs::class.java)
+        var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.MenuScreen) }
+        val playerName = remember { mutableStateOf(prefs.getPlayerName()) }
 
-        is NavigationState.GameScreen -> GameScreen(currentNavigationState.game,
-            startOver = {
-                navigationState = NavigationState.GameScreen(newGame(playerName))
-            }, announceWinner = {
-                println("WINNER: ${it.name}")
-                navigationState = NavigationState.WinnerScreen(it)
-            })
+        when (val currentNavigationState = navigationState) {
+            is NavigationState.MenuScreen -> MenuScreen(playerName,
+                startGame = {
+                    // Save player name
+                    prefs.setPlayerName(playerName.value)
+                    // Start a new game
+                    navigationState = NavigationState.GameScreen(newGame(playerName))
+                })
 
-        is NavigationState.WinnerScreen -> WinnerScreen(currentNavigationState.winner.name,
-            playAgain = {
-                navigationState = NavigationState.GameScreen(newGame(playerName))
-            })
+            is NavigationState.GameScreen -> GameScreen(currentNavigationState.game,
+                startOver = {
+                    navigationState = NavigationState.GameScreen(newGame(playerName))
+                }, announceWinner = {
+                    println("WINNER: ${it.name}")
+                    navigationState = NavigationState.WinnerScreen(it)
+                })
+
+            is NavigationState.WinnerScreen -> WinnerScreen(currentNavigationState.winner.name,
+                playAgain = {
+                    navigationState = NavigationState.GameScreen(newGame(playerName))
+                })
+        }
     }
 }
 

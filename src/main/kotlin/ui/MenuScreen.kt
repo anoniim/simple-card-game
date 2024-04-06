@@ -13,23 +13,22 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MenuScreen(playerName: MutableState<String>, startGame: () -> Unit) {
-    MaterialTheme {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        TextField(
+            value = playerName.value,
+            onValueChange = { playerName.value = it },
+            label = { Text("Enter your name") }
+        )
+        Spacer(Modifier.height(16.dp))
+        Button(
+            onClick = { startGame() },
         ) {
-            TextField(
-                value = playerName.value,
-                onValueChange = { playerName.value = it },
-                label = { Text("Enter your name") }
-            )
-            Spacer(Modifier.height(16.dp))
-            Button(
-                onClick = { startGame() },
-            ) {
-                Text("Start game!")
-            }
+            Text("Start game!")
         }
     }
+
 }

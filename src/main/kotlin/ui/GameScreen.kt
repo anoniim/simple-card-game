@@ -24,19 +24,17 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (Player) -> Unit) {
-    MaterialTheme {
 //        Button(onClick = {
 //            startOver()
 //            firstCardDrawn.value = false
 //        }) {
 //            Text("Start over")
 //        }
-        GameContent(game)
+    GameContent(game)
 
-        val winner = game.winner.collectAsState()
-        if (winner.value != null) {
-            announceWinner(game.winner.value!!)
-        }
+    val winner = game.winner.collectAsState()
+    if (winner.value != null) {
+        announceWinner(game.winner.value!!)
     }
 }
 
