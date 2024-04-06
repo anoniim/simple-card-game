@@ -2,7 +2,7 @@ package engine
 
 private const val STARTING_COINS = 10
 private const val STARTING_POINTS = 0
-private const val NUM_OF_CARD_DECKS = 1
+private const val NUM_OF_CARD_DECKS = 2
 private const val AI_PLAYER_COUNT = 3
 private const val GOAL_SCORE = 30
 private const val RANDOMIZE_FIRST_PLAYER = false
