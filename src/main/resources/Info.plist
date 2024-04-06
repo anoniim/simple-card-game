@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Other keys here -->
+
+    <!-- This should make the app use the dark mode of the system but doesn't seem to work -->
+    <key>NSRequiresAquaSystemAppearance</key><false/>
+
+</dict>
+</plist>

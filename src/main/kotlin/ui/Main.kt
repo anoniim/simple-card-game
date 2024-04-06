@@ -2,16 +2,7 @@ package ui
 
 import GameEngine
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import appModule
@@ -20,9 +11,7 @@ import engine.player.Player
 import org.koin.core.context.startKoin
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
-import java.awt.Image
-import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
+import ui.theme.AppTheme
 
 sealed class NavigationState {
     data object MenuScreen : NavigationState()
@@ -34,10 +23,7 @@ sealed class NavigationState {
 @Preview
 fun App() {
 
-    MaterialTheme {
-        Surface() {
-            Image(modifier = Modifier.fillMaxSize().background(painterResource("assets/background.jpg")))
-        }
+    AppTheme {
         val prefs = get<GamePrefs>(GamePrefs::class.java)
         var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.MenuScreen) }
         val playerName = remember { mutableStateOf(prefs.getPlayerName()) }
