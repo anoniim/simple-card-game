@@ -1,11 +1,6 @@
 package engine.player
 
-import engine.BettingStrategy
-import engine.ManualBettingStrategy
-import engine.PlusOneBettingStrategy
-import engine.RandomBettingStrategy
-import engine.StandardBettingStrategy
-import engine.GameSettings
+import engine.*
 import kotlin.random.Random
 
 class PlayerFactory(
@@ -14,20 +9,21 @@ class PlayerFactory(
 
     private val aiPlayers = listOf(
         AiPlayer("John", PlusOneBettingStrategy(settings.goalScore)),
-        AiPlayer("Paul", PlusOneBettingStrategy(settings.goalScore)),
         AiPlayer("Debbie", RandomBettingStrategy(settings.goalScore)),
+        AiPlayer("Darren", RandomPlusOneBettingStrategy(settings.goalScore)),
+        AiPlayer("Lucy", StandardBettingStrategy(1.2, settings.goalScore)),
         AiPlayer("Camila", StandardBettingStrategy(1.0, settings.goalScore)),
-        AiPlayer("Lucy", StandardBettingStrategy(0.95, settings.goalScore)),
-        AiPlayer("Bob", StandardBettingStrategy(0.85, settings.goalScore)),
-        AiPlayer("Thomas", StandardBettingStrategy(0.75, settings.goalScore)),
-        AiPlayer("Diana", StandardBettingStrategy(0.65, settings.goalScore)),
-        AiPlayer("Lisa", StandardBettingStrategy(0.55, settings.goalScore)),
-        AiPlayer("Charlie", StandardBettingStrategy(0.50, settings.goalScore)),
-        AiPlayer("Clair", StandardBettingStrategy(0.45, settings.goalScore)),
-        AiPlayer("Bart", StandardBettingStrategy(0.40, settings.goalScore)),
-        AiPlayer("Meghan", StandardBettingStrategy(0.35, settings.goalScore)),
-        AiPlayer("Mike", StandardBettingStrategy(0.30, settings.goalScore)),
-        AiPlayer("Cedric", StandardBettingStrategy(0.25, settings.goalScore)),
+        AiPlayer("Thomas", StandardBettingStrategy(0.9, settings.goalScore)),
+        AiPlayer("Lisa", StandardBettingStrategy(0.8, settings.goalScore)),
+        AiPlayer("Clair", StandardBettingStrategy(0.7, settings.goalScore)),
+        AiPlayer("Meghan", HighStandardBettingStrategy(5, 1.0, settings.goalScore)),
+        AiPlayer("Cedric", HighStandardBettingStrategy(5, 0.9, settings.goalScore)),
+        AiPlayer("Diana", HighStandardBettingStrategy(5, 0.8, settings.goalScore)),
+        AiPlayer("Charlie", HighStandardBettingStrategy(5, 0.7, settings.goalScore)),
+        AiPlayer("Paul", HighStandardBettingStrategy(8,1.0, settings.goalScore)),
+        AiPlayer("Bob", HighStandardBettingStrategy(8,0.9, settings.goalScore)),
+        AiPlayer("Bart", HighStandardBettingStrategy(8,0.8, settings.goalScore)),
+        AiPlayer("Mike", HighStandardBettingStrategy(8,0.7, settings.goalScore)),
     )
 
 
