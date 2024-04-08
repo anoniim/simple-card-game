@@ -31,7 +31,7 @@ enum class Card(
     CARD_7("7", 7, "img/7.png"),
     CARD_8("8", 8, "img/8.png"),
     CARD_9("9", 9, "img/9.png"),
-    CARD_10("10", 10, "img/0.png"),
+    CARD_10("10", 10, "img/10.png"),
     CARD_J("J", 11, "img/J.png"),
     CARD_Q("Q", 12, "img/Q.png"),
     CARD_K("K", 13, "img/K.png"),
