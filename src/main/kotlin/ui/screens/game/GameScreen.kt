@@ -50,7 +50,7 @@ fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (Player)
                 .offset(y = 8.dp)
         )
         val alignmentModifier = Modifier.align(Alignment.Center)
-            .offset(y = (-80).dp)
+            .offset(y = (-70).dp)
         CardSection(game, coroutineScope, alignmentModifier)
 
         val winner = game.winner.collectAsState()
