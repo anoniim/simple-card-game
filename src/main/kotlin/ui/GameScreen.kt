@@ -2,6 +2,7 @@ package ui
 
 import GameEngine
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -11,12 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,8 +86,7 @@ private fun CardSection(game: GameEngine, coroutineScope: CoroutineScope, alignm
 @Composable
 private fun DrawFirstCardButton(alignmentModifier: Modifier, cardSizeModifier: Modifier, onClick: () -> Unit) {
     Column(
-        modifier = alignmentModifier.fillMaxHeight()
-            .shadow(16.dp),
+        modifier = alignmentModifier.fillMaxHeight(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -133,50 +134,96 @@ fun HumanPlayerView(
     onPlayerBet: (Int) -> Unit,
     onPlayerPass: () -> Unit
 ) {
-    Row(verticalAlignment = Alignment.Bottom) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         PlayerView(players[3])
         BettingSection(players, onPlayerBet, onPlayerPass)
     }
 }
 
+private const val BEANS = "\uD83E\uDED8"
+
 @Composable
 private fun PlayerView(
     player: Player,
 ) {
-    Box(Modifier.width(280.dp).height(200.dp)) {
+    val placedBetViewWidth = 80.dp
+    val playerStatsWidth = 280.dp
+    val bettingSectionWidth = 120.dp
+    val playerBoxWidthWithBet = playerStatsWidth + placedBetViewWidth
+    val playerBoxWidthWithBettingSection = playerStatsWidth + bettingSectionWidth
+    val playerBoxWidth = when {
+        player.isHuman && player.bet != null -> playerBoxWidthWithBettingSection
+        player.bet != null -> playerBoxWidthWithBet
+        else -> playerStatsWidth
+    }
+    Row(Modifier.width(playerBoxWidth).height(200.dp)) {
+        val placedBetHorizontalOffset = 20.dp
+        if (player.id.value % 3 == 0) {
+            PlayerStats(playerStatsWidth, player)
+            PlacedBetSection(Modifier.align(Alignment.CenterVertically), placedBetViewWidth, player, -placedBetHorizontalOffset)
+        } else {
+            PlacedBetSection(Modifier.align(Alignment.CenterVertically), placedBetViewWidth, player, placedBetHorizontalOffset)
+            PlayerStats(playerStatsWidth, player)
+        }
+    }
+}
+
+@Composable
+private fun PlayerStats(playerStatsWidth: Dp, player: Player) {
+    Box(Modifier.width(playerStatsWidth).height(200.dp)) {
+        // Player stats background
         Image(
             painter = painterResource("img/board_trans.png"),
             contentDescription = null,
-            modifier = Modifier.width(280.dp).height(200.dp),
+            modifier = Modifier.width(playerStatsWidth).height(200.dp),
         )
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.width(playerStatsWidth).height(200.dp)
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            if (player.isFirstInThisRound) Text(text = "1️⃣") else Text(text = "")
-            val isRoundWinner = player.isRoundWinner
-            PlayerText(text = player.name, 22.sp, isRoundWinner)
-            PlayerText(text = "Coins: ${player.coins}", isRoundWinner = isRoundWinner)
-            PlayerText(text = "Score: ${player.score}", isRoundWinner = isRoundWinner)
-            Spacer(Modifier.height(16.dp))
+            PlayerText(text = player.name, 30.sp)
+            PlayerText(text = "⭐ ${player.score}")
+            PlayerText(text = "$BEANS ${player.coins}")
+        }
+        Text(
+            text = if (player.isFirstInThisRound) "1️⃣" else "",
+            fontSize = 30.sp,
+            color = Color.White,
+            modifier = Modifier.align(Alignment.TopStart).padding(horizontal = 20.dp, vertical = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player: Player, horizontalOffset: Dp) {
+    val showPlacedBet = player.bet != null
+    if (showPlacedBet) {
+        val bettingSectionBackground = if (player.isRoundWinner) Color.Green else MaterialTheme.colorScheme.tertiaryContainer
+        Box(
+            alignmentModifier.width(placedBetViewWidth).height(50.dp)
+                .offset(x = horizontalOffset)
+                .clip(RoundedCornerShape(16.dp))
+                .background(bettingSectionBackground)
+        ) {
             when (player.bet) {
-                is CoinBet -> PlayerText(text = "Current bet: ${player.bet.coins}", isRoundWinner = isRoundWinner)
-                is Pass -> PlayerText(text = "Pass", isRoundWinner = isRoundWinner)
-                else -> PlayerText(text = "-", isRoundWinner = isRoundWinner)
+                is CoinBet -> PlayerText(text = "$BEANS ${player.bet.coins}", fontSize = 25.sp, Modifier.align(Alignment.Center))
+                is Pass -> PlayerText(text = "PASS", fontSize = 18.sp, Modifier.align(Alignment.Center))
+                else -> {}
             }
         }
     }
 }
 
 @Composable
-private fun PlayerText(text: String, fontSize: TextUnit = 18.sp, isRoundWinner: Boolean) {
-    val textColor = if (isRoundWinner) Color.Green else MaterialTheme.colorScheme.errorContainer
+private fun PlayerText(text: String, fontSize: TextUnit = 30.sp, modifier: Modifier = Modifier) {
     Text(
         text = text,
         fontSize = fontSize,
-        color = textColor,
+        color = MaterialTheme.colorScheme.tertiary,
         fontWeight = FontWeight.Bold,
+        modifier = modifier,
     )
 }
 
