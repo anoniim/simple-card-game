@@ -11,6 +11,8 @@ class GameEngine(
     private val settings: GameSettings,
 ) {
 
+    val goalScore: Int = settings.goalScore
+
     private val _players = MutableStateFlow(players)
     val players: StateFlow<List<Player>> = _players.asStateFlow()
 

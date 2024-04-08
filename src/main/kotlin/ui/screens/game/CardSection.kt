@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 internal fun CardSection(game: GameEngine, coroutineScope: CoroutineScope, alignmentModifier: Modifier) {
     val cardState = game.card.collectAsState()
     val firstCardDrawn = remember { mutableStateOf(false) }
-    val cardSizeModifier = Modifier.height(236.dp).width(194.dp)
+    val cardSizeModifier = Modifier.width(194.dp).height(236.dp)
     val card = cardState.value
     if (!firstCardDrawn.value) {
         DrawFirstCardButton(

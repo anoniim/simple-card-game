@@ -147,7 +147,7 @@ private fun PlayerStats(player: Player) {
             .padding(8.dp),
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Icon("★")
+            Image(painterResource("img/plant.png"), contentDescription = null, modifier = Modifier.size(30.dp))
             PlayerText(text = "${player.score}")
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -163,7 +163,6 @@ private fun Icon(iconString: String) {
     Text(
         text = iconString,
         fontSize = 25.sp,
-        color = Color.Yellow,
     )
 }
 
