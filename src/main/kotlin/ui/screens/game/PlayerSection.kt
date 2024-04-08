@@ -1,107 +1,30 @@
-package ui
+package ui.screens.game
 
-import GameEngine
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import engine.Card
 import engine.CoinBet
 import engine.Pass
 import engine.player.Player
 import getHighestBetInCoins
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+
 
 @Composable
-fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (Player) -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Image(
-            painter = painterResource("img/background.jpg"),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-//        Button(onClick = {
-//            startOver()
-//            firstCardDrawn.value = false
-//        }) {
-//            Text("Start over")
-//        }
-        val players = game.players.collectAsState()
-        val coroutineScope = rememberCoroutineScope()
-        PlayerOverview(players.value,
-            onPlayerBet = { coroutineScope.launch { game.placeBetForHumanPlayer(CoinBet(it)) } },
-            onPlayerPass = { coroutineScope.launch { game.placeBetForHumanPlayer(Pass) } }
-        )
-        CardSection(game, coroutineScope, Modifier.align(Alignment.Center))
-
-        val winner = game.winner.collectAsState()
-        if (winner.value != null) {
-            announceWinner(game.winner.value!!)
-        }
-    }
-}
-
-@Composable
-private fun CardSection(game: GameEngine, coroutineScope: CoroutineScope, alignmentModifier: Modifier) {
-    val cardState = game.card.collectAsState()
-    val firstCardDrawn = remember { mutableStateOf(false) }
-    val cardSizeModifier = Modifier.height(236.dp).width(194.dp)
-    val card = cardState.value
-    if (!firstCardDrawn.value) {
-        DrawFirstCardButton(
-            alignmentModifier = alignmentModifier,
-            cardSizeModifier = cardSizeModifier,
-        ) {
-            firstCardDrawn.value = true
-            coroutineScope.launch { game.startGame() }
-        }
-    } else if (card != null) {
-        CardView(alignmentModifier.then(cardSizeModifier), card)
-    } else {
-        Spacer(modifier = cardSizeModifier)
-    }
-}
-
-@Composable
-private fun DrawFirstCardButton(alignmentModifier: Modifier, cardSizeModifier: Modifier, onClick: () -> Unit) {
-    Column(
-        modifier = alignmentModifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(
-            onClick = onClick,
-            modifier = cardSizeModifier,
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text("Draw first card!")
-        }
-    }
-}
-
-@Composable
-private fun PlayerOverview(
+internal fun PlayerSection(
     players: List<Player>,
     onPlayerBet: (Int) -> Unit,
     onPlayerPass: () -> Unit
@@ -248,29 +171,5 @@ private fun BettingSection(
                 onPlayerPass()
             },
         )
-    }
-}
-
-@Composable
-fun CardView(modifier: Modifier, card: Card) {
-    Card(
-        modifier = modifier
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Text(
-                text = card.displayValue,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-                    .weight(1f),
-                fontSize = 160.sp
-            )
-            Text(
-                text = "Points: ${card.points}",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-                    .padding(4.dp),
-                fontSize = 20.sp
-            )
-        }
     }
 }

@@ -11,6 +11,9 @@ import engine.player.Player
 import org.koin.core.context.startKoin
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
+import ui.screens.game.GameScreen
+import ui.screens.menu.MenuScreen
+import ui.screens.winner.WinnerScreen
 import ui.theme.AppTheme
 
 sealed class NavigationState {
