@@ -58,9 +58,9 @@ internal fun BetInputField(
     ) {
         if (state.canBet) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TextButton(onClick = { state.decrease() }) {
                     IconText("-")
@@ -115,7 +115,7 @@ fun IconText(text: String) {
         text = text,
         fontSize = 30.sp,
         fontWeight = FontWeight.ExtraBold,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.tertiary,
     )
 }
 

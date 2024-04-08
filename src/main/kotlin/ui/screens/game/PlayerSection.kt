@@ -10,8 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -80,17 +83,17 @@ private fun PlayerView(
     Row(Modifier.width(playerBoxWidth).height(200.dp)) {
         val placedBetHorizontalOffset = 20.dp
         if (player.id.value % 3 == 0) {
-            PlayerStats(playerStatsWidth, player)
+            PlayerBoard(playerStatsWidth, player)
             PlacedBetSection(Modifier.align(Alignment.CenterVertically), placedBetViewWidth, player, -placedBetHorizontalOffset)
         } else {
             PlacedBetSection(Modifier.align(Alignment.CenterVertically), placedBetViewWidth, player, placedBetHorizontalOffset)
-            PlayerStats(playerStatsWidth, player)
+            PlayerBoard(playerStatsWidth, player)
         }
     }
 }
 
 @Composable
-private fun PlayerStats(playerStatsWidth: Dp, player: Player) {
+private fun PlayerBoard(playerStatsWidth: Dp, player: Player) {
     Box(Modifier.width(playerStatsWidth).height(200.dp)) {
         // Player stats background
         Image(
@@ -100,13 +103,13 @@ private fun PlayerStats(playerStatsWidth: Dp, player: Player) {
         )
         Column(
             modifier = Modifier.width(playerStatsWidth).height(200.dp)
-                .padding(16.dp),
+                .padding(vertical = 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top,
         ) {
-            PlayerText(text = player.name, 30.sp)
-            PlayerText(text = "⭐ ${player.score}")
-            PlayerText(text = "$BEANS_SYMBOL ${player.coins}")
+            PlayerName(player)
+            Spacer(Modifier.height(8.dp))
+            PlayerStats(player)
         }
         Text(
             text = if (player.isFirstInThisRound) "1️⃣" else "",
@@ -115,6 +118,53 @@ private fun PlayerStats(playerStatsWidth: Dp, player: Player) {
             modifier = Modifier.align(Alignment.TopStart).padding(horizontal = 20.dp, vertical = 8.dp)
         )
     }
+}
+
+@Composable
+private fun PlayerName(player: Player) {
+    Text(
+        text = player.name.uppercase(),
+        fontSize = 30.sp,
+        color = MaterialTheme.colorScheme.primary,
+        style = TextStyle(
+            fontWeight = FontWeight.Bold,
+            fontSize = 30.sp,
+            shadow = Shadow(
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                blurRadius = 2f
+            )
+        ),
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+private fun PlayerStats(player: Player) {
+    Column(
+        Modifier.width(100.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .padding(8.dp),
+    ) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Icon("★")
+            PlayerText(text = "${player.score}")
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Icon(BEANS_SYMBOL)
+            PlayerText(text = "${player.coins}")
+        }
+
+    }
+}
+
+@Composable
+private fun Icon(iconString: String) {
+    Text(
+        text = iconString,
+        fontSize = 25.sp,
+        color = Color.Yellow,
+    )
 }
 
 @Composable
@@ -129,8 +179,18 @@ fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player
                 .background(bettingSectionBackground)
         ) {
             when (player.bet) {
-                is CoinBet -> PlayerText(text = "$BEANS_SYMBOL ${player.bet.coins}", fontSize = 25.sp, Modifier.align(Alignment.Center))
-                is Pass -> PlayerText(text = "PASS", fontSize = 18.sp, Modifier.align(Alignment.Center))
+                is CoinBet -> PlayerText(
+                    text = "$BEANS_SYMBOL ${player.bet.coins}",
+                    fontSize = 25.sp,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+
+                is Pass -> PlayerText(
+                    text = "PASS",
+                    fontSize = 18.sp,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+
                 else -> {}
             }
         }
@@ -138,12 +198,18 @@ fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player
 }
 
 @Composable
-private fun PlayerText(text: String, fontSize: TextUnit = 30.sp, modifier: Modifier = Modifier) {
+private fun PlayerText(
+    text: String,
+    fontSize: TextUnit = 30.sp,
+    color: Color = MaterialTheme.colorScheme.tertiary,
+    modifier: Modifier = Modifier
+) {
     Text(
         text = text,
         fontSize = fontSize,
-        color = MaterialTheme.colorScheme.tertiary,
+        color = color,
         fontWeight = FontWeight.Bold,
         modifier = modifier,
+        maxLines = 1,
     )
 }
