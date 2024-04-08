@@ -11,23 +11,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import engine.Card
 import engine.player.Player
 import getHighestBetInCoins
 
 @Composable
 internal fun BettingSection(
     players: List<Player>,
+    card: State<Card?>,
     onPlayerBet: (Int) -> Unit,
     onPlayerPass: () -> Unit
 ) {
     println(players)
     // Show betting section only if it's human player's turn
     val humanPlayer = players.find { it.isCurrentPlayer && it.isHuman }
-    if (humanPlayer != null && humanPlayer.bet == null) {
+    if (humanPlayer != null && humanPlayer.bet == null && card.value != null) {
         val highestBet = getHighestBetInCoins(players)
         val maxPossibleBet = humanPlayer.coins
         BetInputField(

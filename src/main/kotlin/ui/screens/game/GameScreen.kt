@@ -41,7 +41,7 @@ fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (Player)
 //        }
         val players = game.players.collectAsState()
         val coroutineScope = rememberCoroutineScope()
-        PlayerSection(players.value,
+        PlayerSection(players.value, game.card.collectAsState(),
             onPlayerBet = { coroutineScope.launch { game.placeBetForHumanPlayer(CoinBet(it)) } },
             onPlayerPass = { coroutineScope.launch { game.placeBetForHumanPlayer(Pass) } }
         )

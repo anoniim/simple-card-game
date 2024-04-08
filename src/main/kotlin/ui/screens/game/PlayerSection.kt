@@ -7,10 +7,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import engine.Card
 import engine.CoinBet
 import engine.Pass
 import engine.player.Player
@@ -29,6 +30,7 @@ internal const val BEANS_SYMBOL = "\uD83E\uDED8"
 @Composable
 internal fun PlayerSection(
     players: List<Player>,
+    card: State<Card?>,
     onPlayerBet: (Int) -> Unit,
     onPlayerPass: () -> Unit
 ) {
@@ -48,7 +50,7 @@ internal fun PlayerSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            HumanPlayerView(players, onPlayerBet, onPlayerPass)
+            HumanPlayerView(players, card, onPlayerBet, onPlayerPass)
             PlayerView(players[2])
         }
     }
@@ -57,12 +59,13 @@ internal fun PlayerSection(
 @Composable
 fun HumanPlayerView(
     players: List<Player>,
+    card: State<Card?>,
     onPlayerBet: (Int) -> Unit,
     onPlayerPass: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         PlayerView(players[3])
-        BettingSection(players, onPlayerBet, onPlayerPass)
+        BettingSection(players, card, onPlayerBet, onPlayerPass)
     }
 }
 
@@ -153,19 +156,11 @@ private fun PlayerStats(player: Player) {
         }
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Icon(BEANS_SYMBOL)
+            Text(text = BEANS_SYMBOL, fontSize = 25.sp)
             PlayerText(text = "${player.coins}")
         }
 
     }
-}
-
-@Composable
-private fun Icon(iconString: String) {
-    Text(
-        text = iconString,
-        fontSize = 25.sp,
-    )
 }
 
 @Composable
