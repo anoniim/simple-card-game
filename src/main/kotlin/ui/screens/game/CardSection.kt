@@ -13,7 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import engine.Card
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -51,7 +53,9 @@ private fun DrawFirstCardButton(alignmentModifier: Modifier, cardSizeModifier: M
             modifier = cardSizeModifier,
             shape = RoundedCornerShape(16.dp)
         ) {
-            Text("Draw first card!")
+            Text("DRAW\n\nFIRST\n\nCARD",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center)
         }
     }
 }
