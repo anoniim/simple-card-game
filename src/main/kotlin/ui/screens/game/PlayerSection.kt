@@ -141,15 +141,16 @@ private fun PlayerName(player: Player) {
 @Composable
 private fun PlayerStats(player: Player) {
     Column(
-        Modifier.width(100.dp)
+        Modifier.width(115.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
-            .padding(8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Image(painterResource("img/plant.png"), contentDescription = null, modifier = Modifier.size(30.dp))
             PlayerText(text = "${player.score}")
         }
+        Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Icon(BEANS_SYMBOL)
             PlayerText(text = "${player.coins}")
@@ -199,7 +200,7 @@ fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player
 @Composable
 private fun PlayerText(
     text: String,
-    fontSize: TextUnit = 30.sp,
+    fontSize: TextUnit = 25.sp,
     color: Color = MaterialTheme.colorScheme.tertiary,
     modifier: Modifier = Modifier
 ) {
