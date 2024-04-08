@@ -29,27 +29,31 @@ fun MenuScreen(playerName: MutableState<String>, startGame: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        Column(
-            modifier = Modifier.fillMaxSize(0.3f)
-                .clip(RoundedCornerShape(16.dp))
-                .shadow(16.dp)
-                .background(Color.Gray.copy(alpha = 0.9f))
-                .align(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        StartGameBox(playerName, startGame, Modifier.align(Alignment.Center))
+    }
+}
+
+@Composable
+private fun StartGameBox(playerName: MutableState<String>, startGame: () -> Unit, alignmentModifier: Modifier) {
+    Column(
+        modifier = alignmentModifier.fillMaxSize(0.3f)
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(16.dp)
+            .background(Color.Gray.copy(alpha = 0.9f)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        OutlinedTextField(
+            value = playerName.value,
+            onValueChange = { playerName.value = it.uppercase().take(12) },
+            label = { Text("Enter your name") },
+            modifier = Modifier.padding(horizontal = 32.dp)
+        )
+        Spacer(Modifier.height(16.dp))
+        Button(
+            onClick = { startGame() },
         ) {
-            OutlinedTextField(
-                value = playerName.value,
-                onValueChange = { playerName.value = it },
-                label = { Text("Enter your name") },
-                modifier = Modifier.padding(horizontal = 32.dp)
-            )
-            Spacer(Modifier.height(16.dp))
-            Button(
-                onClick = { startGame() },
-            ) {
-                Text("Start game!")
-            }
+            Text("START GAME")
         }
     }
 }

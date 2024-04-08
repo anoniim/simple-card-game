@@ -134,7 +134,8 @@ private fun PlayerName(player: Player) {
                 blurRadius = 2f
             )
         ),
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
     )
 }
 
