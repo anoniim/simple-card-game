@@ -1,16 +1,46 @@
 package ui.screens.game
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import engine.player.Player
+import getHighestBetInCoins
 
-// TODO change from Input field to up and down buttons (do not allow lower than minimum bet and higher than player's coins)
+@Composable
+internal fun BettingSection(
+    players: List<Player>,
+    onPlayerBet: (Int) -> Unit,
+    onPlayerPass: () -> Unit
+) {
+    println(players)
+    // Show betting section only if it's human player's turn
+    val humanPlayer = players.find { it.isCurrentPlayer && it.isHuman }
+    if (humanPlayer != null && humanPlayer.bet == null) {
+        val highestBet = getHighestBetInCoins(players)
+        val maxPossibleBet = humanPlayer.coins
+        BetInputField(
+            rememberBetInputStateHolder(minBet = highestBet + 1, maxPossibleBet),
+            onBetConfirmed = {
+                onPlayerBet(it)
+            },
+            playerPassed = {
+                onPlayerPass()
+            },
+        )
+    }
+}
 
 @Composable
 internal fun BetInputField(
@@ -18,30 +48,39 @@ internal fun BetInputField(
     onBetConfirmed: (Int) -> Unit,
     playerPassed: () -> Unit
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Column(
+        Modifier.width(200.dp)
+            .offset(x = -20.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         if (state.canBet) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                TextButton(onClick = { state.increase() }) {
-                    IconText("⬆")
-                }
-                IconText(text = state.betInput)
                 TextButton(onClick = { state.decrease() }) {
-                    IconText("⬇")
+                    IconText("-")
+                }
+                IconText(text = "$BEANS_SYMBOL ${state.betInput}")
+                TextButton(onClick = { state.increase() }) {
+                    IconText("+")
                 }
             }
         }
         if (state.canBet) {
             Column {
-                Button(onClick = {
-                    onBetConfirmed(state.bet)
-                    state.resetBet()
-                }) {
+                Button(modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        onBetConfirmed(state.bet)
+                        state.resetBet()
+                    }) {
                     Text(
                         text = "BET",
-                        fontSize = 12.sp
+                        fontSize = 16.sp
                     )
                 }
                 Spacer(Modifier.width(16.dp))
@@ -55,13 +94,16 @@ internal fun BetInputField(
 
 @Composable
 private fun PassButton(modifier: Modifier = Modifier, state: BetInputStateHolder, playerPassed: () -> Unit) {
-    Button(onClick = {
-        state.resetBet()
-        playerPassed()
-    }, modifier = modifier) {
+    Button(
+        onClick = {
+            state.resetBet()
+            playerPassed()
+        }, modifier = modifier
+            .fillMaxWidth()
+    ) {
         Text(
             text = "PASS",
-            fontSize = 12.sp
+            fontSize = 16.sp
         )
     }
 }
@@ -71,7 +113,7 @@ fun IconText(text: String) {
     // White text
     Text(
         text = text,
-        fontSize = 20.sp,
+        fontSize = 30.sp,
         fontWeight = FontWeight.ExtraBold,
         color = Color.White,
     )

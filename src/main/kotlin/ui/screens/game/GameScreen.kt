@@ -2,8 +2,11 @@ package ui.screens.game
 
 import GameEngine
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale

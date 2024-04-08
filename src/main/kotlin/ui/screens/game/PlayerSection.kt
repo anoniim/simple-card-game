@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.sp
 import engine.CoinBet
 import engine.Pass
 import engine.player.Player
-import getHighestBetInCoins
 
+internal const val BEANS_SYMBOL = "\uD83E\uDED8"
 
 @Composable
 internal fun PlayerSection(
@@ -62,8 +62,6 @@ fun HumanPlayerView(
         BettingSection(players, onPlayerBet, onPlayerPass)
     }
 }
-
-private const val BEANS = "\uD83E\uDED8"
 
 @Composable
 private fun PlayerView(
@@ -108,7 +106,7 @@ private fun PlayerStats(playerStatsWidth: Dp, player: Player) {
         ) {
             PlayerText(text = player.name, 30.sp)
             PlayerText(text = "⭐ ${player.score}")
-            PlayerText(text = "$BEANS ${player.coins}")
+            PlayerText(text = "$BEANS_SYMBOL ${player.coins}")
         }
         Text(
             text = if (player.isFirstInThisRound) "1️⃣" else "",
@@ -131,7 +129,7 @@ fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player
                 .background(bettingSectionBackground)
         ) {
             when (player.bet) {
-                is CoinBet -> PlayerText(text = "$BEANS ${player.bet.coins}", fontSize = 25.sp, Modifier.align(Alignment.Center))
+                is CoinBet -> PlayerText(text = "$BEANS_SYMBOL ${player.bet.coins}", fontSize = 25.sp, Modifier.align(Alignment.Center))
                 is Pass -> PlayerText(text = "PASS", fontSize = 18.sp, Modifier.align(Alignment.Center))
                 else -> {}
             }
@@ -148,28 +146,4 @@ private fun PlayerText(text: String, fontSize: TextUnit = 30.sp, modifier: Modif
         fontWeight = FontWeight.Bold,
         modifier = modifier,
     )
-}
-
-@Composable
-private fun BettingSection(
-    players: List<Player>,
-    onPlayerBet: (Int) -> Unit,
-    onPlayerPass: () -> Unit
-) {
-    println(players)
-    // Show betting section only if it's human player's turn
-    val humanPlayer = players.find { it.isCurrentPlayer && it.isHuman }
-    if (humanPlayer != null && humanPlayer.bet == null) {
-        val highestBet = getHighestBetInCoins(players)
-        val maxBet = humanPlayer.coins
-        BetInputField(
-            rememberBetInputStateHolder(minBet = highestBet + 1, maxBet),
-            onBetConfirmed = {
-                onPlayerBet(it)
-            },
-            playerPassed = {
-                onPlayerPass()
-            },
-        )
-    }
 }
