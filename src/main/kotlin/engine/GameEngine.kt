@@ -66,14 +66,13 @@ class GameEngine(
             // All players have played in this round, evaluate this round
             updateRoundWinningPlayer()
             delay(ACTION_DELAY)
-            addOneCoinToAllPlayers()
 
             // Is there a winner?
             val overallWinner = getOverallWinner()
             if (overallWinner != null) {
-                delay(ACTION_DELAY)
                 _winner.value = overallWinner
             } else {
+                addOneCoinToAllPlayers()
                 progressToNextRound()
             }
         } else {
