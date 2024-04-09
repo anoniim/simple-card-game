@@ -65,6 +65,9 @@ class GameEngine(
             delay(ACTION_DELAY)
             // All players have played in this round, evaluate this round
             updateRoundWinningPlayer()
+            delay(ACTION_DELAY)
+            addOneCoinToAllPlayers()
+
             // Is there a winner?
             val overallWinner = getOverallWinner()
             if (overallWinner != null) {
@@ -133,10 +136,14 @@ class GameEngine(
             val updatedCoins = roundWinner.coins - winningBet
             val updatedScore = roundWinner.score + winningPoints
             val playersWithScore = players.value.updateScore(roundWinner, updatedCoins, updatedScore)
-            val updatedPlayers = playersWithScore.allPlusOneCoin()
             currentRound.roundWinner = players.value.indexOf(roundWinner)
-            _players.value = updatedPlayers
+            _players.value = playersWithScore
         }
+    }
+
+    private fun addOneCoinToAllPlayers() {
+        val updatedPlayers = players.value.allPlusOneCoin()
+        _players.value = updatedPlayers
     }
 
     data class Round(

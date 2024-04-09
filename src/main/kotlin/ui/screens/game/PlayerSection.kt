@@ -29,11 +29,12 @@ internal const val BEANS_SYMBOL = "\uD83E\uDED8"
 
 @Composable
 internal fun PlayerSection(
-    players: List<Player>,
+    playersState: State<List<Player>>,
     card: State<Card?>,
     onPlayerBet: (Int) -> Unit,
     onPlayerPass: () -> Unit
 ) {
+    val players = playersState.value
     // Arrange the four players in the four corners of the screen
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -167,7 +168,7 @@ private fun PlayerStats(player: Player) {
 fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player: Player, horizontalOffset: Dp) {
     val showPlacedBet = player.bet != null
     if (showPlacedBet) {
-        val bettingSectionBackground = if (player.isRoundWinner) Color.Green else MaterialTheme.colorScheme.tertiaryContainer
+        val bettingSectionBackground = if (player.isRoundWinner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiaryContainer
         Box(
             alignmentModifier.width(placedBetViewWidth).height(50.dp)
                 .offset(x = horizontalOffset)
