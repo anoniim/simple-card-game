@@ -44,8 +44,7 @@ class GameEngine(
     }
 
     private fun placeBetForAiPlayer(currentAiPlayer: Player) {
-        val highestBet = getHighestBetInCoins()
-        val aiPlayerBet = currentAiPlayer.generateBet(card.value!!.points, highestBet)
+        val aiPlayerBet = currentAiPlayer.generateBet(card.value!!.points, players.value)
         _players.value = players.value.placeBet(currentAiPlayer, aiPlayerBet)
     }
 
@@ -115,10 +114,6 @@ class GameEngine(
     }
 
     private fun getRoundWinner(): Player? = players.value.maxByOrNull(::betToCoins)
-
-    private fun getHighestBetInCoins(): Int {
-        return getHighestBetInCoins(players.value)
-    }
 
     private fun betToCoins(player: Player) = when (val bet = player.bet) {
         is CoinBet -> bet.coins

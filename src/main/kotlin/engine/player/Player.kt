@@ -17,8 +17,8 @@ data class Player(
     val isRoundWinner: Boolean = false,
     val bettingStrategy: BettingStrategy,
 ) {
-    fun generateBet(points: Int, highestBet: Int): Bet {
-        return bettingStrategy.generateBet(points, this, highestBet)
+    fun generateBet(points: Int, players: List<Player>): Bet {
+        return bettingStrategy.generateBet(points, players, this)
     }
 }
 

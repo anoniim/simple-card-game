@@ -1,19 +1,22 @@
 package engine
 
 import engine.player.Player
+import engine.player.getCurrentPlayer
+import getHighestBetInCoins
 import kotlin.math.ceil
 import kotlin.random.Random
 
 // TODO Add a rule: If the card would win the game for the human player, always bet
 
 interface BettingStrategy {
-    fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet
+    fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet
 }
 
 class PlusOneBettingStrategy(
     private val goalScore: Int
 ) : BettingStrategy {
-    override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
+    override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
+        val highestBet = getHighestBetInCoins(players)
         // If the card value is what the player needs to win, bet everything
         if (cardValue >= goalScore - player.score && player.coins > highestBet) {
             return CoinBet(player.coins)
@@ -28,7 +31,8 @@ class PlusOneBettingStrategy(
 class RandomBettingStrategy(
     private val goalScore: Int
 ) : BettingStrategy {
-    override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
+    override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
+        val highestBet = getHighestBetInCoins(players)
         val lowestPossibleBet = highestBet + 1
         val highestPossibleBet = player.coins
         // If the card value is what the player needs to win, bet everything
@@ -45,7 +49,8 @@ class RandomBettingStrategy(
 class RandomPlusOneBettingStrategy(
     private val goalScore: Int
 ) : BettingStrategy {
-    override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
+    override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
+        val highestBet = getHighestBetInCoins(players)
         val lowestPossibleBet = highestBet + 1
         val highestPossibleBet = player.coins
         // If the card value is what the player needs to win, bet everything
@@ -65,7 +70,7 @@ class RandomPlusOneBettingStrategy(
 }
 
 class ManualBettingStrategy : BettingStrategy {
-    override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
+    override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
         return Pass
     }
 }
@@ -74,7 +79,8 @@ open class StandardBettingStrategy(
     private val takeFactor: Double,
     private val goalScore: Int,
 ) : BettingStrategy {
-    override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
+    override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
+        val highestBet = getHighestBetInCoins(players)
         val coins = player.coins
         // If the card value is what the player needs to win, bet everything
         if (cardValue >= goalScore - player.score && coins > highestBet) {
@@ -98,7 +104,8 @@ class HighStandardBettingStrategy(
     takeFactor: Double,
     private val goalScore: Int,
 ) : StandardBettingStrategy(takeFactor, goalScore){
-    override fun generateBet(cardValue: Int, player: Player, highestBet: Int): Bet {
+    override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
+        val highestBet = getHighestBetInCoins(players)
         val coins = player.coins
         // If the card value is what the player needs to win, bet everything
         if (cardValue >= goalScore - player.score && coins > highestBet) {
@@ -106,6 +113,6 @@ class HighStandardBettingStrategy(
         }
         // Don't take anything below minimum value
         if (cardValue < minCardValue) return Pass
-        return super.generateBet(cardValue, player, highestBet)
+        return super.generateBet(cardValue, players, player)
     }
 }
