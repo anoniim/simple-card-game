@@ -77,8 +77,7 @@ fun List<Player>.placeBet(player: Player, bet: Bet): List<Player> {
             set(indexOf(player), player.copy(bet = bet))
         }
     } else {
-        println("! Player ${player.name} tried to bet $bet but has only ${player.coins})")
-        emptyList()
+        error("! Player ${player.name} tried to bet $bet but has only ${player.coins})")
     }
 }
 
