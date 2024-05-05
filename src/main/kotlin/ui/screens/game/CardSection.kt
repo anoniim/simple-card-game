@@ -53,8 +53,9 @@ private fun DrawFirstCardButton(alignmentModifier: Modifier, cardSizeModifier: M
             modifier = cardSizeModifier,
             shape = RoundedCornerShape(16.dp)
         ) {
-            Text("DRAW\n\nFIRST\n\nCARD",
+            Text("CLICK HERE\nTO DRAW\nTHE FIRST\nCARD",
                 fontSize = 20.sp,
+                lineHeight = 30.sp,
                 textAlign = TextAlign.Center)
         }
     }
