@@ -53,10 +53,8 @@ fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (Player)
             .offset(y = (-70).dp)
         CardSection(game, coroutineScope, alignmentModifier)
 
-        val winner = game.winner.collectAsState()
-        if (winner.value != null) {
-            announceWinner(game.winner.value!!)
-        }
+        val winner = game.winner.collectAsState().value
+        if (winner != null) announceWinner(winner)
     }
 }
 
