@@ -3,15 +3,8 @@ package ui
 import GameEngine
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowState
-import androidx.compose.ui.window.application
-import appModule
 import engine.GamePrefs
 import engine.player.Player
-import org.koin.core.context.startKoin
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
 import ui.screens.game.GameScreen
@@ -62,15 +55,3 @@ fun App() {
 private fun newGame(playerName: MutableState<String>) =
     get<GameEngine>(GameEngine::class.java) { parametersOf(playerName.value) }
 
-fun main() = application {
-    startKoin {
-        modules(appModule)
-    }
-    Window(
-        title = "Simple card game",
-        state = WindowState(width = 960.dp, height = 540.dp),
-        onCloseRequest = ::exitApplication
-    ) {
-        App()
-    }
-}
