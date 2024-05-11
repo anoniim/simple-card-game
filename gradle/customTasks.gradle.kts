@@ -1,4 +1,5 @@
 tasks.register<Copy>("setExecutablePermission") {
+    description = "Sets executable permission for the generated .app bundle on macOS"
     doLast {
         val osName = System.getProperty("os.name")
         if (osName.startsWith("Mac OS")) {
