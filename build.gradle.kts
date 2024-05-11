@@ -21,6 +21,14 @@ compose.desktop {
     }
 }
 
+tasks.register<Copy>("setExecutablePermission") {
+    doLast {
+        val executableFile = file("${layout.buildDirectory}/compose/binaries/main/app/simple-card-game.app/Contents/MacOS/simple-card-game")
+        executableFile.setExecutable(true, false)
+    }
+    dependsOn("packageMacosX64AppRelease")
+}
+
 repositories {
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
