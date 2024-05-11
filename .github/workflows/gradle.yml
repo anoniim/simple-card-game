@@ -42,7 +42,7 @@ jobs:
     - name: Print .app bundle structure
       run: |
         brew install tree
-        tree build/compose/binaries/app/simple-card-game.app
+        tree build/compose/binaries/main/app/simple-card-game.app
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
