@@ -6,7 +6,7 @@ tasks.register<Copy>("setExecutablePermission") {
             if (appBundle.exists()) {
                 val executableFile = file("${appBundle}/Contents/MacOS/simple-card-game")
                 executableFile.setExecutable(true, false)
-                println("Executable permission set for: $executableFile"
+                println("Executable permission set for: $executableFile")
             } else {
                 println("Warning: .app bundle not found. Skipping setExecutablePermission task.")
             }
