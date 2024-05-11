@@ -17,3 +17,7 @@ tasks.register<Copy>("setExecutablePermission") {
     }
     dependsOn("createDistributable")
 }
+
+tasks.named("package") {
+    dependsOn("setExecutablePermission")
+}
