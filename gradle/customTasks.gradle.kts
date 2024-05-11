@@ -16,9 +16,9 @@ tasks.register<Copy>("setExecutablePermission") {
         }
     }
 
-    // This block will be executed after all tasks have been evaluated.
+    // This block will be executed after all tasks have been evaluated
     project.afterEvaluate {
         // Find the 'createDistributable' task and add 'setExecutablePermission' as a finalizing task.
-        tasks.findByName("createDistributable")?.finalizedBy(this)
+        tasks.findByName("createDistributable")?.mustRunAfter(this)
     }
 }
