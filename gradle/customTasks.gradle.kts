@@ -15,9 +15,10 @@ tasks.register<Copy>("setExecutablePermission") {
             println("Not running on macOS. Skipping setExecutablePermission task.")
         }
     }
-    dependsOn("createDistributable")
-}
 
-tasks.named("package") {
-    dependsOn("setExecutablePermission")
+    // This block will be executed after all tasks have been evaluated.
+    project.afterEvaluate {
+        // Find the 'createDistributable' task and add 'setExecutablePermission' as a finalizing task.
+        tasks.findByName("createDistributable")?.finalizedBy(this)
+    }
 }
