@@ -1,4 +1,4 @@
-tasks.register<Copy>("setExecutablePermission") {
+val setExecutablePermissionTask = tasks.register<Copy>("setExecutablePermission") {
     description = "Sets executable permission for the generated .app bundle on macOS"
     doLast {
         val osName = System.getProperty("os.name")
@@ -15,10 +15,16 @@ tasks.register<Copy>("setExecutablePermission") {
             println("Not running on macOS. Skipping setExecutablePermission task.")
         }
     }
+}
 
-    // This block will be executed after all tasks have been evaluated
-    project.afterEvaluate {
-        // Find the 'createDistributable' task and add 'setExecutablePermission' as a finalizing task.
-        tasks.findByName("createDistributable")?.mustRunAfter(this)
+afterEvaluate {
+    tasks.named("createDistributable") {
+        finalizedBy(setExecutablePermissionTask)
+    }
+}
+
+gradle.taskGraph.whenReady {
+    allTasks.forEach { task ->
+        println(task.path)
     }
 }
