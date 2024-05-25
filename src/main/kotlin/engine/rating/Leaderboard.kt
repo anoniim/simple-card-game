@@ -17,8 +17,10 @@ class Leaderboard(
     fun getDisplayRows(): List<DisplayRow> {
         return stats.map {
             val winRatio = it.value.totalWins.toDouble() / it.value.totalGames.toDouble()
-            DisplayRow(it.key, it.value.totalGames, winRatio)
-        }
+            val formattedWinRatio = (winRatio * 100).toInt()
+            DisplayRow(it.key, it.value.rating.toInt(), it.value.totalGames, formattedWinRatio)
+        }.sortedBy { it.rating }
+            .reversed()
     }
 
     fun serialize(): String {
@@ -104,6 +106,7 @@ class PlayerStats(
 
 data class DisplayRow(
     val name: String,
+    val rating: Int,
     val games: Int,
-    val winRatio: Double
+    val winRatio: Int
 )

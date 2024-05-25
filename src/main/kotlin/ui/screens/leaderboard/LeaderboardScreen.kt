@@ -60,6 +60,7 @@ private fun StartGameBox(
         // Header
         Row {
             HeaderText("Name", Modifier.Companion.weight(2f).padding(horizontal = 16.dp))
+            HeaderText("Rating", Modifier.weight(1f))
             HeaderText("# of games", Modifier.weight(1f))
             HeaderText("Win ratio", Modifier.weight(1f))
         }
@@ -71,8 +72,9 @@ private fun StartGameBox(
                         .padding(vertical = 4.dp)
                 ) {
                     Text(text = rowData.name, modifier = Modifier.weight(2f).padding(horizontal = 16.dp))
+                    Text(text = rowData.rating.toString(), modifier = Modifier.weight(1f))
                     Text(text = rowData.games.toString(), modifier = Modifier.weight(1f))
-                    Text(text = "${rowData.winRatio * 100}%", modifier = Modifier.weight(1f))
+                    Text(text = "${rowData.winRatio}%", modifier = Modifier.weight(1f))
                 }
             }
         }
