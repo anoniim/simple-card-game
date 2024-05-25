@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import engine.rating.DisplayRow
 
 @Composable
-fun LeaderboardScreen(displayRows: List<DisplayRow>, playerName: MutableState<String>, closeLeaderboard: () -> Unit) {
+fun LeaderboardScreen(displayRows: List<DisplayRow>, playerName: String, closeLeaderboard: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -43,7 +43,7 @@ fun LeaderboardScreen(displayRows: List<DisplayRow>, playerName: MutableState<St
 @Composable
 private fun StartGameBox(
     displayRows: List<DisplayRow>,
-    playerName: MutableState<String>,
+    playerName: String,
     closeLeaderboard: () -> Unit,
     alignmentModifier: Modifier
 ) {
@@ -71,7 +71,11 @@ private fun StartGameBox(
                     modifier = Modifier.background(if (index % 2 == 0) Color.LightGray else Color.Transparent)
                         .padding(vertical = 4.dp)
                 ) {
-                    Text(text = rowData.name, modifier = Modifier.weight(2f).padding(horizontal = 16.dp))
+                    Text(
+                        text = rowData.name, modifier = Modifier.weight(2f)
+                            .padding(horizontal = 16.dp),
+                        fontWeight = if (rowData.name == playerName) FontWeight.Bold else FontWeight.Normal
+                    )
                     Text(text = rowData.rating.toString(), modifier = Modifier.weight(1f))
                     Text(text = rowData.games.toString(), modifier = Modifier.weight(1f))
                     Text(text = "${rowData.winRatio}%", modifier = Modifier.weight(1f))

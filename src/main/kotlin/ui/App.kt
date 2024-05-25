@@ -59,10 +59,11 @@ fun App() {
                     navigationState = NavigationState.MenuScreen
                 })
 
-            is NavigationState.LeaderboardScreen -> LeaderboardScreen(prefs.getLeaderboard().getDisplayRows(), playerName,
+            is NavigationState.LeaderboardScreen -> LeaderboardScreen(prefs.getLeaderboard().getDisplayRows(),
+                playerName.value,
                 closeLeaderboard = {
                     navigationState = NavigationState.MenuScreen
-            })
+                })
         }
     }
 }
