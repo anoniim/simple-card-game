@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MenuScreen(playerName: MutableState<String>, startGame: () -> Unit) {
+fun MenuScreen(playerName: MutableState<String>, startGame: () -> Unit, openLeaderboard: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -29,17 +30,26 @@ fun MenuScreen(playerName: MutableState<String>, startGame: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        StartGameBox(playerName, startGame, Modifier.align(Alignment.Center))
+        StartGameBox(
+            playerName, startGame, openLeaderboard,
+            Modifier.align(Alignment.Center)
+        )
     }
 }
 
 @Composable
-private fun StartGameBox(playerName: MutableState<String>, startGame: () -> Unit, alignmentModifier: Modifier) {
+private fun StartGameBox(
+    playerName: MutableState<String>,
+    startGame: () -> Unit,
+    openLeaderboard: () -> Unit,
+    alignmentModifier: Modifier
+) {
     Column(
-        modifier = alignmentModifier.fillMaxSize(0.3f)
+        modifier = alignmentModifier
             .clip(RoundedCornerShape(16.dp))
             .shadow(16.dp)
-            .background(Color.Gray.copy(alpha = 0.9f)),
+            .background(Color.Gray.copy(alpha = 0.9f))
+            .padding(vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -49,11 +59,17 @@ private fun StartGameBox(playerName: MutableState<String>, startGame: () -> Unit
             label = { Text("Enter your name") },
             modifier = Modifier.padding(horizontal = 32.dp)
         )
-        Spacer(Modifier.height(16.dp))
         Button(
             onClick = { startGame() },
+            modifier = Modifier.padding(top = 16.dp)
         ) {
             Text("START GAME")
+        }
+        OutlinedButton(
+            onClick = { openLeaderboard() },
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("LEADERBOARD")
         }
     }
 }

@@ -9,12 +9,14 @@ import engine.rating.Leaderboard
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
 import ui.screens.game.GameScreen
+import ui.screens.leaderboard.LeaderboardScreen
 import ui.screens.menu.MenuScreen
 import ui.screens.winner.WinnerScreen
 import ui.theme.AppTheme
 
 sealed class NavigationState {
     data object MenuScreen : NavigationState()
+    data object LeaderboardScreen : NavigationState()
     data class GameScreen(val game: GameEngine) : NavigationState()
     data class WinnerScreen(val winner: Player) : NavigationState()
 }
@@ -35,6 +37,9 @@ fun App() {
                     prefs.setPlayerName(playerName.value)
                     // Start a new game
                     navigationState = NavigationState.GameScreen(newGame(playerName, prefs.getLeaderboard()))
+                },
+                openLeaderboard = {
+                    navigationState = NavigationState.LeaderboardScreen
                 })
 
             is NavigationState.GameScreen -> GameScreen(currentNavigationState.game,
@@ -50,6 +55,11 @@ fun App() {
                 playAgain = {
                     navigationState = NavigationState.GameScreen(newGame(playerName, prefs.getLeaderboard()))
                 })
+
+            is NavigationState.LeaderboardScreen -> LeaderboardScreen(prefs.getLeaderboard().getDisplayRows(), playerName,
+                closeLeaderboard = {
+
+            })
         }
     }
 }

@@ -14,6 +14,13 @@ class Leaderboard(
 
     fun getPlayerRating(playerName: String) = stats[playerName]?.rating ?: DEFAULT_RATING
 
+    fun getDisplayRows(): List<DisplayRow> {
+        return stats.map {
+            val winRatio = it.value.totalWins.toDouble() / it.value.totalGames.toDouble()
+            DisplayRow(it.key, it.value.totalGames, winRatio)
+        }
+    }
+
     fun serialize(): String {
         return buildString {
             stats.forEach {
@@ -94,3 +101,9 @@ class PlayerStats(
         }
     }
 }
+
+data class DisplayRow(
+    val name: String,
+    val games: Int,
+    val winRatio: Double
+)
