@@ -54,6 +54,9 @@ fun App() {
             is NavigationState.WinnerScreen -> WinnerScreen(currentNavigationState.winner.name,
                 playAgain = {
                     navigationState = NavigationState.GameScreen(newGame(playerName, prefs.getLeaderboard()))
+                },
+                openMenu = {
+                    navigationState = NavigationState.MenuScreen
                 })
 
             is NavigationState.LeaderboardScreen -> LeaderboardScreen(prefs.getLeaderboard().getDisplayRows(), playerName,

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun WinnerScreen(winnerName: String, playAgain: () -> Unit) {
+fun WinnerScreen(winnerName: String, playAgain: () -> Unit, openMenu: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -50,6 +51,13 @@ fun WinnerScreen(winnerName: String, playAgain: () -> Unit) {
                 onClick = { playAgain() },
             ) {
                 Text("PLAY AGAIN")
+            }
+
+            OutlinedButton(
+                onClick = { openMenu() },
+                Modifier.padding(4.dp)
+            ) {
+                Text("Menu")
             }
         }
     }
