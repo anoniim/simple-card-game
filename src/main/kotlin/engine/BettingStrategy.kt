@@ -59,7 +59,7 @@ class RandomPlusOneBettingStrategy(
         }
         // If this is the first bet, pick a random bet
         if (highestBet == 0) {
-            val randomBet = 3 * Random.nextInt(lowestPossibleBet, highestPossibleBet + 1) / 2
+            val randomBet = 2 * Random.nextInt(lowestPossibleBet, highestPossibleBet + 1) / 3
             return CoinBet(randomBet)
         }
         // Otherwise bet plus one
