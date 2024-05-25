@@ -58,7 +58,7 @@ fun App() {
 
             is NavigationState.LeaderboardScreen -> LeaderboardScreen(prefs.getLeaderboard().getDisplayRows(), playerName,
                 closeLeaderboard = {
-
+                    navigationState = NavigationState.MenuScreen
             })
         }
     }

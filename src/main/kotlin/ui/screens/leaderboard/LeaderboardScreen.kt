@@ -76,6 +76,14 @@ private fun StartGameBox(
                 }
             }
         }
+
+        OutlinedButton(
+            onClick = { closeLeaderboard() },
+            modifier = Modifier.fillMaxWidth(fraction = 0.5f)
+                .padding(top = 8.dp),
+        ) {
+            Text("Close")
+        }
     }
 }
 
