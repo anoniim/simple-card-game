@@ -1,6 +1,7 @@
 package ui.screens.game
 
 import GameEngine
+import WinningState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,11 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import engine.CoinBet
 import engine.Pass
-import engine.player.Player
 import kotlinx.coroutines.launch
 
 @Composable
-fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (Player) -> Unit) {
+fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (WinningState) -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -53,8 +53,8 @@ fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (Player)
             .offset(y = (-70).dp)
         CardSection(game, coroutineScope, alignmentModifier)
 
-        val winner = game.winner.collectAsState().value
-        if (winner != null) announceWinner(winner)
+        val winningState = game.winningState.collectAsState().value
+        if (winningState != null) announceWinner(winningState)
     }
 }
 

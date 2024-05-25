@@ -1,5 +1,7 @@
 import engine.*
 import engine.player.PlayerFactory
+import engine.rating.EloRatingSystem
+import engine.rating.Leaderboard
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -12,9 +14,10 @@ val appModule = module {
         val settings = get<GameSettings>()
         CardDeck(settings.numOfCardDecks)
     }
-    factory { (playerName: String) ->
+    factory { (playerName: String, leaderboard: Leaderboard) ->
         val playerFactory = get<PlayerFactory>()
         val players = playerFactory.createPlayers(playerName)
-        GameEngine(players, get(), get())
+        val ratingSystem = EloRatingSystem(leaderboard)
+        GameEngine(players, get(), get(), ratingSystem)
     }
 }

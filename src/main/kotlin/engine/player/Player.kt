@@ -1,7 +1,7 @@
 package engine.player
 
-import engine.BettingStrategy
 import engine.Bet
+import engine.BettingStrategy
 import engine.CoinBet
 import engine.Pass
 
@@ -21,7 +21,6 @@ data class Player(
         return bettingStrategy.generateBet(points, players, this)
     }
 }
-
 
 @JvmInline
 value class PlayerId(val value: Int)

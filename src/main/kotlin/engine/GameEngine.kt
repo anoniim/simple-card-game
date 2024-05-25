@@ -1,5 +1,7 @@
 import engine.*
 import engine.player.*
+import engine.rating.EloRatingSystem
+import engine.rating.Leaderboard
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 
@@ -9,6 +11,7 @@ class GameEngine(
     players: List<Player>,
     private val cardDeck: CardDeck,
     private val settings: GameSettings,
+    private val ratingSystem: EloRatingSystem,
 ) {
 
     val goalScore: Int = settings.goalScore
@@ -19,8 +22,8 @@ class GameEngine(
     private val _card = MutableStateFlow<Card?>(null)
     val card: StateFlow<Card?> = _card.asStateFlow()
 
-    private val _winner = MutableStateFlow<Player?>(null)
-    val winner: StateFlow<Player?> = _winner.asStateFlow()
+    private val _winningState = MutableStateFlow<WinningState?>(null)
+    val winningState: StateFlow<WinningState?> = _winningState.asStateFlow()
 
     private val currentRound: Round = Round.initial(players.size)
 
@@ -69,7 +72,7 @@ class GameEngine(
             // Is there a winner?
             val overallWinner = getOverallWinner()
             if (overallWinner != null) {
-                _winner.value = overallWinner
+                _winningState.value = createWinningState(overallWinner)
             } else {
                 addOneCoinToAllPlayers()
                 progressToNextRound()
@@ -79,6 +82,13 @@ class GameEngine(
             val nextPlayerIndex = currentRound.progressToNextPlayer()
             _players.value = players.value.updateCurrentPlayer(nextPlayerIndex)
         }
+    }
+
+    private fun createWinningState(overallWinner: Player): WinningState {
+        return WinningState(
+            overallWinner,
+            ratingSystem.updateRatings(players.value, overallWinner)
+        )
     }
 
     private fun getOverallWinner() = players.value.find { it.score >= settings.goalScore }
@@ -196,3 +206,8 @@ fun getHighestBetInCoins(players: List<Player>): Int {
         }
     } else 0
 }
+
+class WinningState(
+    val winner: Player,
+    val leaderboard: Leaderboard,
+)
