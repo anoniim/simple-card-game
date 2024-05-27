@@ -1,7 +1,6 @@
 package engine
 
 import engine.player.Player
-import engine.player.getCurrentPlayer
 import getHighestBetInCoins
 import kotlin.math.ceil
 import kotlin.random.Random
@@ -28,6 +27,18 @@ class PlusOneBettingStrategy(
     }
 }
 
+class TotalRandomBettingStrategy : BettingStrategy {
+    override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
+        val highestBet = getHighestBetInCoins(players)
+        val lowestPossibleBet = highestBet + 1
+        val highestPossibleBet = player.coins
+        return if (lowestPossibleBet < highestPossibleBet) {
+            val randomBet = Random.nextInt(lowestPossibleBet, highestPossibleBet + 1)
+            CoinBet(randomBet)
+        } else Pass
+    }
+}
+
 class RandomBettingStrategy(
     private val goalScore: Int
 ) : BettingStrategy {
@@ -46,7 +57,7 @@ class RandomBettingStrategy(
     }
 }
 
-class RandomPlusOneBettingStrategy(
+abstract class RandomPlusOneBettingStrategy(
     private val goalScore: Int
 ) : BettingStrategy {
     override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
@@ -59,7 +70,8 @@ class RandomPlusOneBettingStrategy(
         }
         // If this is the first bet, pick a random bet
         if (highestBet == 0) {
-            val randomBet = 2 * Random.nextInt(lowestPossibleBet, highestPossibleBet + 1) / 3
+            val until = randomUntil(highestPossibleBet)
+            val randomBet = Random.nextInt(lowestPossibleBet, until)
             return CoinBet(randomBet)
         }
         // Otherwise bet plus one
@@ -67,6 +79,20 @@ class RandomPlusOneBettingStrategy(
             CoinBet(lowestPossibleBet)
         } else Pass
     }
+
+    abstract fun randomUntil(highestPossibleBet: Int): Int
+}
+
+class HighestRandomPlusOneBettingStrategy(goalScore: Int) : RandomPlusOneBettingStrategy(goalScore) {
+    override fun randomUntil(highestPossibleBet: Int): Int = highestPossibleBet + 1
+}
+
+class ReasonableRandomPlusOneBettingStrategy(goalScore: Int) : RandomPlusOneBettingStrategy(goalScore) {
+    override fun randomUntil(highestPossibleBet: Int): Int = 3 * (highestPossibleBet + 1) / 4
+}
+
+class ConservativeRandomPlusOneBettingStrategy(goalScore: Int) : RandomPlusOneBettingStrategy(goalScore) {
+    override fun randomUntil(highestPossibleBet: Int): Int = highestPossibleBet / 2
 }
 
 class ManualBettingStrategy : BettingStrategy {
