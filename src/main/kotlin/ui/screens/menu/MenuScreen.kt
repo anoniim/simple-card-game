@@ -53,12 +53,14 @@ private fun MenuBox(
     ) {
         Button(
             onClick = { startGame() },
+            modifier = Modifier.width(220.dp),
         ) {
             Text("NEW GAME")
         }
         OutlinedButton(
             onClick = { openLeaderboard() },
             modifier = Modifier.padding(top = 16.dp)
+                .width(220.dp),
         ) {
             Text("LEADERBOARD")
         }
