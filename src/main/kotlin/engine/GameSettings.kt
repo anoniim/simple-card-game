@@ -7,7 +7,7 @@ private const val AI_PLAYER_COUNT = 3
 private const val GOAL_SCORE = 30
 private const val RANDOMIZE_FIRST_PLAYER = false
 
-class GameSettings(
+data class GameSettings(
     val startingCoins: Int,
     val startingPoints: Int,
     val numOfCardDecks: Int,
