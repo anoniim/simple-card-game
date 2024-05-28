@@ -24,7 +24,9 @@ val appModule = module {
         val prefs = get<GamePrefs>()
         EloRatingSystem(prefs.loadLeaderboard())
     }
-    factory { (playerName: String) ->
+    factory {
+        val prefs = get<GamePrefs>()
+        val playerName = prefs.loadPlayerName()
         val playerFactory = get<PlayerFactory>()
         val players = playerFactory.createPlayers(playerName)
         GameEngine(players, get(), get(), get())
