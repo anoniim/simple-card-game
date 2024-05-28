@@ -1,10 +1,5 @@
 package engine.player
 
-import engine.Bet
-import engine.BettingStrategy
-import engine.CoinBet
-import engine.Pass
-
 data class Player(
     val id: PlayerId,
     val name: String,

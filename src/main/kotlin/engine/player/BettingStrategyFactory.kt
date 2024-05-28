@@ -1,6 +1,6 @@
 package engine.player
 
-import engine.*
+import engine.GameSettings
 
 class BettingStrategyFactory(
     private val settings: GameSettings

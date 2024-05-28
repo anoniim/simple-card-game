@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import engine.Card
-import engine.CoinBet
-import engine.Pass
+import engine.player.CoinBet
+import engine.player.Pass
 import engine.player.Player
 
 internal const val BEANS_SYMBOL = "\uD83E\uDED8"

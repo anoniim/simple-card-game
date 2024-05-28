@@ -1,6 +1,5 @@
-package engine
+package engine.player
 
-import engine.player.Player
 import getHighestBetInCoins
 import kotlin.math.ceil
 import kotlin.random.Random

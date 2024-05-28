@@ -18,8 +18,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import engine.CoinBet
-import engine.Pass
+import engine.player.CoinBet
+import engine.player.Pass
 import kotlinx.coroutines.launch
 
 @Composable

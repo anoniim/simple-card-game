@@ -1,6 +1,6 @@
 package engine.player
 
-import engine.*
+import engine.GameSettings
 import kotlin.random.Random
 
 class PlayerFactory(
@@ -77,13 +77,8 @@ class PlayerFactory(
         )
     )
 
-    private fun oneOf(vararg players: AiPlayer): AiPlayer {
-        return players.random()
-    }
-
-
     fun createPlayers(playerName: String): List<Player> {
-        val allPlayers = createAiPlayer(settings.aiPlayerCount) + createHumanPlayer(settings.aiPlayerCount, playerName)
+        val allPlayers = createAiPlayers(settings.aiPlayerCount) + createHumanPlayer(settings.aiPlayerCount, playerName)
         return allPlayers.setFirstPlayer(getFirstPlayer())
     }
 
@@ -93,7 +88,7 @@ class PlayerFactory(
         } else 0
     }
 
-    private fun createAiPlayer(aiPlayerCount: Int): List<Player> {
+    private fun createAiPlayers(aiPlayerCount: Int): List<Player> {
         val names = aiPlayersEasy.shuffled().take(aiPlayerCount)
         return names.mapIndexed { index, player ->
             createPlayer(index, player.name, false, player.bettingStrategy)
@@ -112,6 +107,10 @@ class PlayerFactory(
         settings.startingPoints,
         bettingStrategy = bettingStrategy,
     )
+
+    private fun oneOf(vararg players: AiPlayer): AiPlayer {
+        return players.random()
+    }
 }
 
 class AiPlayer(
