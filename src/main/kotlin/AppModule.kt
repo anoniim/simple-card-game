@@ -16,7 +16,7 @@ val appModule = module {
     val settings = get<GameSettings>()
         CardDeck(settings.numOfCardDecks)
     }
-    factory { (playerName: String, leaderboard: Leaderboard) ->
+    factory { (playerName: String) ->
         val playerFactory = get<PlayerFactory>()
         val players = playerFactory.createPlayers(playerName)
         val prefs = get<GamePrefs>()
