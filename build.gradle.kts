@@ -2,6 +2,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization") version "1.9.0"
     id("org.jetbrains.compose") version("1.6.1")
 }
 
@@ -41,6 +42,7 @@ dependencies {
     val koinVersion = "3.5.3"
     implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
     implementation("io.insert-koin:koin-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
 //    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
 //    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")

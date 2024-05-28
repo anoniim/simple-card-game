@@ -1,12 +1,8 @@
 package engine
 
-private const val STARTING_COINS = 10
-private const val STARTING_POINTS = 0
-private const val NUM_OF_CARD_DECKS = 2
-private const val AI_PLAYER_COUNT = 3
-private const val GOAL_SCORE = 30
-private const val RANDOMIZE_FIRST_PLAYER = false
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class GameSettings(
     val startingCoins: Int,
     val startingPoints: Int,
@@ -18,12 +14,12 @@ data class GameSettings(
 
     companion object {
         val DEFAULT = GameSettings(
-            STARTING_COINS,
-            STARTING_POINTS,
-            NUM_OF_CARD_DECKS,
-            AI_PLAYER_COUNT,
-            GOAL_SCORE,
-            RANDOMIZE_FIRST_PLAYER,
+            startingCoins = 10,
+            startingPoints = 0,
+            numOfCardDecks = 2,
+            aiPlayerCount = 3,
+            goalScore = 30,
+            randomizeFirstPlayer = false,
         )
     }
 }

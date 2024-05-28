@@ -3,22 +3,26 @@ import engine.GamePrefs
 import engine.GameSettings
 import engine.player.PlayerFactory
 import engine.rating.EloRatingSystem
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val appModule = module {
 
     singleOf(::GamePrefs)
-    single { GameSettings.DEFAULT }
-    singleOf(::PlayerFactory)
+    factoryOf(::PlayerFactory)
 
+    factory {
+        val prefs = get<GamePrefs>()
+        prefs.loadGameSettings()
+    }
     factory {
         val settings = get<GameSettings>()
         CardDeck(settings.numOfCardDecks)
     }
     factory {
         val prefs = get<GamePrefs>()
-        EloRatingSystem(prefs.getLeaderboard())
+        EloRatingSystem(prefs.loadLeaderboard())
     }
     factory { (playerName: String) ->
         val playerFactory = get<PlayerFactory>()

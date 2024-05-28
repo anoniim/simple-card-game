@@ -27,13 +27,13 @@ fun App() {
     AppTheme {
         val prefs = remember { get<GamePrefs>(GamePrefs::class.java) }
         var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.MenuScreen) }
-        val playerName = remember { mutableStateOf(prefs.getPlayerName()) }
+        val playerName = remember { mutableStateOf(prefs.loadPlayerName()) }
 
         when (val currentNavigationState = navigationState) {
             is NavigationState.MenuScreen -> MenuScreen(playerName,
                 startGame = {
                     // Save player name
-                    prefs.setPlayerName(playerName.value)
+                    prefs.savePlayerName(playerName.value)
                     // Start a new game
                     navigationState = NavigationState.GameScreen(newGame(playerName))
                 },
@@ -46,7 +46,7 @@ fun App() {
                     navigationState = NavigationState.GameScreen(newGame(playerName))
                 }, announceWinner = {
                     println("WINNER: ${it.winner.name}")
-                    prefs.updateLeaderboard(it.leaderboard)
+                    prefs.saveLeaderboard(it.leaderboard)
                     navigationState = NavigationState.WinnerScreen(it.winner)
                 })
 
@@ -58,7 +58,7 @@ fun App() {
                     navigationState = NavigationState.MenuScreen
                 })
 
-            is NavigationState.LeaderboardScreen -> LeaderboardScreen(prefs.getLeaderboard().getDisplayRows(),
+            is NavigationState.LeaderboardScreen -> LeaderboardScreen(prefs.loadLeaderboard().getDisplayRows(),
                 playerName.value,
                 closeLeaderboard = {
                     navigationState = NavigationState.MenuScreen
