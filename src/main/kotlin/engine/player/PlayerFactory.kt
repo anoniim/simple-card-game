@@ -1,5 +1,6 @@
 package engine.player
 
+import engine.AiPlayerDifficulty
 import engine.GameSettings
 import kotlin.random.Random
 
@@ -89,9 +90,17 @@ class PlayerFactory(
     }
 
     private fun createAiPlayers(aiPlayerCount: Int): List<Player> {
-        val names = aiPlayersEasy.shuffled().take(aiPlayerCount)
+        val names = aiPlayerPool().shuffled().take(aiPlayerCount)
         return names.mapIndexed { index, player ->
             createPlayer(index, player.name, false, player.bettingStrategy)
+        }
+    }
+
+    private fun aiPlayerPool(): List<AiPlayer> {
+        return when(settings.aiPlayerDifficulty) {
+            AiPlayerDifficulty.EASY -> aiPlayersEasy
+            AiPlayerDifficulty.MEDIUM -> aiPlayersMedium
+            AiPlayerDifficulty.HARD -> aiPlayersHard
         }
     }
 

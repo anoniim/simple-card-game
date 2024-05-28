@@ -1,6 +1,5 @@
 package engine
 
-import engine.GameSettings.Companion.DEFAULT
 import engine.rating.Leaderboard
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -31,7 +30,7 @@ class GamePrefs {
     }
 
     fun loadGameSettings(): GameSettings {
-        val loadedSettings = prefs.get(SETTINGS, Json.encodeToString(DEFAULT))
+        val loadedSettings = prefs.get(SETTINGS, Json.encodeToString(GameSettings.DEFAULT))
         return Json.decodeFromString(loadedSettings)
     }
 }
