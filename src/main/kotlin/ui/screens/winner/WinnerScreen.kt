@@ -57,7 +57,7 @@ fun WinnerScreen(winnerName: String, playAgain: () -> Unit, openMenu: () -> Unit
                 onClick = { openMenu() },
                 Modifier.padding(4.dp)
             ) {
-                Text("Menu")
+                Text("MENU")
             }
         }
     }
