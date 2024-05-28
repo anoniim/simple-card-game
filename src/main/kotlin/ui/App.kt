@@ -5,7 +5,6 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
 import engine.GamePrefs
 import engine.player.Player
-import engine.rating.Leaderboard
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.get
 import ui.screens.game.GameScreen
@@ -36,7 +35,7 @@ fun App() {
                     // Save player name
                     prefs.setPlayerName(playerName.value)
                     // Start a new game
-                    navigationState = NavigationState.GameScreen(newGame(playerName, prefs.getLeaderboard()))
+                    navigationState = NavigationState.GameScreen(newGame(playerName))
                 },
                 openLeaderboard = {
                     navigationState = NavigationState.LeaderboardScreen
@@ -44,7 +43,7 @@ fun App() {
 
             is NavigationState.GameScreen -> GameScreen(currentNavigationState.game,
                 startOver = {
-                    navigationState = NavigationState.GameScreen(newGame(playerName, prefs.getLeaderboard()))
+                    navigationState = NavigationState.GameScreen(newGame(playerName))
                 }, announceWinner = {
                     println("WINNER: ${it.winner.name}")
                     prefs.updateLeaderboard(it.leaderboard)
@@ -53,7 +52,7 @@ fun App() {
 
             is NavigationState.WinnerScreen -> WinnerScreen(currentNavigationState.winner.name,
                 playAgain = {
-                    navigationState = NavigationState.GameScreen(newGame(playerName, prefs.getLeaderboard()))
+                    navigationState = NavigationState.GameScreen(newGame(playerName))
                 },
                 openMenu = {
                     navigationState = NavigationState.MenuScreen
@@ -68,8 +67,8 @@ fun App() {
     }
 }
 
-private fun newGame(playerName: MutableState<String>, leaderboard: Leaderboard) =
+private fun newGame(playerName: MutableState<String>) =
     get<GameEngine>(GameEngine::class.java) {
-        parametersOf(playerName.value, leaderboard)
+        parametersOf(playerName.value)
     }
 

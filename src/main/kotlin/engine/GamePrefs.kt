@@ -15,12 +15,10 @@ class GamePrefs {
 
     fun getLeaderboard(): Leaderboard {
         val serializedLeaderboard = prefs.get(LEADERBOARD, "")
-        println("serialized: $serializedLeaderboard")
         return Leaderboard.deserialize(serializedLeaderboard)
     }
 
     fun updateLeaderboard(newLeaderboard: Leaderboard) {
         prefs.put(LEADERBOARD, newLeaderboard.serialize())
-        println("deserialized: ${newLeaderboard.serialize()}")
     }
 }
