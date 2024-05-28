@@ -9,13 +9,15 @@ import org.koin.java.KoinJavaComponent.get
 import ui.screens.game.GameScreen
 import ui.screens.leaderboard.LeaderboardScreen
 import ui.screens.menu.MenuScreen
+import ui.screens.menu.NewGameMenuScreen
 import ui.screens.winner.WinnerScreen
 import ui.theme.AppTheme
 
 sealed class NavigationState {
     data object MenuScreen : NavigationState()
+    data object NewGameMenuScreen : NavigationState()
     data object LeaderboardScreen : NavigationState()
-    data class GameScreen(val game: GameEngine) : NavigationState()
+    data object GameScreen : NavigationState()
     data class WinnerScreen(val winner: Player) : NavigationState()
 }
 
@@ -24,26 +26,33 @@ sealed class NavigationState {
 fun App() {
 
     AppTheme {
-        val prefs = remember { get<GamePrefs>(GamePrefs::class.java) }
         var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.MenuScreen) }
+        val prefs = remember { get<GamePrefs>(GamePrefs::class.java) }
         val playerName = remember { mutableStateOf(prefs.loadPlayerName()) }
 
         when (val currentNavigationState = navigationState) {
-            is NavigationState.MenuScreen -> MenuScreen(playerName,
-                startGame = {
-                    // Save player name
-                    prefs.savePlayerName(playerName.value)
-                    // Start a new game
-                    navigationState = NavigationState.GameScreen(newGameEngine())
+            is NavigationState.MenuScreen -> MenuScreen(
+                openNewGameMenu = {
+                    navigationState = NavigationState.NewGameMenuScreen
                 },
                 openLeaderboard = {
                     navigationState = NavigationState.LeaderboardScreen
                 })
 
-            is NavigationState.GameScreen -> GameScreen(currentNavigationState.game,
+            is NavigationState.NewGameMenuScreen -> NewGameMenuScreen(playerName,
+                startGame = {
+                    prefs.savePlayerName(playerName.value)
+                    navigationState = NavigationState.GameScreen
+                },
+                backToMainMenu = {
+                    navigationState = NavigationState.MenuScreen
+                })
+
+            is NavigationState.GameScreen -> GameScreen(newGameEngine(),
                 startOver = {
-                    navigationState = NavigationState.GameScreen(newGameEngine())
-                }, announceWinner = {
+                    navigationState = NavigationState.GameScreen
+                },
+                announceWinner = {
                     println("WINNER: ${it.winner.name}")
                     prefs.saveLeaderboard(it.leaderboard)
                     navigationState = NavigationState.WinnerScreen(it.winner)
@@ -51,7 +60,7 @@ fun App() {
 
             is NavigationState.WinnerScreen -> WinnerScreen(currentNavigationState.winner.name,
                 playAgain = {
-                    navigationState = NavigationState.GameScreen(newGameEngine())
+                    navigationState = NavigationState.GameScreen
                 },
                 openMenu = {
                     navigationState = NavigationState.MenuScreen
