@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import engine.AiPlayerDifficulty
+import engine.GameDifficulty
 import engine.GamePrefs
 import engine.GameSettings
 import org.koin.java.KoinJavaComponent.get
@@ -51,7 +51,7 @@ private fun MenuBox(
     alignmentModifier: Modifier
 ) {
     val prefs = remember { get<GamePrefs>(GamePrefs::class.java) }
-    val difficulty = remember { mutableStateOf(AiPlayerDifficulty.MEDIUM) }
+    val difficulty = remember { mutableStateOf(prefs.loadGameDifficulty()) }
 
     Column(
         modifier = alignmentModifier
@@ -92,7 +92,7 @@ private fun MenuBox(
 /** A row with 3 UI elements for selecting the difficulty of the game. Arrow left and right allows for cycling between difficulty levels.
  * The text in the middle between the arrows shows EASY/MEDIUM/HARD as the user clicks the arrows. */
 @Composable
-fun DifficultyBox(prefs: GamePrefs, difficulty: MutableState<AiPlayerDifficulty>) {
+fun DifficultyBox(prefs: GamePrefs, difficulty: MutableState<GameDifficulty>) {
     Row(
         modifier = Modifier.padding(top = 24.dp)
             .height(44.dp)
@@ -109,16 +109,11 @@ fun DifficultyBox(prefs: GamePrefs, difficulty: MutableState<AiPlayerDifficulty>
 }
 
 @Composable
-private fun ArrowButton(prefs: GamePrefs, difficulty: MutableState<AiPlayerDifficulty>, buttonText: String, increment: Int) {
+private fun ArrowButton(prefs: GamePrefs, difficulty: MutableState<GameDifficulty>, buttonText: String, increment: Int) {
     Button(
         onClick = {
             difficulty.update(increment)
-            val settings = when (difficulty.value) {
-                AiPlayerDifficulty.EASY -> GameSettings.EASY
-                AiPlayerDifficulty.MEDIUM -> GameSettings.DEFAULT
-                AiPlayerDifficulty.HARD -> GameSettings.HARD
-            }
-            prefs.saveGameSettings(settings)
+            prefs.saveGameDifficulty(difficulty.value)
         },
         modifier = Modifier.height(36.dp),
     ) {
@@ -138,11 +133,11 @@ private fun ArrowText(text: String) {
 }
 
 @Composable
-private fun DifficultyText(difficulty: MutableState<AiPlayerDifficulty>) {
+private fun DifficultyText(difficulty: MutableState<GameDifficulty>) {
     val difficultyText = when (difficulty.value) {
-        AiPlayerDifficulty.EASY -> "EASY"
-        AiPlayerDifficulty.MEDIUM -> "MEDIUM"
-        AiPlayerDifficulty.HARD -> "HARD"
+        GameDifficulty.EASY -> "EASY"
+        GameDifficulty.MEDIUM -> "MEDIUM"
+        GameDifficulty.HARD -> "HARD"
     }
     Text(
         difficultyText,
@@ -153,8 +148,8 @@ private fun DifficultyText(difficulty: MutableState<AiPlayerDifficulty>) {
     )
 }
 
-private fun MutableState<AiPlayerDifficulty>.update(increment: Int) {
-    val difficultySize = AiPlayerDifficulty.entries.size
+private fun MutableState<GameDifficulty>.update(increment: Int) {
+    val difficultySize = GameDifficulty.entries.size
     val newOrdinal = (value.ordinal + increment + difficultySize) % difficultySize
-    value = AiPlayerDifficulty.entries[newOrdinal]
+    value = GameDifficulty.entries[newOrdinal]
 }

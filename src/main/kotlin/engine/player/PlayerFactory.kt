@@ -1,6 +1,6 @@
 package engine.player
 
-import engine.AiPlayerDifficulty
+import engine.GameDifficulty
 import engine.GameSettings
 import kotlin.random.Random
 
@@ -97,10 +97,10 @@ class PlayerFactory(
     }
 
     private fun aiPlayerPool(): List<AiPlayer> {
-        return when(settings.aiPlayerDifficulty) {
-            AiPlayerDifficulty.EASY -> aiPlayersEasy
-            AiPlayerDifficulty.MEDIUM -> aiPlayersMedium
-            AiPlayerDifficulty.HARD -> aiPlayersHard
+        return when(settings.gameDifficulty) {
+            GameDifficulty.EASY -> aiPlayersEasy
+            GameDifficulty.MEDIUM -> aiPlayersMedium
+            GameDifficulty.HARD -> aiPlayersHard
         }
     }
 

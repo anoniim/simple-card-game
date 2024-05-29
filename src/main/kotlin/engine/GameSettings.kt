@@ -8,44 +8,53 @@ data class GameSettings(
     val startingPoints: Int,
     val numOfCardDecks: Int,
     val aiPlayerCount: Int,
-    val aiPlayerDifficulty: AiPlayerDifficulty,
+    val gameDifficulty: GameDifficulty,
     val goalScore: Int,
     val randomizeFirstPlayer: Boolean,
 ) {
     companion object {
-        val EASY = GameSettings(
+
+        fun forDifficulty(difficulty: GameDifficulty): GameSettings {
+            return when (difficulty) {
+                GameDifficulty.EASY -> EASY
+                GameDifficulty.MEDIUM -> DEFAULT
+                GameDifficulty.HARD -> HARD
+            }
+        }
+
+        private val EASY = GameSettings(
             startingCoins = 10,
             startingPoints = 0,
             numOfCardDecks = 1,
             aiPlayerCount = 3,
-            aiPlayerDifficulty = AiPlayerDifficulty.EASY,
+            gameDifficulty = GameDifficulty.EASY,
             goalScore = 30,
             randomizeFirstPlayer = false,
         )
 
-        val DEFAULT = GameSettings(
+        private val DEFAULT = GameSettings(
             startingCoins = 10,
             startingPoints = 0,
             numOfCardDecks = 2,
             aiPlayerCount = 3,
-            aiPlayerDifficulty = AiPlayerDifficulty.MEDIUM,
+            gameDifficulty = GameDifficulty.MEDIUM,
             goalScore = 30,
             randomizeFirstPlayer = false,
         )
 
-        val HARD = GameSettings(
+        private val HARD = GameSettings(
             startingCoins = 15,
             startingPoints = 0,
             numOfCardDecks = 3,
             aiPlayerCount = 3,
-            aiPlayerDifficulty = AiPlayerDifficulty.HARD,
+            gameDifficulty = GameDifficulty.HARD,
             goalScore = 40,
             randomizeFirstPlayer = false, // FIXME: Set to true once fixed
         )
     }
 }
 
-enum class AiPlayerDifficulty {
+enum class GameDifficulty {
     EASY,
     MEDIUM,
     HARD,

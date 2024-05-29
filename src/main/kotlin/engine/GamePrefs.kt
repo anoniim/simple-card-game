@@ -1,13 +1,11 @@
 package engine
 
 import engine.rating.Leaderboard
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.util.prefs.Preferences
 
 private const val PLAYER_NAME = "playerName"
 private const val LEADERBOARD = "leaderboard"
-private const val SETTINGS = "settings"
+private const val DIFFICULTY = "difficulty"
 
 class GamePrefs {
     private val prefs: Preferences = Preferences.userRoot().node(this::class.java.name)
@@ -25,12 +23,12 @@ class GamePrefs {
         return Leaderboard.deserialize(serializedLeaderboard)
     }
 
-    fun saveGameSettings(newSettings: GameSettings) {
-        prefs.put(SETTINGS, Json.encodeToString(newSettings))
+    fun saveGameDifficulty(newDifficulty: GameDifficulty) {
+        prefs.putInt(DIFFICULTY, newDifficulty.ordinal)
     }
 
-    fun loadGameSettings(): GameSettings {
-        val loadedSettings = prefs.get(SETTINGS, Json.encodeToString(GameSettings.DEFAULT))
-        return Json.decodeFromString(loadedSettings)
+    fun loadGameDifficulty(): GameDifficulty {
+        val loadedDifficultyIndex = prefs.getInt(DIFFICULTY, GameDifficulty.MEDIUM.ordinal)
+        return GameDifficulty.entries[loadedDifficultyIndex]
     }
 }

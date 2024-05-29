@@ -14,7 +14,7 @@ val appModule = module {
 
     factory {
         val prefs = get<GamePrefs>()
-        prefs.loadGameSettings()
+        GameSettings.forDifficulty(prefs.loadGameDifficulty())
     }
     factory {
         val settings = get<GameSettings>()
