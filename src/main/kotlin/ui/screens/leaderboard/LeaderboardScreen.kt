@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,6 +19,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import engine.rating.DisplayRow
+import ui.Locale
+import ui.Strings
 
 @Composable
 fun LeaderboardScreen(displayRows: List<DisplayRow>, playerName: String, closeLeaderboard: () -> Unit) {
@@ -59,10 +60,10 @@ private fun StartGameBox(
     ) {
         // Header
         Row {
-            HeaderText("Name", Modifier.Companion.weight(2f).padding(horizontal = 16.dp))
-            HeaderText("Rating", Modifier.weight(1f))
-            HeaderText("# of games", Modifier.weight(1f))
-            HeaderText("Win ratio", Modifier.weight(1f))
+            HeaderText("leaderboard_name", Modifier.Companion.weight(2f).padding(horizontal = 16.dp))
+            HeaderText("leaderboard_rating", Modifier.weight(1f))
+            HeaderText("leaderboard_num_of_games", Modifier.weight(1f))
+            HeaderText("leaderboard_win_ratio", Modifier.weight(1f))
         }
 
         LazyColumn(modifier = Modifier.weight(1f)) {
@@ -88,15 +89,17 @@ private fun StartGameBox(
             modifier = Modifier.fillMaxWidth(fraction = 0.5f)
                 .padding(top = 8.dp),
         ) {
-            Text("Close")
+            Text(
+                text = Strings["close", Locale.current].uppercase()
+            )
         }
     }
 }
 
 @Composable
-private fun HeaderText(title: String, positionModifier: Modifier) {
+private fun HeaderText(stringKey: String, positionModifier: Modifier) {
     Text(
-        text = title,
+        text = Strings[stringKey, Locale.current],
         modifier = positionModifier.padding(vertical = 4.dp),
         fontWeight = FontWeight.Bold
     )

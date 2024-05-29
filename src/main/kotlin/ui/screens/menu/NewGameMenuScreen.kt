@@ -66,7 +66,7 @@ private fun MenuBox(
         OutlinedTextField(
             value = playerName.value,
             onValueChange = { playerName.value = it.uppercase().take(12) },
-            label = { Text("Enter your name") },
+            label = { Text("Player name") },
             modifier = Modifier.width(220.dp)
         )
         DifficultyBox(prefs, difficulty)

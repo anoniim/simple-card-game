@@ -12,6 +12,7 @@ import ui.screens.menu.MenuScreen
 import ui.screens.menu.NewGameMenuScreen
 import ui.screens.winner.WinnerScreen
 import ui.theme.AppTheme
+import java.util.*
 
 sealed class NavigationState {
     data object MenuScreen : NavigationState()
@@ -24,56 +25,75 @@ sealed class NavigationState {
 @Composable
 @Preview
 fun App() {
-
-    AppTheme {
-        var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.MenuScreen) }
-        val prefs = remember { get<GamePrefs>(GamePrefs::class.java) }
-        val playerName = remember { mutableStateOf(prefs.loadPlayerName()) }
-
-        when (val currentNavigationState = navigationState) {
-            is NavigationState.MenuScreen -> MenuScreen(
-                openNewGameMenu = {
-                    navigationState = NavigationState.NewGameMenuScreen
-                },
-                openLeaderboard = {
-                    navigationState = NavigationState.LeaderboardScreen
-                })
-
-            is NavigationState.NewGameMenuScreen -> NewGameMenuScreen(playerName,
-                startGame = {
-                    prefs.savePlayerName(playerName.value)
-                    navigationState = NavigationState.GameScreen
-                },
-                backToMainMenu = {
-                    navigationState = NavigationState.MenuScreen
-                })
-
-            is NavigationState.GameScreen -> GameScreen(newGameEngine(),
-                startOver = {
-                    navigationState = NavigationState.GameScreen
-                },
-                announceWinner = {
-                    println("WINNER: ${it.winner.name}")
-                    prefs.saveLeaderboard(it.leaderboard)
-                    navigationState = NavigationState.WinnerScreen(it.winner)
-                })
-
-            is NavigationState.WinnerScreen -> WinnerScreen(currentNavigationState.winner.name,
-                playAgain = {
-                    navigationState = NavigationState.GameScreen
-                },
-                openMenu = {
-                    navigationState = NavigationState.MenuScreen
-                })
-
-            is NavigationState.LeaderboardScreen -> LeaderboardScreen(prefs.loadLeaderboard().getDisplayRows(),
-                playerName.value,
-                closeLeaderboard = {
-                    navigationState = NavigationState.MenuScreen
-                })
+    var locale by remember { mutableStateOf(java.util.Locale.getDefault()) }
+    CompositionLocalProvider(Locale provides locale) {
+        AppTheme {
+            NavigationContent { newLocale ->
+                locale = newLocale
+            }
         }
+    }
+}
+
+@Composable
+private fun NavigationContent(onLocaleChange: (Locale) -> Unit) {
+    var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.MenuScreen) }
+    val prefs = remember { get<GamePrefs>(GamePrefs::class.java) }
+    val playerName = remember { mutableStateOf(prefs.loadPlayerName()) }
+
+    when (val currentNavigationState = navigationState) {
+        is NavigationState.MenuScreen -> MenuScreen(
+            openNewGameMenu = {
+                navigationState = NavigationState.NewGameMenuScreen
+            },
+            openLeaderboard = {
+                navigationState = NavigationState.LeaderboardScreen
+            },
+            onLocaleChange = onLocaleChange
+        )
+
+        is NavigationState.NewGameMenuScreen -> NewGameMenuScreen(playerName,
+            startGame = {
+                prefs.savePlayerName(playerName.value)
+                navigationState = NavigationState.GameScreen
+            },
+            backToMainMenu = {
+                navigationState = NavigationState.MenuScreen
+            })
+
+        is NavigationState.GameScreen -> GameScreen(newGameEngine(),
+            startOver = {
+                navigationState = NavigationState.GameScreen
+            },
+            announceWinner = {
+                println("WINNER: ${it.winner.name}")
+                prefs.saveLeaderboard(it.leaderboard)
+                navigationState = NavigationState.WinnerScreen(it.winner)
+            })
+
+        is NavigationState.WinnerScreen -> WinnerScreen(currentNavigationState.winner.name,
+            playAgain = {
+                navigationState = NavigationState.GameScreen
+            },
+            openMenu = {
+                navigationState = NavigationState.MenuScreen
+            })
+
+        is NavigationState.LeaderboardScreen -> LeaderboardScreen(prefs.loadLeaderboard().getDisplayRows(),
+            playerName.value,
+            closeLeaderboard = {
+                navigationState = NavigationState.MenuScreen
+            })
     }
 }
 
 private fun newGameEngine() = get<GameEngine>(GameEngine::class.java)
 
+val Locale = staticCompositionLocalOf<Locale> { java.util.Locale.getDefault() }
+
+object Strings {
+    operator fun get(key: String, locale: Locale): String {
+        val bundle = ResourceBundle.getBundle("Strings", locale)
+        return bundle.getString(key)
+    }
+}

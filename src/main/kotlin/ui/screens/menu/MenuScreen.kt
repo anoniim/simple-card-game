@@ -16,9 +16,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import ui.Locale
+import ui.Strings
+import java.util.*
 
 @Composable
-fun MenuScreen(openNewGameMenu: () -> Unit, openLeaderboard: () -> Unit) {
+fun MenuScreen(
+    openNewGameMenu: () -> Unit,
+    openLeaderboard: () -> Unit,
+    onLocaleChange: (Locale) -> Unit
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -29,7 +37,9 @@ fun MenuScreen(openNewGameMenu: () -> Unit, openLeaderboard: () -> Unit) {
             contentScale = ContentScale.Crop
         )
         MenuBox(
-            openNewGameMenu, openLeaderboard,
+            openNewGameMenu,
+            openLeaderboard,
+            onLocaleChange,
             Modifier.align(Alignment.Center)
         )
     }
@@ -37,8 +47,9 @@ fun MenuScreen(openNewGameMenu: () -> Unit, openLeaderboard: () -> Unit) {
 
 @Composable
 private fun MenuBox(
-    startGame: () -> Unit,
+    openNewGameMenu: () -> Unit,
     openLeaderboard: () -> Unit,
+    onLocaleChange: (Locale) -> Unit,
     alignmentModifier: Modifier
 ) {
     Column(
@@ -52,17 +63,81 @@ private fun MenuBox(
         verticalArrangement = Arrangement.Center
     ) {
         Button(
-            onClick = { startGame() },
+            onClick = { openNewGameMenu() },
             modifier = Modifier.width(220.dp),
         ) {
-            Text("NEW GAME")
+            Text(
+                text = Strings["new_game", Locale.current].uppercase()
+            )
         }
         OutlinedButton(
             onClick = { openLeaderboard() },
             modifier = Modifier.padding(top = 16.dp)
                 .width(220.dp),
         ) {
-            Text("LEADERBOARD")
+            Text(
+                text = Strings["leaderboard", Locale.current].uppercase()
+            )
+        }
+        LanguageBox(onLocaleChange)
+    }
+}
+
+@Composable
+fun LanguageBox(onLocaleChange: (Locale) -> Unit) {
+    val locale = Locale.current
+    Row(
+        modifier = Modifier.width(220.dp)
+            .padding(top = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        if (locale == Locale("cs")) {
+            LanguageButton(
+                onClick = { onLocaleChange(java.util.Locale.ENGLISH) },
+                text = "🇬🇧",
+            )
+            SelectedLanguageButton(
+                text = "🇨🇿",
+            )
+        } else {
+            SelectedLanguageButton(
+                text = "🇬🇧",
+            )
+            LanguageButton(
+                onClick = { onLocaleChange(Locale("cs")) },
+                text = "🇨🇿",
+            )
         }
     }
+}
+
+@Composable
+fun SelectedLanguageButton(
+    text: String,
+) {
+    Button(
+        onClick = { /* clicked language already selected */ },
+    ) {
+        FlagIcon(text)
+    }
+}
+
+@Composable
+fun LanguageButton(
+    onClick: () -> Unit,
+    text: String,
+) {
+    OutlinedButton(
+        onClick = onClick,
+    ) {
+        FlagIcon(text)
+    }
+}
+
+@Composable
+private fun FlagIcon(text: String) {
+    Text(
+        text,
+        fontSize = 24.sp
+    )
 }
