@@ -8,7 +8,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import ui.SoundAction
 import ui.Sounds
 
 private const val ACTION_DELAY = 1000L
@@ -56,47 +55,19 @@ class GameEngine(
     private fun placeBetForAiPlayer(currentAiPlayer: Player) {
         val aiPlayerBet = currentAiPlayer.generateBet(card.value!!.points, players.value)
         _players.value = players.value.placeBet(currentAiPlayer, aiPlayerBet)
-        playSoundForAiPlayerBet(aiPlayerBet)
-    }
-
-    private fun playSoundForAiPlayerBet(aiPlayerBet: Bet) {
-        val action = when (aiPlayerBet) {
-            is Pass -> SoundAction.OPPONENT_PASS
-            is CoinBet -> {
-                if (aiPlayerBet.coins < 3) SoundAction.BET_LITTLE
-                else SoundAction.BET_HIGH
-            }
-        }
-        sounds.play(action)
+        sounds.aiPlayerBet(aiPlayerBet)
     }
 
     suspend fun placeBetForHumanPlayer(bet: Bet) {
         val player: Player = players.value.getCurrentPlayer()
         val updatedPlayers = players.value.placeBet(player, bet)
-        playSoundForHumanPlayerBet(bet)
+        sounds.humanPlayerBet(bet, players.value)
         if (updatedPlayers.isNotEmpty()) {
             _players.value = updatedPlayers
             delay(ACTION_DELAY)
             progress()
             executeAiPlayerMoves()
         }
-    }
-
-    private fun playSoundForHumanPlayerBet(humanPlayerBet: Bet) {
-        val action = when (humanPlayerBet) {
-            is Pass -> {
-                val highestBet = getHighestBetInCoins(players.value)
-                val maxPossibleBet = players.value.getCurrentPlayer().coins
-                if (maxPossibleBet < highestBet) SoundAction.PASS_NO_CHOICE
-                else SoundAction.PASS
-            }
-
-            is CoinBet -> {
-                if (humanPlayerBet.coins < 3) SoundAction.BET_LITTLE
-                else SoundAction.BET_HIGH
-            }
-        }
-        sounds.play(action)
     }
 
     private suspend fun progress() {
@@ -109,7 +80,7 @@ class GameEngine(
             // Is there a winner?
             val overallWinner = getOverallWinner()
             if (overallWinner != null) {
-                sounds.play(if (overallWinner.isHuman) SoundAction.GAME_WIN else SoundAction.GAME_LOSS)
+                sounds.gameOver(overallWinner)
                 _winningState.value = createWinningState(overallWinner)
             } else {
                 addOneCoinToAllPlayers()
@@ -147,7 +118,7 @@ class GameEngine(
     }
 
     private fun drawNewCard() {
-        sounds.play(SoundAction.DRAW_CARD)
+        sounds.drawCard()
         _card.value = cardDeck.drawCard()
     }
 
@@ -181,21 +152,8 @@ class GameEngine(
             val playersWithScore = players.value.updateScore(roundWinner, updatedCoins, updatedScore)
             currentRound.roundWinner = players.value.indexOf(roundWinner)
             _players.value = playersWithScore
-            playSoundForRoundWinner(roundWinner, winningPoints)
+            sounds.roundWinner(roundWinner, winningPoints)
         }
-    }
-
-    private fun playSoundForRoundWinner(roundWinner: Player, winningPoints: Int) {
-        val action = if (roundWinner.isHuman) {
-            // win
-            if (winningPoints >= 10) SoundAction.ROUND_WIN_BIG_CARD
-            else SoundAction.ROUND_WIN
-        } else {
-            // loss
-            if (winningPoints >= 10) SoundAction.ROUND_LOSS_BIG_CARD
-            else SoundAction.ROUND_LOSS
-        }
-        sounds.play(action)
     }
 
     private fun addOneCoinToAllPlayers() {

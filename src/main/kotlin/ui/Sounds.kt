@@ -1,11 +1,66 @@
 package ui
 
+import engine.player.*
+import getHighestBetInCoins
 import java.io.File
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
 
-interface Sounds {
+class Sounds(
+    private val soundPlayer: SoundPlayer
+) {
+    fun aiPlayerBet(bet: Bet) {
+        val action = when (bet) {
+            is Pass -> SoundAction.OPPONENT_PASS
+            is CoinBet -> {
+                if (bet.coins < 3) SoundAction.BET_LITTLE
+                else SoundAction.BET_HIGH
+            }
+        }
+        soundPlayer.play(action)
+    }
+
+    fun humanPlayerBet(bet: Bet, players: List<Player>) {
+        val action = when (bet) {
+            is Pass -> {
+                val highestBet = getHighestBetInCoins(players)
+                val maxPossibleBet = players.getCurrentPlayer().coins
+                if (maxPossibleBet < highestBet) SoundAction.PASS_NO_CHOICE
+                else SoundAction.PASS
+            }
+
+            is CoinBet -> {
+                if (bet.coins < 3) SoundAction.BET_LITTLE
+                else SoundAction.BET_HIGH
+            }
+        }
+        soundPlayer.play(action)
+    }
+
+    fun gameOver(overallWinner: Player) {
+        soundPlayer.play(if (overallWinner.isHuman) SoundAction.GAME_WIN else SoundAction.GAME_LOSS)
+    }
+
+    fun drawCard() {
+        soundPlayer.play(SoundAction.DRAW_CARD)
+    }
+
+    fun roundWinner(roundWinner: Player, winningPoints: Int) {
+        val action = if (roundWinner.isHuman) {
+            // win
+            if (winningPoints >= 10) SoundAction.ROUND_WIN_BIG_CARD
+            else SoundAction.ROUND_WIN
+        } else {
+            // loss
+            if (winningPoints >= 10) SoundAction.ROUND_LOSS_BIG_CARD
+            else SoundAction.ROUND_LOSS
+        }
+        soundPlayer.play(action)
+    }
+}
+
+interface SoundPlayer {
     fun play(action: SoundAction)
 }
 
@@ -24,10 +79,10 @@ enum class SoundAction(
     ROUND_LOSS_BIG_CARD("ajaj", "nee", "nee2", "oh-no", "sakra", "sakra2", "sakra3", "to-snad-ne"),
     GAME_WIN("clap-jupi", "clap-jupi2", "im-the-winner", "vyhra"),
     GAME_LOSS("clap"),
-    IDLE("delej", "ja-nevim", "pojdme", "pojdme2", "pojdme3", "sup-sup", "tak-pojd",);
+    IDLE("delej", "ja-nevim", "pojdme", "pojdme2", "pojdme3", "sup-sup", "tak-pojd");
 }
 
-object JavaXSounds: Sounds {
+object JavaXSounds : SoundPlayer {
     override fun play(action: SoundAction) {
         playSound(action.soundFiles.random())
     }
