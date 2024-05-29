@@ -28,8 +28,8 @@ class GameEngine(
     private val _card = MutableStateFlow<Card?>(null)
     val card: StateFlow<Card?> = _card.asStateFlow()
 
-    private val _winningState = MutableStateFlow<WinningState?>(null)
-    val winningState: StateFlow<WinningState?> = _winningState.asStateFlow()
+    private val _gameEndState = MutableStateFlow<GameEndState?>(null)
+    val gameEndState: StateFlow<GameEndState?> = _gameEndState.asStateFlow()
 
     private val currentRound: Round = Round.initial(players.size)
 
@@ -81,7 +81,8 @@ class GameEngine(
             val overallWinner = getOverallWinner()
             if (overallWinner != null) {
                 sounds.gameOver(overallWinner)
-                _winningState.value = createWinningState(overallWinner)
+                val updatedLeaderboard = ratingSystem.updateRatings(players.value, overallWinner)
+                _gameEndState.value = GameEndState(overallWinner, updatedLeaderboard)
             } else {
                 addOneCoinToAllPlayers()
                 progressToNextRound()
@@ -92,13 +93,6 @@ class GameEngine(
             _players.value = players.value.updateCurrentPlayer(nextPlayerIndex)
             sounds.idling(players.value.getCurrentPlayer())
         }
-    }
-
-    private fun createWinningState(overallWinner: Player): WinningState {
-        return WinningState(
-            overallWinner,
-            ratingSystem.updateRatings(players.value, overallWinner)
-        )
     }
 
     private fun getOverallWinner() = players.value.find { it.score >= settings.goalScore }
@@ -162,6 +156,10 @@ class GameEngine(
         _players.value = updatedPlayers
     }
 
+    fun penalizeExit(): Leaderboard {
+        return ratingSystem.penalizeExit(players.value.find { it.isHuman })
+    }
+
     data class Round(
         private val playerCount: Int,
         private var firstPlayer: Int,
@@ -219,7 +217,7 @@ fun getHighestBetInCoins(players: List<Player>): Int {
     } else 0
 }
 
-class WinningState(
+class GameEndState(
     val winner: Player,
     val leaderboard: Leaderboard,
 )

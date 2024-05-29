@@ -9,6 +9,7 @@ class EloRatingSystem(
 
     private val winnerKFactor = 10
     private val loserKFactor = 3 * winnerKFactor
+    private val exitPenalty = -10.0
 
     fun updateRatings(players: List<Player>, winner: Player): Leaderboard {
         var winnerRatingTotalDelta = 0.0
@@ -40,6 +41,12 @@ class EloRatingSystem(
     }
 
     private fun Player.getRating() = leaderboard.getPlayerRating(name)
+
+    fun penalizeExit(humanPlayer: Player?): Leaderboard {
+        if (humanPlayer == null) throw IllegalStateException("Human player not found, WTF?!")
+        leaderboard.updateLoserRating(humanPlayer.name, exitPenalty)
+        return leaderboard
+    }
 }
 
 private typealias RatingDelta = Pair<Double, Double> // <winnerDelta, loserDelta>

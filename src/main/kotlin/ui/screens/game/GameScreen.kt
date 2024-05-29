@@ -1,7 +1,7 @@
 package ui.screens.game
 
 import GameEngine
-import WinningState
+import GameEndState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import engine.player.CoinBet
 import engine.player.Pass
+import engine.rating.Leaderboard
 import kotlinx.coroutines.launch
 import ui.AppLocale
 import ui.Strings
@@ -30,9 +31,8 @@ import ui.Strings
 @Composable
 fun GameScreen(
     game: GameEngine,
-    startOver: () -> Unit,
-    exitToMenu: () -> Unit,
-    announceWinner: (WinningState) -> Unit
+    exitToMenu: (Leaderboard) -> Unit,
+    announceWinner: (GameEndState) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -53,7 +53,6 @@ fun GameScreen(
 
         TopMenuSection(
             game,
-            startOver,
             exitToMenu,
             Modifier.align(Alignment.TopCenter)
                 .offset(y = 8.dp)
@@ -63,61 +62,45 @@ fun GameScreen(
             .offset(y = (-70).dp)
         CardSection(game, coroutineScope, alignmentModifier)
 
-        val winningState = game.winningState.collectAsState().value
-        if (winningState != null) announceWinner(winningState)
+        val gameEndState = game.gameEndState.collectAsState().value
+        if (gameEndState != null) announceWinner(gameEndState)
     }
 }
 
 @Composable
 fun TopMenuSection(
     game: GameEngine,
-    startOver: () -> Unit,
-    exitToMenu: () -> Unit,
+    exitToMenu: (Leaderboard) -> Unit,
     positionModifier: Modifier
 ) {
     Row(
         modifier = positionModifier,
     ) {
         GoalSection(game.goalScore)
-//        Spacer(Modifier.width(8.dp))
-//        RestartIcon(startOver)
         Spacer(Modifier.width(8.dp))
-        ExitIcon(exitToMenu)
+        ExitIcon(game, exitToMenu)
     }
 }
 
 @Composable
-private fun ExitIcon(exitToMenu: () -> Unit) {
+private fun ExitIcon(game: GameEngine, exitToMenu: (Leaderboard) -> Unit) {
     Box(
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
-            .clickable { exitToMenu() }
+            .clickable {
+                val updatedLeaderboard = game.penalizeExit()
+                exitToMenu(updatedLeaderboard)
+            }
     ) {
         Text(
             text = "⨯",
             textAlign = TextAlign.Center,
             fontSize = 44.sp,
             color = Color.White,
-            modifier = Modifier.padding(horizontal = 8.dp)
+            modifier = Modifier.padding(horizontal = 12.dp)
         )
     }
 }
-
-//@Composable
-//private fun RestartIcon(startOver: () -> Unit) {
-//    Box(
-//        modifier = Modifier.clip(RoundedCornerShape(8.dp))
-//            .background(MaterialTheme.colorScheme.secondaryContainer)
-//            .clickable { startOver() }
-//            .padding(10.dp)
-//    ) {
-//        Image(
-//            painter = painterResource("img/restart.png"),
-//            contentDescription = null,
-//            modifier = Modifier.size(20.dp)
-//        )
-//    }
-//}
 
 @Composable
 fun GoalSection(goalScore: Int) {
