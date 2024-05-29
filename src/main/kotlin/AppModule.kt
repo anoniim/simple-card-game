@@ -6,9 +6,12 @@ import engine.rating.EloRatingSystem
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import ui.JavaXSounds
+import ui.Sounds
 
 val appModule = module {
 
+    single<Sounds> { JavaXSounds }
     singleOf(::GamePrefs)
     factoryOf(::PlayerFactory)
 
@@ -29,6 +32,6 @@ val appModule = module {
         val playerName = prefs.loadPlayerName()
         val playerFactory = get<PlayerFactory>()
         val players = playerFactory.createPlayers(playerName)
-        GameEngine(players, get(), get(), get())
+        GameEngine(players, get(), get(), get(), get())
     }
 }

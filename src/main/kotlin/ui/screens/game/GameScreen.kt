@@ -22,6 +22,7 @@ import engine.player.CoinBet
 import engine.player.Pass
 import kotlinx.coroutines.launch
 import ui.AppLocale
+import ui.Sounds
 import ui.Strings
 
 @Composable
