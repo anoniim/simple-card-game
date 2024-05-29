@@ -90,6 +90,7 @@ class GameEngine(
             // Set next player who hasn't played yet in this round
             val nextPlayerIndex = currentRound.progressToNextPlayer()
             _players.value = players.value.updateCurrentPlayer(nextPlayerIndex)
+            sounds.idling(players.value.getCurrentPlayer())
         }
     }
 

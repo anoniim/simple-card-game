@@ -42,7 +42,15 @@ dependencies {
     val koinVersion = "3.5.3"
     implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
     implementation("io.insert-koin:koin-core")
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // Coroutines for Android
+//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+
+    // Coroutines for JVM
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.1")
 
 //    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
 //    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")

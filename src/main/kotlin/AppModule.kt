@@ -6,12 +6,12 @@ import engine.rating.EloRatingSystem
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import ui.JavaXSounds
+import ui.JavaXSoundPlayer
 import ui.Sounds
 
 val appModule = module {
 
-    single<Sounds> { JavaXSounds }
+    single<Sounds> { Sounds(JavaXSoundPlayer) }
     singleOf(::GamePrefs)
     factoryOf(::PlayerFactory)
 

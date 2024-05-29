@@ -2,6 +2,8 @@ package ui
 
 import engine.player.*
 import getHighestBetInCoins
+import kotlinx.coroutines.*
+import kotlinx.coroutines.swing.Swing
 import java.io.File
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
@@ -22,6 +24,7 @@ class Sounds(
     }
 
     fun humanPlayerBet(bet: Bet, players: List<Player>) {
+        idleTimerJob?.cancel()
         val action = when (bet) {
             is Pass -> {
                 val highestBet = getHighestBetInCoins(players)
@@ -58,6 +61,19 @@ class Sounds(
         }
         soundPlayer.play(action)
     }
+
+    private var idleTimerJob: Job? = null
+
+    fun idling(currentPlayer: Player) {
+        if (currentPlayer.isHuman) startTimer { soundPlayer.play(SoundAction.IDLE) }
+    }
+
+    private fun startTimer(function: () -> Unit) {
+        idleTimerJob = CoroutineScope(Dispatchers.Swing).launch {
+            delay(10_000)
+            function()
+        }
+    }
 }
 
 interface SoundPlayer {
@@ -82,7 +98,7 @@ enum class SoundAction(
     IDLE("delej", "ja-nevim", "pojdme", "pojdme2", "pojdme3", "sup-sup", "tak-pojd");
 }
 
-object JavaXSounds : SoundPlayer {
+object JavaXSoundPlayer : SoundPlayer {
     override fun play(action: SoundAction) {
         playSound(action.soundFiles.random())
     }
