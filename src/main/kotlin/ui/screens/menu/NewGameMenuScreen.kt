@@ -22,8 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import engine.GameDifficulty
 import engine.GamePrefs
-import engine.GameSettings
 import org.koin.java.KoinJavaComponent.get
+import ui.Locale
+import ui.Strings
 
 @Composable
 fun NewGameMenuScreen(playerName: MutableState<String>, startGame: () -> Unit, backToMainMenu: () -> Unit) {
@@ -66,7 +67,7 @@ private fun MenuBox(
         OutlinedTextField(
             value = playerName.value,
             onValueChange = { playerName.value = it.uppercase().take(12) },
-            label = { Text("Player name") },
+            label = { Text(Strings["player_name", Locale.current]) },
             modifier = Modifier.width(220.dp)
         )
         DifficultyBox(prefs, difficulty)
@@ -77,14 +78,14 @@ private fun MenuBox(
             modifier = Modifier.padding(top = 16.dp)
                 .width(220.dp)
         ) {
-            Text("START GAME")
+            Text(Strings["start_game", Locale.current].uppercase())
         }
         OutlinedButton(
             onClick = { backToMainMenu() },
             modifier = Modifier.padding(top = 16.dp)
                 .width(220.dp)
         ) {
-            Text("BACK")
+            Text(Strings["back", Locale.current].uppercase())
         }
     }
 }
@@ -135,9 +136,9 @@ private fun ArrowText(text: String) {
 @Composable
 private fun DifficultyText(difficulty: MutableState<GameDifficulty>) {
     val difficultyText = when (difficulty.value) {
-        GameDifficulty.EASY -> "EASY"
-        GameDifficulty.MEDIUM -> "MEDIUM"
-        GameDifficulty.HARD -> "HARD"
+        GameDifficulty.EASY -> Strings["easy", Locale.current].uppercase()
+        GameDifficulty.MEDIUM -> Strings["medium", Locale.current].uppercase()
+        GameDifficulty.HARD -> Strings["hard", Locale.current].uppercase()
     }
     Text(
         difficultyText,
