@@ -17,7 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ui.Locale
+import ui.AppLocale
 import ui.Strings
 import java.util.*
 
@@ -67,7 +67,7 @@ private fun MenuBox(
             modifier = Modifier.width(220.dp),
         ) {
             Text(
-                text = Strings["new_game", Locale.current].uppercase()
+                text = Strings["new_game", AppLocale.current].uppercase()
             )
         }
         OutlinedButton(
@@ -76,7 +76,7 @@ private fun MenuBox(
                 .width(220.dp),
         ) {
             Text(
-                text = Strings["leaderboard", Locale.current].uppercase()
+                text = Strings["leaderboard", AppLocale.current].uppercase()
             )
         }
         LanguageBox(onLocaleChange)
@@ -85,7 +85,7 @@ private fun MenuBox(
 
 @Composable
 fun LanguageBox(onLocaleChange: (Locale) -> Unit) {
-    val locale = Locale.current
+    val locale = AppLocale.current
     Row(
         modifier = Modifier.width(220.dp)
             .padding(top = 16.dp),

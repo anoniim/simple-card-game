@@ -14,6 +14,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ui.AppLocale
+import ui.Strings
 
 @Composable
 fun WinnerScreen(winnerName: String, playAgain: () -> Unit, openMenu: () -> Unit) {
@@ -32,7 +34,7 @@ fun WinnerScreen(winnerName: String, playAgain: () -> Unit, openMenu: () -> Unit
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "The winner is",
+                text = Strings["winner_label", AppLocale.current],
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -50,14 +52,14 @@ fun WinnerScreen(winnerName: String, playAgain: () -> Unit, openMenu: () -> Unit
             Button(
                 onClick = { playAgain() },
             ) {
-                Text("PLAY AGAIN")
+                Text(Strings["play_again", AppLocale.current].uppercase())
             }
 
             OutlinedButton(
                 onClick = { openMenu() },
                 Modifier.padding(4.dp)
             ) {
-                Text("MENU")
+                Text(Strings["menu", AppLocale.current].uppercase())
             }
         }
     }

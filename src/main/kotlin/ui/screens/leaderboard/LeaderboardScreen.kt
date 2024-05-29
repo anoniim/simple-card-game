@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import engine.rating.DisplayRow
-import ui.Locale
+import ui.AppLocale
 import ui.Strings
 
 @Composable
@@ -90,7 +90,7 @@ private fun StartGameBox(
                 .padding(top = 8.dp),
         ) {
             Text(
-                text = Strings["close", Locale.current].uppercase()
+                text = Strings["close", AppLocale.current].uppercase()
             )
         }
     }
@@ -99,7 +99,7 @@ private fun StartGameBox(
 @Composable
 private fun HeaderText(stringKey: String, positionModifier: Modifier) {
     Text(
-        text = Strings[stringKey, Locale.current],
+        text = Strings[stringKey, AppLocale.current],
         modifier = positionModifier.padding(vertical = 4.dp),
         fontWeight = FontWeight.Bold
     )
