@@ -61,7 +61,10 @@ private fun NavigationContent(onLocaleChange: (Locale) -> Unit) {
 
         is NavigationState.GameScreen -> GameScreen(newGameEngine(),
             startOver = {
-                navigationState = NavigationState.GameScreen
+                navigationState = NavigationState.GameScreen // FIXME Doesn't do anything since the navigation state is already GameScreen
+            },
+            exitToMenu = {
+                navigationState = NavigationState.MenuScreen
             },
             announceWinner = {
                 println("WINNER: ${it.winner.name}")
