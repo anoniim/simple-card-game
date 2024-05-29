@@ -25,12 +25,10 @@ sealed class NavigationState {
 @Composable
 @Preview
 fun App() {
-    var locale by remember { mutableStateOf(java.util.Locale.getDefault()) }
+    var locale by remember { mutableStateOf(Locale.getDefault()) }
     CompositionLocalProvider(AppLocale provides locale) {
         AppTheme {
-            NavigationContent { newLocale ->
-                locale = newLocale
-            }
+            NavigationContent { newLocale -> locale = newLocale }
         }
     }
 }
@@ -88,12 +86,3 @@ private fun NavigationContent(onLocaleChange: (Locale) -> Unit) {
 }
 
 private fun newGameEngine() = get<GameEngine>(GameEngine::class.java)
-
-val AppLocale = staticCompositionLocalOf<Locale> { java.util.Locale.getDefault() }
-
-object Strings {
-    operator fun get(key: String, locale: Locale): String {
-        val bundle = ResourceBundle.getBundle("Strings", locale)
-        return bundle.getString(key)
-    }
-}
