@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.sp
 import engine.Card
 import engine.player.Player
 import getHighestBetInCoins
+import ui.AppLocale
+import ui.Strings
 
 @Composable
 internal fun BettingSection(
@@ -80,7 +82,7 @@ internal fun BetInputField(
                         state.resetBet()
                     }) {
                     Text(
-                        text = "BET",
+                        text = Strings["betting_place_bet", AppLocale.current].uppercase(),
                         fontSize = 16.sp
                     )
                 }
@@ -103,7 +105,7 @@ private fun PassButton(modifier: Modifier = Modifier, state: BetInputStateHolder
             .fillMaxWidth()
     ) {
         Text(
-            text = "PASS",
+            text = Strings["betting_pass", AppLocale.current].uppercase(),
             fontSize = 16.sp
         )
     }

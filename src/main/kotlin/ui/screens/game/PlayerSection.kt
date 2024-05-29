@@ -24,6 +24,8 @@ import engine.Card
 import engine.player.CoinBet
 import engine.player.Pass
 import engine.player.Player
+import ui.AppLocale
+import ui.Strings
 
 internal const val BEANS_SYMBOL = "\uD83E\uDED8"
 
@@ -183,7 +185,7 @@ fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player
                 )
 
                 is Pass -> PlayerText(
-                    text = "PASS",
+                    text = Strings["pass", AppLocale.current].uppercase(),
                     fontSize = 18.sp,
                     modifier = Modifier.align(Alignment.Center)
                 )

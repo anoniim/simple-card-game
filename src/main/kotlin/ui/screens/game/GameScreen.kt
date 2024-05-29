@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.sp
 import engine.player.CoinBet
 import engine.player.Pass
 import kotlinx.coroutines.launch
+import ui.AppLocale
+import ui.Strings
 
 @Composable
 fun GameScreen(game: GameEngine, startOver: () -> Unit, announceWinner: (WinningState) -> Unit) {
@@ -66,7 +68,7 @@ fun GoalSection(goalScore: Int, alignModifier: Modifier) {
             .padding(8.dp),
     ) {
         Text(
-            text = "Goal: $goalScore ",
+            text = "${Strings["goal", AppLocale.current]} $goalScore ",
             color = MaterialTheme.colorScheme.onSecondary,
             fontSize = 20.sp
         )

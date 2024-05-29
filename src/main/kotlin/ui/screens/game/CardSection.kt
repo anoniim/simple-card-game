@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.sp
 import engine.Card
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ui.AppLocale
+import ui.Strings
 
 @Composable
 internal fun CardSection(game: GameEngine, coroutineScope: CoroutineScope, alignmentModifier: Modifier) {
@@ -53,7 +55,8 @@ private fun DrawFirstCardButton(alignmentModifier: Modifier, cardSizeModifier: M
             modifier = cardSizeModifier,
             shape = RoundedCornerShape(16.dp)
         ) {
-            Text("CLICK HERE\nTO DRAW\nTHE FIRST\nCARD",
+            Text(
+                Strings["draw_first_card", AppLocale.current].uppercase(),
                 fontSize = 20.sp,
                 lineHeight = 30.sp,
                 textAlign = TextAlign.Center)
