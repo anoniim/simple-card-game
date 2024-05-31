@@ -25,6 +25,13 @@ The player with the highest bid gets the number of points equal to the value of 
 The player can skip the bid if he doesn't want to bid (or can't bid higher).
 This is called "passing".
 
+## Future features
+
+* Leaving the game before drawing the first card doesn't count as a loss
+* Local multiplayer (hot seat)
+* Very hard difficulty level
+* New game modes (blind bidding, special powers)
+
 ## Design
 
 ### Technologies
