@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,7 +29,7 @@ import ui.Strings
 @Composable
 fun GameScreen(
     game: GameEngine,
-    exitToMenu: (Leaderboard) -> Unit,
+    exitToMenu: (Leaderboard?) -> Unit,
     announceWinner: (GameEndState) -> Unit
 ) {
     Box(
@@ -51,8 +49,10 @@ fun GameScreen(
             onPlayerPass = { coroutineScope.launch { game.placeBetForHumanPlayer(Pass) } }
         )
 
+        val firstCardDrawn = remember { mutableStateOf(false) }
         TopMenuSection(
             game,
+            firstCardDrawn,
             exitToMenu,
             Modifier.align(Alignment.TopCenter)
                 .offset(y = 8.dp)
@@ -60,7 +60,7 @@ fun GameScreen(
 
         val alignmentModifier = Modifier.align(Alignment.Center)
             .offset(y = (-70).dp)
-        CardSection(game, coroutineScope, alignmentModifier)
+        CardSection(game, firstCardDrawn, coroutineScope, alignmentModifier)
 
         val gameEndState = game.gameEndState.collectAsState().value
         if (gameEndState != null) announceWinner(gameEndState)
@@ -70,7 +70,8 @@ fun GameScreen(
 @Composable
 fun TopMenuSection(
     game: GameEngine,
-    exitToMenu: (Leaderboard) -> Unit,
+    firstCardDrawn: MutableState<Boolean>,
+    exitToMenu: (Leaderboard?) -> Unit,
     positionModifier: Modifier
 ) {
     Row(
@@ -78,18 +79,20 @@ fun TopMenuSection(
     ) {
         GoalSection(game.goalScore)
         Spacer(Modifier.width(8.dp))
-        ExitIcon(game, exitToMenu)
+        ExitIcon(game, firstCardDrawn, exitToMenu)
     }
 }
 
 @Composable
-private fun ExitIcon(game: GameEngine, exitToMenu: (Leaderboard) -> Unit) {
+private fun ExitIcon(game: GameEngine, firstCardDrawn: MutableState<Boolean>, exitToMenu: (Leaderboard?) -> Unit) {
     Box(
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable {
-                val updatedLeaderboard = game.penalizeExit()
-                exitToMenu(updatedLeaderboard)
+                if (firstCardDrawn.value) {
+                    val updatedLeaderboard = game.penalizeExit()
+                    exitToMenu(updatedLeaderboard)
+                } else exitToMenu(null)
             }
     ) {
         Text(

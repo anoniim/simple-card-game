@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -23,9 +20,8 @@ import ui.AppLocale
 import ui.Strings
 
 @Composable
-internal fun CardSection(game: GameEngine, coroutineScope: CoroutineScope, alignmentModifier: Modifier) {
+internal fun CardSection(game: GameEngine, firstCardDrawn: MutableState<Boolean>, coroutineScope: CoroutineScope, alignmentModifier: Modifier) {
     val cardState = game.card.collectAsState()
-    val firstCardDrawn = remember { mutableStateOf(false) }
     val cardSizeModifier = Modifier.width(194.dp).height(236.dp)
     val card = cardState.value
     if (!firstCardDrawn.value) {

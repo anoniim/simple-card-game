@@ -60,8 +60,8 @@ private fun NavigationContent(onLocaleChange: (Locale) -> Unit) {
             })
 
         is NavigationState.GameScreen -> GameScreen(newGameEngine(),
-            exitToMenu = {
-                prefs.saveLeaderboard(it)
+            exitToMenu = { updatedLeaderboard ->
+                updatedLeaderboard?.let { prefs.saveLeaderboard(it) }
                 navigationState = NavigationState.MenuScreen
             },
             announceWinner = {
