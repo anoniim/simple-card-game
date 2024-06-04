@@ -44,7 +44,7 @@ class EloRatingSystem(
 
     fun penalizeExit(humanPlayer: Player?): Leaderboard {
         if (humanPlayer == null) throw IllegalStateException("Human player not found, WTF?!")
-        leaderboard.updateLoserRating(humanPlayer.name, exitPenalty)
+        leaderboard.updateRating(humanPlayer.name, exitPenalty)
         return leaderboard
     }
 }
