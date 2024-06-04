@@ -92,7 +92,7 @@ enum class SoundAction(
     ROUND_WIN("dobry", "good-job", "jo", "jo2", "juchu", "jupi", "nice", "yes"),
     ROUND_WIN_BIG_CARD("cha-cha", "dobry", "jo3", "yes2", "yes3", "yes4"),
     ROUND_LOSS("meh", "meh2", "meh3", "nee3", "nee4", "no-no2", "safra"),
-    ROUND_LOSS_BIG_CARD("ajaj", "nee", "nee2", "oh-no", "sakra", "sakra2", "sakra3", "to-snad-ne"),
+    ROUND_LOSS_BIG_CARD("ajaj", "nee", "nee2", "oh-no", "sakra1", "sakra2", "sakra3", "to-snad-ne"),
     GAME_WIN("clap-jupi", "clap-jupi2", "im-the-winner", "vyhra"),
     GAME_LOSS("clap"),
     IDLE("delej", "ja-nevim", "pojdme", "pojdme2", "pojdme3", "sup-sup", "tak-pojd");
