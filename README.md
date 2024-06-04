@@ -27,9 +27,9 @@ This is called "passing".
 
 ## Future features
 
-* Leaving the game before drawing the first card doesn't count as a loss
+* Exiting mid-game shows a confirmation dialog 
 * Local multiplayer (hot seat)
-* Very hard difficulty level
+* Very hard difficulty level (deep learning AI)
 * New game modes (blind bidding, special powers)
 
 ## Design
