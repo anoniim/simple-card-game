@@ -75,14 +75,23 @@ fun GameScreen(
         if (gameEndState != null) announceWinner(gameEndState)
 
         if (showExitDialog.value) {
-            ExitDialog(
-                Modifier.align(Alignment.Center),
-                onExit = {
-                    val updatedLeaderboard = game.penalizeExit()
-                    exitToMenu(updatedLeaderboard)
-                },
-                onCancel = { showExitDialog.value = false }
-            )
+            Box(
+                Modifier.fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { /* consume click */ }
+            ) {
+                ExitDialog(
+                    Modifier.align(Alignment.Center),
+                    onExit = {
+                        val updatedLeaderboard = game.penalizeExit()
+                        exitToMenu(updatedLeaderboard)
+                    },
+                    onCancel = { showExitDialog.value = false }
+                )
+            }
         }
     }
 }
