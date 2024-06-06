@@ -5,18 +5,23 @@ import GameEndState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import engine.player.CoinBet
@@ -50,20 +55,35 @@ fun GameScreen(
         )
 
         val firstCardDrawn = remember { mutableStateOf(false) }
+        val showExitDialog = remember { mutableStateOf(false) }
         TopMenuSection(
             game,
             firstCardDrawn,
+            showExitDialog,
             exitToMenu,
             Modifier.align(Alignment.TopCenter)
                 .offset(y = 8.dp)
         )
 
-        val alignmentModifier = Modifier.align(Alignment.Center)
-            .offset(y = (-70).dp)
-        CardSection(game, firstCardDrawn, coroutineScope, alignmentModifier)
+        CardSection(
+            game, firstCardDrawn, coroutineScope,
+            Modifier.align(Alignment.Center)
+                .offset(y = (-70).dp)
+        )
 
         val gameEndState = game.gameEndState.collectAsState().value
         if (gameEndState != null) announceWinner(gameEndState)
+
+        if (showExitDialog.value) {
+            ExitDialog(
+                Modifier.align(Alignment.Center),
+                onExit = {
+                    val updatedLeaderboard = game.penalizeExit()
+                    exitToMenu(updatedLeaderboard)
+                },
+                onCancel = { showExitDialog.value = false }
+            )
+        }
     }
 }
 
@@ -71,6 +91,7 @@ fun GameScreen(
 fun TopMenuSection(
     game: GameEngine,
     firstCardDrawn: MutableState<Boolean>,
+    showExitDialog: MutableState<Boolean>,
     exitToMenu: (Leaderboard?) -> Unit,
     positionModifier: Modifier
 ) {
@@ -79,19 +100,18 @@ fun TopMenuSection(
     ) {
         GoalSection(game.goalScore)
         Spacer(Modifier.width(8.dp))
-        ExitIcon(game, firstCardDrawn, exitToMenu)
+        ExitIcon(firstCardDrawn, showExitDialog, exitToMenu)
     }
 }
 
 @Composable
-private fun ExitIcon(game: GameEngine, firstCardDrawn: MutableState<Boolean>, exitToMenu: (Leaderboard?) -> Unit) {
+private fun ExitIcon(firstCardDrawn: MutableState<Boolean>, showExitDialog: MutableState<Boolean>, exitToMenu: (Leaderboard?) -> Unit) {
     Box(
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable {
                 if (firstCardDrawn.value) {
-                    val updatedLeaderboard = game.penalizeExit()
-                    exitToMenu(updatedLeaderboard)
+                    showExitDialog.value = true
                 } else exitToMenu(null)
             }
     ) {
