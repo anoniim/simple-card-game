@@ -46,7 +46,7 @@ internal fun BettingSection(
 }
 
 @Composable
-internal fun BetInputField(
+private fun BetInputField(
     state: BetInputStateHolder,
     onBetConfirmed: (Int) -> Unit,
     playerPassed: () -> Unit
@@ -112,7 +112,7 @@ private fun PassButton(modifier: Modifier = Modifier, state: BetInputStateHolder
 }
 
 @Composable
-fun IconText(text: String) {
+private fun IconText(text: String) {
     // White text
     Text(
         text = text,
@@ -123,11 +123,11 @@ fun IconText(text: String) {
 }
 
 @Composable
-fun rememberBetInputStateHolder(minBet: Int, maxBet: Int) = remember {
+private fun rememberBetInputStateHolder(minBet: Int, maxBet: Int) = remember {
     BetInputStateHolder(minBet, maxBet)
 }
 
-class BetInputStateHolder(
+private class BetInputStateHolder(
     private var minBet: Int,
     private var maxBet: Int
 ) {
@@ -140,23 +140,6 @@ class BetInputStateHolder(
 
     var bet: Int = minBet
         private set
-
-
-    fun updateBet(input: String) {
-        if (input.isBlank()) {
-            resetBet()
-            return
-        } else setIntInput(input)
-    }
-
-    private fun setIntInput(input: String) {
-        try {
-            bet = input.toInt()
-            betInput = input
-        } catch (e: NumberFormatException) {
-            // Only numbers are allowed, ignore
-        }
-    }
 
     fun resetBet() {
         betInput = ""

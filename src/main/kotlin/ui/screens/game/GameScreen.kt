@@ -32,7 +32,7 @@ import ui.AppLocale
 import ui.Strings
 
 @Composable
-fun GameScreen(
+internal fun GameScreen(
     game: GameEngine,
     exitToMenu: (Leaderboard?) -> Unit,
     announceWinner: (GameEndState) -> Unit

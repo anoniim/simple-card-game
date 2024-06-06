@@ -167,7 +167,7 @@ private fun PlayerStats(player: Player) {
 }
 
 @Composable
-fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player: Player, horizontalOffset: Dp) {
+private fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player: Player, horizontalOffset: Dp) {
     val showPlacedBet = player.bet != null
     if (showPlacedBet) {
         val bettingSectionBackground = if (player.isRoundWinner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiaryContainer

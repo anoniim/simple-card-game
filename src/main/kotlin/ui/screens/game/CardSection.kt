@@ -61,7 +61,7 @@ private fun DrawFirstCardButton(alignmentModifier: Modifier, cardSizeModifier: M
 }
 
 @Composable
-fun CardView(alignmentModifier: Modifier, card: Card) {
+private fun CardView(alignmentModifier: Modifier, card: Card) {
     Image(
         painter = painterResource(card.image),
         contentDescription = null,

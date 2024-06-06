@@ -22,7 +22,7 @@ import ui.AppLocale
 import ui.Strings
 
 @Composable
-fun ExitDialog(modifier: Modifier, onExit: () -> Unit, onCancel: () -> Unit) {
+internal fun ExitDialog(modifier: Modifier, onExit: () -> Unit, onCancel: () -> Unit) {
     Box(
         Modifier.fillMaxSize()
             .background(Color.Black.copy(alpha = 0.3f))
