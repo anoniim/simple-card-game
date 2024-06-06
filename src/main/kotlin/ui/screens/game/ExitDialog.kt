@@ -1,12 +1,15 @@
 package ui.screens.game
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,25 +24,34 @@ import ui.Strings
 @Composable
 fun ExitDialog(modifier: Modifier, onExit: () -> Unit, onCancel: () -> Unit) {
     Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier.fillMaxSize(fraction = 0.5f)
-            .shadow(32.dp, RoundedCornerShape(32.dp))
-            .clip(RoundedCornerShape(32.dp))
-            .background(Color.Gray.copy(alpha = 0.95f))
-            .padding(32.dp)
+        Modifier.fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.3f))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { /* consume click */ }
     ) {
-        Column(
-            verticalArrangement = Arrangement.SpaceBetween
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier.fillMaxSize(fraction = 0.5f)
+                .shadow(32.dp, RoundedCornerShape(32.dp))
+                .clip(RoundedCornerShape(32.dp))
+                .background(Color.Gray.copy(alpha = 0.95f))
+                .padding(32.dp)
         ) {
-            TitleText()
-            Spacer(Modifier.height(16.dp))
-            MessageText()
-            Spacer(Modifier.height(32.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                DialogButton("exit_dialog_cancel", onCancel)
-                DialogButton("exit_dialog_exit", onExit)
+                TitleText()
+                Spacer(Modifier.height(16.dp))
+                MessageText()
+                Spacer(Modifier.height(32.dp))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    DialogButton("exit_dialog_cancel", onCancel)
+                    DialogButton("exit_dialog_exit", onExit)
+                }
             }
         }
     }

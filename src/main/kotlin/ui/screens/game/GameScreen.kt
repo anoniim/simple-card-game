@@ -40,12 +40,7 @@ fun GameScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Image(
-            painter = painterResource("img/background.jpg"),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        GameBackground()
 
         val players = game.players.collectAsState()
         val coroutineScope = rememberCoroutineScope()
@@ -57,10 +52,7 @@ fun GameScreen(
         val firstCardDrawn = remember { mutableStateOf(false) }
         val showExitDialog = remember { mutableStateOf(false) }
         TopMenuSection(
-            game,
-            firstCardDrawn,
-            showExitDialog,
-            exitToMenu,
+            game, firstCardDrawn, showExitDialog, exitToMenu,
             Modifier.align(Alignment.TopCenter)
                 .offset(y = 8.dp)
         )
@@ -75,29 +67,30 @@ fun GameScreen(
         if (gameEndState != null) announceWinner(gameEndState)
 
         if (showExitDialog.value) {
-            Box(
-                Modifier.fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f))
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) { /* consume click */ }
-            ) {
-                ExitDialog(
-                    Modifier.align(Alignment.Center),
-                    onExit = {
-                        val updatedLeaderboard = game.penalizeExit()
-                        exitToMenu(updatedLeaderboard)
-                    },
-                    onCancel = { showExitDialog.value = false }
-                )
-            }
+            ExitDialog(
+                Modifier.align(Alignment.Center),
+                onExit = {
+                    val updatedLeaderboard = game.penalizeExit()
+                    exitToMenu(updatedLeaderboard)
+                },
+                onCancel = { showExitDialog.value = false }
+            )
         }
     }
 }
 
 @Composable
-fun TopMenuSection(
+private fun GameBackground() {
+    Image(
+        painter = painterResource("img/background.jpg"),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.Crop
+    )
+}
+
+@Composable
+private fun TopMenuSection(
     game: GameEngine,
     firstCardDrawn: MutableState<Boolean>,
     showExitDialog: MutableState<Boolean>,
@@ -135,7 +128,7 @@ private fun ExitIcon(firstCardDrawn: MutableState<Boolean>, showExitDialog: Muta
 }
 
 @Composable
-fun GoalSection(goalScore: Int) {
+private fun GoalSection(goalScore: Int) {
     Row(
         modifier = Modifier.clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
