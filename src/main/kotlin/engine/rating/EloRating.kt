@@ -9,7 +9,7 @@ class EloRatingSystem(
 
     private val winnerKFactor = 10
     private val loserKFactor = winnerKFactor
-    private val exitPenalty = -10.0
+    private val exitPenalty = -3.0
 
     fun updateRatings(players: List<Player>, winner: Player): Leaderboard {
         var winnerRatingTotalDelta = 0.0
