@@ -205,16 +205,14 @@ class GameEngine(
     }
 }
 
-fun getHighestBetInCoins(players: List<Player>): Int {
-    val bets = players.map(Player::bet)
-    return if (bets.isNotEmpty()) {
-        bets.maxOf {
-            when (it) {
-                is CoinBet -> it.coins
-                else -> 0
-            }
+fun List<Player>.getHighestBetInCoins(): Int {
+    val bets = this.map(Player::bet)
+    return bets.maxOfOrNull {
+        when (it) {
+            is CoinBet -> it.coins
+            else -> 0
         }
-    } else 0
+    } ?: 0
 }
 
 class GameEndState(

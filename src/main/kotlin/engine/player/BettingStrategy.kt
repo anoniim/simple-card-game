@@ -14,7 +14,7 @@ class PlusOneBettingStrategy(
     private val goalScore: Int
 ) : BettingStrategy {
     override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
-        val highestBet = getHighestBetInCoins(players)
+        val highestBet = players.getHighestBetInCoins()
         // If the card value is what the player needs to win, bet everything
         if (cardValue >= goalScore - player.score && player.coins > highestBet) {
             return CoinBet(player.coins)
@@ -28,7 +28,7 @@ class PlusOneBettingStrategy(
 
 class TotalRandomBettingStrategy : BettingStrategy {
     override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
-        val highestBet = getHighestBetInCoins(players)
+        val highestBet = players.getHighestBetInCoins()
         val lowestPossibleBet = highestBet + 1
         val highestPossibleBet = player.coins
         return if (lowestPossibleBet < highestPossibleBet) {
@@ -42,7 +42,7 @@ class RandomBettingStrategy(
     private val goalScore: Int
 ) : BettingStrategy {
     override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
-        val highestBet = getHighestBetInCoins(players)
+        val highestBet = players.getHighestBetInCoins()
         val lowestPossibleBet = highestBet + 1
         val highestPossibleBet = player.coins
         // If the card value is what the player needs to win, bet everything
@@ -60,7 +60,7 @@ abstract class RandomPlusOneBettingStrategy(
     private val goalScore: Int
 ) : BettingStrategy {
     override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
-        val highestBet = getHighestBetInCoins(players)
+        val highestBet = players.getHighestBetInCoins()
         val lowestPossibleBet = highestBet + 1
         val highestPossibleBet = player.coins
         // If the card value is what the player needs to win, bet everything
@@ -105,7 +105,7 @@ open class StandardBettingStrategy(
     private val goalScore: Int,
 ) : BettingStrategy {
     override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
-        val highestBet = getHighestBetInCoins(players)
+        val highestBet = players.getHighestBetInCoins()
         val coins = player.coins
         // If the card value is what the player needs to win, bet everything
         if (cardValue >= goalScore - player.score && coins > highestBet) {
@@ -130,7 +130,7 @@ class HighStandardBettingStrategy(
     private val goalScore: Int,
 ) : StandardBettingStrategy(takeFactor, goalScore){
     override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
-        val highestBet = getHighestBetInCoins(players)
+        val highestBet = players.getHighestBetInCoins()
         val coins = player.coins
         // If the card value is what the player needs to win, bet everything
         if (cardValue >= goalScore - player.score && coins > highestBet) {

@@ -31,7 +31,7 @@ internal fun BettingSection(
     // Show betting section only if it's human player's turn
     val humanPlayer = players.find { it.isCurrentPlayer && it.isHuman }
     if (humanPlayer != null && humanPlayer.bet == null && card.value != null) {
-        val highestBet = getHighestBetInCoins(players)
+        val highestBet = players.getHighestBetInCoins()
         val maxPossibleBet = humanPlayer.coins
         BetInputField(
             rememberBetInputStateHolder(minBet = highestBet + 1, maxPossibleBet),

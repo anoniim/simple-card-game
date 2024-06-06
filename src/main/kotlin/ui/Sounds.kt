@@ -27,7 +27,7 @@ class Sounds(
         idleTimerJob?.cancel()
         val action = when (bet) {
             is Pass -> {
-                val highestBet = getHighestBetInCoins(players)
+                val highestBet = players.getHighestBetInCoins()
                 val maxPossibleBet = players.getCurrentPlayer().coins
                 if (maxPossibleBet < highestBet) SoundAction.PASS_NO_CHOICE
                 else SoundAction.PASS
