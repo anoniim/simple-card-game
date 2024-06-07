@@ -2,6 +2,7 @@ package engine.player
 
 import getHighestBetInCoins
 import kotlin.math.ceil
+import kotlin.math.min
 import kotlin.random.Random
 
 // TODO Add a rule: If the card would win the game for the human player, always bet
@@ -117,9 +118,14 @@ open class StandardBettingStrategy(
             return if (idealBet <= coins) CoinBet(idealBet) else CoinBet(coins)
         }
         val requiredBet = highestBet + 1
-        val take = requiredBet <= idealBet
-        return if (requiredBet <= coins && take) {
-            CoinBet(requiredBet)
+        val canPayRequiredBid = requiredBet <= idealBet && requiredBet <= coins
+        return if (canPayRequiredBid) {
+            // If any of the upcoming players can bet more than the required bet, bet so much to beat others or highest possible bet until the ideal
+            val playersWhoCanOverbid = players.filter { it != player && it.bet == null && it.coins > requiredBet + 1 }
+            if (playersWhoCanOverbid.isNotEmpty()) {
+                val idealOrToBeatOthers = playersWhoCanOverbid.maxOf { min(it.coins, min(player.coins, idealBet)) }
+                CoinBet(idealOrToBeatOthers)
+            } else CoinBet(requiredBet)
         } else Pass
     }
 }
