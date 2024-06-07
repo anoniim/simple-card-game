@@ -27,8 +27,10 @@ This is called "passing".
 
 ## Future features
 
+* Settings screen (language, background music)
 * Optimize for Windows
 * Compile for mobile platforms
+* Animations (screen transitions, UI element transformations
 * Very hard difficulty level (deep learning AI)
 * Local multiplayer (hot seat)
 * Global multiplayer 
