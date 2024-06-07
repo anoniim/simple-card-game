@@ -29,7 +29,7 @@ class Sounds(
             is Pass -> {
                 val highestBet = players.getHighestBetInCoins()
                 val maxPossibleBet = players.getCurrentPlayer().coins
-                if (maxPossibleBet < highestBet) SoundAction.PASS_NO_CHOICE
+                if (maxPossibleBet <= highestBet) SoundAction.PASS_NO_CHOICE
                 else SoundAction.PASS
             }
 
