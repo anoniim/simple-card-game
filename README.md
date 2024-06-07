@@ -27,9 +27,13 @@ This is called "passing".
 
 ## Future features
 
-* Exiting mid-game shows a confirmation dialog 
-* Local multiplayer (hot seat)
+* Add backing music
+* Optimize for Windows
+* Compile for mobile platforms
 * Very hard difficulty level (deep learning AI)
+* Local multiplayer (hot seat)
+* Global multiplayer 
+  * Shared leaderboard
 * New game modes (blind bidding, special powers)
 
 ## Design
