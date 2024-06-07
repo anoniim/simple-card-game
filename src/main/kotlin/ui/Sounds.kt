@@ -12,6 +12,11 @@ import javax.sound.sampled.Clip
 class Sounds(
     private val soundPlayer: SoundPlayer
 ) {
+
+    fun backgroundMusic() {
+        soundPlayer.loop("background_track")
+    }
+
     fun aiPlayerBet(bet: Bet) {
         val action = when (bet) {
             is Pass -> SoundAction.OPPONENT_PASS
@@ -78,6 +83,7 @@ class Sounds(
 
 interface SoundPlayer {
     fun play(action: SoundAction)
+    fun loop(soundFileName: String)
 }
 
 enum class SoundAction(
@@ -95,7 +101,7 @@ enum class SoundAction(
     ROUND_LOSS_BIG_CARD("ajaj", "nee", "nee2", "oh-no", "sakra1", "sakra2", "sakra3", "to-snad-ne"),
     GAME_WIN("clap-jupi", "clap-jupi2", "im-the-winner", "vyhra"),
     GAME_LOSS("clap"),
-    IDLE("delej", "ja-nevim", "pojdme", "pojdme2", "pojdme3", "sup-sup", "tak-pojd");
+    IDLE("delej", "ja-nevim", "pojdme", "pojdme2", "pojdme3", "sup-sup", "tak-pojd"),
 }
 
 object JavaXSoundPlayer : SoundPlayer {
@@ -103,14 +109,28 @@ object JavaXSoundPlayer : SoundPlayer {
         playSound(action.soundFiles.random())
     }
 
+    override fun loop(soundFileName: String) {
+        try {
+            val clip = createClip(soundFileName)
+            clip.loop(Clip.LOOP_CONTINUOUSLY)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
+
     private fun playSound(soundFileName: String) {
         try {
-            val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(File("src/main/resources/sounds/$soundFileName.wav"))
-            val clip: Clip = AudioSystem.getClip()
-            clip.open(audioInputStream)
+            val clip = createClip(soundFileName)
             clip.start()
         } catch (ex: Exception) {
             ex.printStackTrace()
+        }
+    }
+
+    private fun createClip(soundFileName: String): Clip {
+        val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(File("src/main/resources/sounds/$soundFileName.wav"))
+        return AudioSystem.getClip().apply {
+            open(audioInputStream)
         }
     }
 }

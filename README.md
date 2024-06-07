@@ -27,7 +27,6 @@ This is called "passing".
 
 ## Future features
 
-* Add backing music
 * Optimize for Windows
 * Compile for mobile platforms
 * Very hard difficulty level (deep learning AI)

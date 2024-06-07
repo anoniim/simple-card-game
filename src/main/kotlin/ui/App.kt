@@ -29,6 +29,8 @@ fun App() {
     CompositionLocalProvider(AppLocale provides locale) {
         AppTheme {
             NavigationContent { newLocale -> locale = newLocale }
+            val sounds = remember { get<Sounds>(Sounds::class.java) }
+            sounds.backgroundMusic()
         }
     }
 }
