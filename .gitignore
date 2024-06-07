@@ -52,4 +52,4 @@ bin/
 .DS_Store
 
 ### Python
-pyenv/
+venv/
