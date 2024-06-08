@@ -1,13 +1,9 @@
-package ui
+package net.solvetheriddle.cardgame
 
 import engine.player.*
 import getHighestBetInCoins
 import kotlinx.coroutines.*
 import kotlinx.coroutines.swing.Swing
-import java.io.File
-import javax.sound.sampled.AudioInputStream
-import javax.sound.sampled.AudioSystem
-import javax.sound.sampled.Clip
 
 class Sounds(
     private val soundPlayer: SoundPlayer
@@ -104,33 +100,3 @@ enum class SoundAction(
     IDLE("delej", "ja-nevim", "pojdme", "pojdme2", "pojdme3", "sup-sup", "tak-pojd"),
 }
 
-object JavaXSoundPlayer : SoundPlayer {
-    override fun play(action: SoundAction) {
-        playSound(action.soundFiles.random())
-    }
-
-    override fun loop(soundFileName: String) {
-        try {
-            val clip = createClip(soundFileName)
-            clip.loop(Clip.LOOP_CONTINUOUSLY)
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
-    }
-
-    private fun playSound(soundFileName: String) {
-        try {
-            val clip = createClip(soundFileName)
-            clip.start()
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
-    }
-
-    private fun createClip(soundFileName: String): Clip {
-        val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(File("src/main/resources/sounds/$soundFileName.wav"))
-        return AudioSystem.getClip().apply {
-            open(audioInputStream)
-        }
-    }
-}

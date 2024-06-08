@@ -168,7 +168,8 @@ private fun PlayerStats(player: Player) {
 
 @Composable
 private fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp, player: Player, horizontalOffset: Dp) {
-    val showPlacedBet = player.bet != null
+    val bet = player.bet
+    val showPlacedBet = bet != null
     if (showPlacedBet) {
         val bettingSectionBackground = if (player.isRoundWinner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiaryContainer
         Box(
@@ -177,9 +178,9 @@ private fun PlacedBetSection(alignmentModifier: Modifier, placedBetViewWidth: Dp
                 .clip(RoundedCornerShape(16.dp))
                 .background(bettingSectionBackground)
         ) {
-            when (player.bet) {
+            when (bet) {
                 is CoinBet -> PlayerText(
-                    text = "$BEANS_SYMBOL ${player.bet.coins}",
+                    text = "$BEANS_SYMBOL ${bet.coins}",
                     fontSize = 25.sp,
                     modifier = Modifier.align(Alignment.Center)
                 )

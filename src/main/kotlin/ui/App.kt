@@ -5,6 +5,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
 import GamePrefs
 import engine.player.Player
+import net.solvetheriddle.cardgame.Sounds
 import org.koin.java.KoinJavaComponent.get
 import ui.screens.game.GameScreen
 import ui.screens.leaderboard.LeaderboardScreen

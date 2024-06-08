@@ -5,8 +5,8 @@ import engine.rating.EloRatingSystem
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import ui.JavaXSoundPlayer
-import ui.Sounds
+import ui.sound.JavaXSoundPlayer
+import net.solvetheriddle.cardgame.Sounds
 
 val appModule = module {
 
