@@ -7,12 +7,16 @@ import engine.GameSettings
 import engine.player.PlayerFactory
 import engine.rating.EloRatingSystem
 import engine.rating.Leaderboard
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import mocks.NoOpSoundPlayer
 
 fun main() {
     println("Let's do some ML training!")
     val game = createNewGameEngine("CP1")
-    game.startGame()
+    GlobalScope.launch {
+        game.startGame()
+    }
 }
 
 private fun createNewGameEngine(modelName: String): GameEngine {

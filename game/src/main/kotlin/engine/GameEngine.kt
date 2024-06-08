@@ -18,6 +18,7 @@ class GameEngine(
     private val settings: GameSettings,
     private val ratingSystem: EloRatingSystem,
     private val sounds: Sounds,
+    private val speedMode: SpeedMode = SpeedMode.NORMAL,
 ) {
 
     val goalScore: Int = settings.goalScore
@@ -35,7 +36,7 @@ class GameEngine(
 
     suspend fun startGame() {
         drawNewCard()
-        delay(ACTION_DELAY)
+        pause()
         val currentPlayer = players.value.getCurrentPlayer()
         if (!currentPlayer.isHuman) {
             executeAiPlayerMoves()
@@ -47,7 +48,7 @@ class GameEngine(
     private suspend fun executeAiPlayerMoves() {
         while (!players.value.getCurrentPlayer().isHuman) {
             placeBetForAiPlayer(players.value.getCurrentPlayer())
-            delay(ACTION_DELAY)
+            pause()
             progress()
         }
     }
@@ -64,7 +65,7 @@ class GameEngine(
         sounds.humanPlayerBet(bet, players.value)
         if (updatedPlayers.isNotEmpty()) {
             _players.value = updatedPlayers
-            delay(ACTION_DELAY)
+            pause()
             progress()
             executeAiPlayerMoves()
         }
@@ -72,10 +73,10 @@ class GameEngine(
 
     private suspend fun progress() {
         if (currentRound.haveAllPlayersPlayed()) {
-            delay(ACTION_DELAY)
+            pause()
             // All players have played in this round, evaluate this round
             updateRoundWinningPlayer()
-            delay(ACTION_DELAY)
+            pause()
 
             // Is there a winner?
             val overallWinner = getOverallWinner()
@@ -100,12 +101,20 @@ class GameEngine(
     private suspend fun progressToNextRound() {
         resetBets()
         resetCard()
-        delay(ACTION_DELAY)
+        pause()
 
         setNewFirstPlayer()
-        delay(ACTION_DELAY)
+        pause()
 
         drawNewCard()
+    }
+
+    private suspend fun pause() {
+        when(speedMode) {
+            SpeedMode.IMMEDIATE -> return
+            SpeedMode.NORMAL -> delay(ACTION_DELAY)
+            SpeedMode.FAST -> delay(ACTION_DELAY / 2)
+        }
     }
 
     private fun resetCard() {
@@ -219,3 +228,9 @@ class GameEndState(
     val winner: Player,
     val leaderboard: Leaderboard,
 )
+
+enum class SpeedMode {
+    IMMEDIATE,
+    NORMAL,
+    FAST,
+}
