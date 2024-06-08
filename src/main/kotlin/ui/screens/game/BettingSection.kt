@@ -22,13 +22,13 @@ import ui.Strings
 
 @Composable
 internal fun BettingSection(
-    players: List<Player>,
+    playersState: State<List<Player>>,
     card: State<Card?>,
     onPlayerBet: (Int) -> Unit,
     onPlayerPass: () -> Unit
 ) {
-    println(players)
     // Show betting section only if it's human player's turn
+    val players = playersState.value
     val humanPlayer = players.find { it.isCurrentPlayer && it.isHuman }
     if (humanPlayer != null && humanPlayer.bet == null && card.value != null) {
         val highestBet = players.getHighestBetInCoins()
@@ -73,8 +73,6 @@ private fun BetInputField(
                     IconText("+")
                 }
             }
-        }
-        if (state.canBet) {
             Column {
                 Button(modifier = Modifier.fillMaxWidth(),
                     onClick = {
@@ -123,7 +121,7 @@ private fun IconText(text: String) {
 }
 
 @Composable
-private fun rememberBetInputStateHolder(minBet: Int, maxBet: Int) = remember {
+private fun rememberBetInputStateHolder(minBet: Int, maxBet: Int) = remember(minBet, maxBet) {
     BetInputStateHolder(minBet, maxBet)
 }
 

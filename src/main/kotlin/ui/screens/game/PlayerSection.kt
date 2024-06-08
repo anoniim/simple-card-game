@@ -53,7 +53,7 @@ internal fun PlayerSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            HumanPlayerView(players, card, onPlayerBet, onPlayerPass)
+            HumanPlayerView(playersState, card, onPlayerBet, onPlayerPass)
             PlayerView(players[2])
         }
     }
@@ -61,13 +61,13 @@ internal fun PlayerSection(
 
 @Composable
 fun HumanPlayerView(
-    players: List<Player>,
+    players: State<List<Player>>,
     card: State<Card?>,
     onPlayerBet: (Int) -> Unit,
     onPlayerPass: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        PlayerView(players[3])
+        PlayerView(players.value[3])
         BettingSection(players, card, onPlayerBet, onPlayerPass)
     }
 }
