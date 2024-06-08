@@ -15,3 +15,4 @@ plugins {
 
 rootProject.name = "simple-card-game"
 include("game")
+include("ml-training")
