@@ -1,5 +1,4 @@
 import engine.CardDeck
-import engine.GamePrefs
 import engine.GameSettings
 import engine.player.PlayerFactory
 import engine.rating.EloRatingSystem

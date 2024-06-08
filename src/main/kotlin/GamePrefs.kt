@@ -1,5 +1,4 @@
-package engine
-
+import engine.GameDifficulty
 import engine.rating.Leaderboard
 import java.util.prefs.Preferences
 

@@ -3,7 +3,7 @@ package ui
 import GameEngine
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
-import engine.GamePrefs
+import GamePrefs
 import engine.player.Player
 import org.koin.java.KoinJavaComponent.get
 import ui.screens.game.GameScreen

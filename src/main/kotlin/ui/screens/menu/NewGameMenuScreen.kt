@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import engine.GameDifficulty
-import engine.GamePrefs
+import GamePrefs
 import org.koin.java.KoinJavaComponent.get
 import ui.AppLocale
 import ui.Strings
