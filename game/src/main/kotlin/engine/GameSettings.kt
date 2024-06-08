@@ -2,6 +2,7 @@ package engine
 
 import kotlinx.serialization.Serializable
 
+@Suppress("PLUGIN_IS_NOT_ENABLED") // Plugin is enabled in the main module where this class is actually serialized
 @Serializable
 data class GameSettings(
     val startingCoins: Int,
