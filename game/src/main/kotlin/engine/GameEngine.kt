@@ -111,7 +111,7 @@ class GameEngine(
 
     private suspend fun pause() {
         when(speedMode) {
-            SpeedMode.IMMEDIATE -> return
+            SpeedMode.INSTANTANEOUS -> return
             SpeedMode.NORMAL -> delay(ACTION_DELAY)
             SpeedMode.FAST -> delay(ACTION_DELAY / 2)
         }
@@ -230,7 +230,7 @@ class GameEndState(
 )
 
 enum class SpeedMode {
-    IMMEDIATE,
+    INSTANTANEOUS,
     NORMAL,
     FAST,
 }
