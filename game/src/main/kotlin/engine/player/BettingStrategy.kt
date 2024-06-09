@@ -68,9 +68,11 @@ abstract class RandomPlusOneBettingStrategy(
         if (cardValue >= goalScore - player.score && highestPossibleBet > highestBet) {
             return CoinBet(highestPossibleBet)
         }
+        // If the player has only one coin, bet it
+        if (highestPossibleBet == 1) return CoinBet(1)
         // If this is the first bet, pick a random bet
         if (highestBet == 0) {
-            val until = randomUntil(highestPossibleBet)
+            val until = randomUntil(highestPossibleBet) + 1 // +1 because until is exclusive
             val randomBet = Random.nextInt(lowestPossibleBet, until)
             return CoinBet(randomBet)
         }
@@ -84,15 +86,17 @@ abstract class RandomPlusOneBettingStrategy(
 }
 
 class HighestRandomPlusOneBettingStrategy(goalScore: Int) : RandomPlusOneBettingStrategy(goalScore) {
-    override fun randomUntil(highestPossibleBet: Int): Int = highestPossibleBet + 1
+    override fun randomUntil(highestPossibleBet: Int): Int = highestPossibleBet
 }
 
 class ReasonableRandomPlusOneBettingStrategy(goalScore: Int) : RandomPlusOneBettingStrategy(goalScore) {
-    override fun randomUntil(highestPossibleBet: Int): Int = 3 * (highestPossibleBet + 1) / 4
+    override fun randomUntil(highestPossibleBet: Int): Int = 3 * highestPossibleBet / 4
 }
 
 class ConservativeRandomPlusOneBettingStrategy(goalScore: Int) : RandomPlusOneBettingStrategy(goalScore) {
-    override fun randomUntil(highestPossibleBet: Int): Int = highestPossibleBet / 2
+    override fun randomUntil(highestPossibleBet: Int): Int {
+        return highestPossibleBet / 2
+    }
 }
 
 class ManualBettingStrategy : BettingStrategy {
@@ -134,7 +138,7 @@ class HighStandardBettingStrategy(
     private val minCardValue: Int,
     takeFactor: Double,
     private val goalScore: Int,
-) : StandardBettingStrategy(takeFactor, goalScore){
+) : StandardBettingStrategy(takeFactor, goalScore) {
     override fun generateBet(cardValue: Int, players: List<Player>, player: Player): Bet {
         val highestBet = players.getHighestBetInCoins()
         val coins = player.coins
