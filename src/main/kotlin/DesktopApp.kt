@@ -3,7 +3,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import org.koin.core.context.startKoin
-import ui.App
+import ui.AppComposable
 
 fun main() = application {
     startKoin {
@@ -14,6 +14,6 @@ fun main() = application {
         state = WindowState(width = 960.dp, height = 540.dp),
         onCloseRequest = ::exitApplication
     ) {
-        App()
+        AppComposable()
     }
 }

@@ -25,7 +25,7 @@ sealed class NavigationState {
 
 @Composable
 @Preview
-fun App() {
+fun AppComposable() {
     var locale by remember { mutableStateOf(Locale.getDefault()) }
     CompositionLocalProvider(AppLocale provides locale) {
         AppTheme {
