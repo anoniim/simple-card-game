@@ -47,7 +47,7 @@ class GameEngine(
     }
 
     private suspend fun executeAiPlayerMoves() {
-        while (!players.value.getCurrentPlayer().isHuman) {
+        while (!players.value.getCurrentPlayer().isHuman && gameEndState.value == null) {
             println("AI player's turn")
             placeBetForAiPlayer(players.value.getCurrentPlayer())
             pause()
@@ -74,6 +74,10 @@ class GameEngine(
     }
 
     private suspend fun progress() {
+        if (gameEndState.value != null) {
+            println("Game has ended")
+            return
+        }
         if (currentRound.haveAllPlayersPlayed()) {
             pause()
             // All players have played in this round, evaluate this round
