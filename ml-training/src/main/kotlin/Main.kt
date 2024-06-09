@@ -11,6 +11,8 @@ import engine.player.Player
 import engine.player.PlayerFactory
 import engine.rating.EloRatingSystem
 import engine.rating.Leaderboard
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -20,23 +22,47 @@ fun main() {
     println("Let's do some ML training!")
     val game = createNewGameEngine("CP1")
     runBlocking {
-        val cardFlow = game.card
-        val playersFlow = game.players
-        val gameEndStateFlow = game.gameEndState
-        val gameStateFlow = combine(cardFlow, playersFlow, gameEndStateFlow) { card, players, gameEndState ->
-            GameState(players, card, gameEndState)
-        }
+        val gameStateFlow = game.getGameStateFlow()
+
         println("Setting collection")
-        launch {
+        val stateCollectionJob = launch {
             gameStateFlow.collect { gameState ->
                 println("Game state: $gameState")
+                step(gameState, game)
             }
         }
         println("Starting game")
         game.startGame()
 
+        while (game.gameEndState.value == null) {
+            println("Game is not over yet")
+            delay(10)
+        }
+
+        println("Game is over NOW")
+        stateCollectionJob.cancel()
     }
     println("done")
+}
+
+private fun GameEngine.getGameStateFlow(): Flow<GameState> {
+    val cardFlow = card
+    val playersFlow = players
+    val gameEndStateFlow = gameEndState
+
+    return combine(cardFlow, playersFlow, gameEndStateFlow) { card, players, gameEndState ->
+        GameState(players, card, gameEndState)
+    }
+}
+
+private suspend fun step(gameState: GameState, game: GameEngine) {
+    val player = gameState.players.find { it.isHuman } ?: throw IllegalStateException("Human player not found")
+    if (player.isHuman && player.isCurrentPlayer) {
+        println("Human player's turn")
+        val bet = player.generateBet(gameState.card!!.points, gameState.players)
+        println("Human player's bet: $bet")
+        game.placeBetForHumanPlayer(bet)
+    }
 }
 
 private fun createNewGameEngine(modelName: String): GameEngine {
@@ -46,7 +72,7 @@ private fun createNewGameEngine(modelName: String): GameEngine {
     val sounds = Sounds(NoOpSoundPlayer())
     val players = PlayerFactory(settings).createPlayers(modelName)
     return GameEngine(players, cardDeck, settings, ratingSystem, sounds,
-        speedMode = SpeedMode.FAST)
+        speedMode = SpeedMode.INSTANTANEOUS)
 }
 
 private data class GameState(
