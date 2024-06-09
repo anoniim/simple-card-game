@@ -42,11 +42,13 @@ class GameEngine(
             executeAiPlayerMoves()
         } else {
             // Human player's turn
+            println("Human player's turn")
         }
     }
 
     private suspend fun executeAiPlayerMoves() {
         while (!players.value.getCurrentPlayer().isHuman) {
+            println("AI player's turn")
             placeBetForAiPlayer(players.value.getCurrentPlayer())
             pause()
             progress()
