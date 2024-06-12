@@ -19,6 +19,7 @@ build/
 .idea/tasks.xml
 .idea/misc.xml
 .idea/usage.statistics.xml
+.idea/uiDesigner.xml
 *.iws
 *.iml
 *.ipr
