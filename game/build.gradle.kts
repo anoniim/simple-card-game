@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "net.solvetheriddle.cardgame"
-version = "1.0-SNAPSHOT"
+version = project.properties["applicationVersion"] as String
 
 repositories {
     mavenCentral()

@@ -30,7 +30,7 @@ This is called "passing".
 * Settings screen (language, background music)
 * Optimize for Windows
 * Compile for mobile platforms
-* Animations (screen transitions, UI element transformations
+* Animations (screen transitions, UI element transformations)
 * Very hard difficulty level (deep learning AI)
 * Local multiplayer (hot seat)
 * Global multiplayer 
@@ -109,4 +109,16 @@ else (no)
 endif
  
 @enduml
+```
+
+# How to build and run
+
+Build a fat JAR with Gradle
+```
+./gradlew shadowJar
+```
+
+and run it with Java
+```
+java -jar build/libs/simple-card-game-[version]-all.jar
 ```

@@ -4,21 +4,28 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization") version "1.9.0"
     id("org.jetbrains.compose") version("1.6.1")
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "net.solvetheriddle.cardgame"
-version = "1.0-SNAPSHOT"
+version = project.properties["applicationVersion"] as String
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "DesktopAppKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
             packageName = "simple-card-game"
-            packageVersion = "1.0.0"
+            packageVersion = project.properties["applicationVersion"] as String
 //            icon("src/main/resources/icon.png") // Not supported by Compose yet
         }
+    }
+}
+
+tasks.shadowJar {
+    manifest {
+        attributes["Main-Class"] = "DesktopAppKt"
     }
 }
 
