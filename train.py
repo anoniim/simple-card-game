@@ -34,6 +34,9 @@ model = keras.Sequential([
     layers.Dense(64, activation='relu'),
     layers.Dense(action_size)  # Output layer with number of actions
 ])
+
+
+# Set decaying epsilon-greedy parameters
 model.compile(loss=losses.MeanSquaredError(), optimizer=optimizers.Adam())
 epsilon = 1.0 # Initial epsilon
 epsilon_min = 0.01 # Minimum epsilon
@@ -42,8 +45,11 @@ epsilon_decay = 0.995 # Decay rate
 
 # Set up replay memory and target model
 replay_memory = []
+batch_size = 16
 target_model = keras.models.clone_model(model)
 target_model.set_weights(model.get_weights())
+target_update_frequency = 20
+gamma = 0.95  # Discount factor (for future rewards)
 
 
 # Training loop
@@ -96,4 +102,4 @@ for episode in range(num_episodes):
 
 
 # Save the trained model
-model.save("card_game_dqn_model")
+model.save("card_game_dqn_model.keras")
