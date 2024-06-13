@@ -108,7 +108,8 @@ class GameEngine(
     private fun updateLog(roundWinner: Player?) {
         log.add(
             RoundLog(
-                players.value.map { it.bet ?: throw IllegalStateException("All players should have placed bets at this point but ${it.name} hasn't") },
+                card.value?.points ?: throw IllegalStateException("No card when updating log"),
+                players.value.map { it.bet ?: throw IllegalStateException("${it.name} found with no bet when updating log") },
                 roundWinner
             )
         )
@@ -234,6 +235,7 @@ class GameEngine(
     }
 
     data class RoundLog(
+        val cardValue: Int,
         val bets: List<Bet>,
         val roundWinner: Player?,
     )
