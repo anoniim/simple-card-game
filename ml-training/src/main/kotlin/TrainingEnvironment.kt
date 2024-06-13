@@ -33,6 +33,7 @@ class TrainingEnvironment {
         game = createNewGameEngine(modelName)
         return runBlocking {
             game.startGame()
+            updateActionSpace()
             game.getGameState()
         }.toStateArray()
     }
@@ -50,7 +51,7 @@ class TrainingEnvironment {
     }
 
     @Suppress("unused") // Called by Py4J
-    fun step(actionIndex: Int): Triple<List<Int>, Int, Boolean> {
+    fun step(actionIndex: Int): List<Any> {
         val newState = runBlocking {
             game.placeBetForHumanPlayer(validActions[actionIndex])
             game.getGameState()
@@ -59,7 +60,7 @@ class TrainingEnvironment {
         val gameStateArray = game.getGameState().toStateArray()
         val reward = calculateReward(newState)
         val gameOver = newState.gameEndState != null
-        return Triple(gameStateArray, reward, gameOver) // TODO create object for this return type
+        return listOf(gameStateArray, reward, gameOver) // TODO create object for this return type
     }
 
     private fun calculateReward(newState: GameState): Int {
@@ -86,7 +87,7 @@ class TrainingEnvironment {
     }
 
     private fun createNewGameEngine(modelName: String): GameEngine {
-        val settings = GameSettings.forDifficulty(GameDifficulty.EASY)
+        val settings = GameSettings.forDifficulty(GameDifficulty.HARD)
         val cardDeck = CardDeck(settings.numOfCardDecks)
         val ratingSystem = EloRatingSystem(Leaderboard(emptyMap()))
         val sounds = Sounds(NoOpSoundPlayer())
