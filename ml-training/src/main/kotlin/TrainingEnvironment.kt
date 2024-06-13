@@ -24,8 +24,8 @@ class TrainingEnvironment {
     @Suppress("unused") // Called by Py4J
     val gameStateArraySize = 13
 
-    private lateinit var game: GameEngine
-    private lateinit var validActions: List<Bet>
+    private lateinit var game: GameEngine // Initialized in reset()
+    private lateinit var validActions: List<Bet> // Initialized in reset()
 
 
     @Suppress("unused") // Called by Py4J
