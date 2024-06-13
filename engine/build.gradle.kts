@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm")
 }
 
-group = "net.solvetheriddle.cardgame"
+group = "net.solvetheriddle.cardgame.engine"
 version = project.properties["applicationVersion"] as String
 
 repositories {

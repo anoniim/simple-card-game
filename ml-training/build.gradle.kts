@@ -17,7 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":game"))
+    implementation(project(":engine"))
+
     implementation(files("../venv/share/py4j/py4j0.10.9.7.jar"))
 
     testImplementation(kotlin("test"))
