@@ -35,6 +35,9 @@ model = keras.Sequential([
     layers.Dense(action_size)  # Output layer with number of actions
 ])
 model.compile(loss=losses.MeanSquaredError(), optimizer=optimizers.Adam())
+epsilon = 1.0 # Initial epsilon
+epsilon_min = 0.01 # Minimum epsilon
+epsilon_decay = 0.995 # Decay rate
 
 
 # Set up replay memory and target model
@@ -87,6 +90,9 @@ for episode in range(num_episodes):
         # Update target network
         if episode % target_update_frequency == 0:
             target_model.set_weights(model.get_weights())
+
+        # Decay epsilon after each episode:
+        epsilon = max(epsilon * epsilon_decay, epsilon_min)
 
 
 # Save the trained model
