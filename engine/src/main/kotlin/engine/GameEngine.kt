@@ -22,6 +22,8 @@ class GameEngine(
 ) {
 
     val goalScore: Int = settings.goalScore
+    private val log = mutableListOf<RoundLog>()
+    fun getLog(): List<RoundLog> = log
 
     private val _players = MutableStateFlow(players)
     val players: StateFlow<List<Player>> = _players.asStateFlow()
@@ -81,7 +83,8 @@ class GameEngine(
         if (currentRound.haveAllPlayersPlayed()) {
             pause()
             // All players have played in this round, evaluate this round
-            updateRoundWinningPlayer()
+            val roundWinner = updateRoundWinningPlayer()
+            updateLog(roundWinner)
             pause()
 
             // Is there a winner?
@@ -102,6 +105,15 @@ class GameEngine(
         }
     }
 
+    private fun updateLog(roundWinner: Player?) {
+        log.add(
+            RoundLog(
+                players.value.map { it.bet ?: throw IllegalStateException("All players should have placed bets at this point but ${it.name} hasn't") },
+                roundWinner
+            )
+        )
+    }
+
     private fun getOverallWinner() = players.value.find { it.score >= settings.goalScore }
 
     private suspend fun progressToNextRound() {
@@ -116,7 +128,7 @@ class GameEngine(
     }
 
     private suspend fun pause() {
-        when(speedMode) {
+        when (speedMode) {
             SpeedMode.INSTANTANEOUS -> return
             SpeedMode.NORMAL -> delay(ACTION_DELAY)
             SpeedMode.FAST -> delay(ACTION_DELAY / 2)
@@ -150,9 +162,10 @@ class GameEngine(
         else -> 0
     }
 
-    private fun updateRoundWinningPlayer() {
+    private fun updateRoundWinningPlayer(): Player? {
         if (players.value.map(Player::bet).all { it is Pass }) {
             // No bets placed, no winner, no need to update scores
+            return null
         } else {
             val roundWinner = getRoundWinner() ?: throw IllegalStateException("No bets placed")
             val winningBet = (roundWinner.bet as CoinBet).coins
@@ -163,6 +176,7 @@ class GameEngine(
             currentRound.roundWinner = players.value.indexOf(roundWinner)
             _players.value = playersWithScore
             sounds.roundWinner(roundWinner, winningPoints)
+            return roundWinner
         }
     }
 
@@ -218,6 +232,11 @@ class GameEngine(
             )
         }
     }
+
+    data class RoundLog(
+        val bets: List<Bet>,
+        val roundWinner: Player?,
+    )
 }
 
 fun List<Player>.getHighestBetInCoins(): Int {
