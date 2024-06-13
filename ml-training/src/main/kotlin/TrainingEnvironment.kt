@@ -19,6 +19,8 @@ private const val ACTION_PASS = 0
 
 class TrainingEnvironment {
 
+    @Suppress("MemberVisibilityCanBePrivate")  // Called by Py4J
+    val modelName = "CP1"
     @Suppress("unused") // Called by Py4J
     val gameStateArraySize = 13
 
@@ -28,7 +30,7 @@ class TrainingEnvironment {
 
     @Suppress("unused") // Called by Py4J
     fun reset(): List<Int> {
-        game = createNewGameEngine("CP1")
+        game = createNewGameEngine(modelName)
         return runBlocking {
             game.startGame()
             game.getGameState()
