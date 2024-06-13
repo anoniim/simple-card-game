@@ -4,7 +4,7 @@ import py4j.GatewayServer
 
 
 fun main() {
-    val gatewayServer = GatewayServer(TrainingEntryPoint())
+    val gatewayServer = GatewayServer(TrainingEnvironment())
     gatewayServer.start()
     println("Gateway Server Started")
 }
