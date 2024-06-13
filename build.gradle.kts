@@ -47,6 +47,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.material3)
 
+    // Koin
     val koinVersion = "3.5.3"
     implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
     implementation("io.insert-koin:koin-core")

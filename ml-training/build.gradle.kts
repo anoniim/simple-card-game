@@ -19,8 +19,10 @@ repositories {
 dependencies {
     implementation(project(":engine"))
 
+    // Py4J to communicate with Python
     implementation(files("../venv/share/py4j/py4j0.10.9.7.jar"))
 
+    // Test
     testImplementation(kotlin("test"))
 }
 
