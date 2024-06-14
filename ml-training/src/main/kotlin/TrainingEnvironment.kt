@@ -15,7 +15,7 @@ import kotlinx.coroutines.runBlocking
 import mocks.NoOpSoundPlayer
 
 private const val ACTION_SPACE_SIZE = 15
-private const val INVALID_ACTION = -2
+private const val INVALID_ACTION = -1
 private const val NO_ACTION = -1
 private const val ACTION_PASS = 0
 
@@ -43,7 +43,7 @@ class TrainingEnvironment {
     fun getActionSpaceSize() = ACTION_SPACE_SIZE
 
     @Suppress("unused") // Called by Py4J
-    fun getValidActions() = List(ACTION_SPACE_SIZE) { it }.map { action ->
+    fun getActions() = List(ACTION_SPACE_SIZE) { it }.map { action ->
         when (action) {
             0 -> ACTION_PASS
             in validBids -> action

@@ -61,16 +61,17 @@ for episode in range(num_episodes):
 
     while not done:
         # Choose action (e.g., epsilon-greedy)
-        valid_actions = np.array(env.getValidActions(), dtype=np.int32)
+        actions = np.array(env.getActions(), dtype=np.int32)
+        action_mask = (actions != -1).astype(np.float32)  # Mask for valid actions
+
         # Epsilon-greedy policy can't be in use until masking works as expected
-        # if random.random() < epsilon:
-        #     action = np.random.choice(valid_actions)
-        # else:
-        action_mask = np.zeros(action_size)
-        action_mask[valid_actions] = 1
-        q_values = model.predict(state.reshape(1, -1))
-        masked_q_values = np.isin(np.arange(action_size), valid_actions)
-        action = np.argmax(masked_q_values)
+        if random.random() < epsilon:
+            action = np.random.choice(actions[action_mask == 1]) # Exploration
+        else:
+            # Apply mask to Q-values before argmax for exploitation
+            q_values = model.predict(state.reshape(1, -1))
+            masked_q_values = q_values * action_mask
+            action = np.argmax(masked_q_values)
 
         # Take action and observe
         next_state, reward, done = env.step(int(action))
@@ -88,7 +89,7 @@ for episode in range(num_episodes):
             target_qs = (rewards + gamma * np.amax(target_model.predict(np.array(next_states)), axis=1) * (1 - np.array(dones))).reshape(-1, 1)
 
             # Apply masking to the target Q-values for invalid actions
-            valid_actions_batch = [env.getValidActions() for _ in range(batch_size)]  
+            valid_actions_batch = [env.getActions() for _ in range(batch_size)]  
             masks = np.array([np.isin(np.arange(action_size), valid_actions) for valid_actions in valid_actions_batch])
             target_qs = target_qs * masks
             
