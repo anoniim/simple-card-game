@@ -14,6 +14,8 @@ import getHighestBetInCoins
 import kotlinx.coroutines.runBlocking
 import mocks.NoOpSoundPlayer
 
+private const val ACTION_SPACE_SIZE = 15
+private const val INVALID_ACTION = -2
 private const val NO_ACTION = -1
 private const val ACTION_PASS = 0
 
@@ -25,8 +27,7 @@ class TrainingEnvironment {
     val gameStateArraySize = 13
 
     private lateinit var game: GameEngine // Initialized in reset()
-    private lateinit var validActions: List<Bet> // Initialized in reset()
-
+    private lateinit var validBids: IntRange // Initialized in reset()
 
     @Suppress("unused") // Called by Py4J
     fun reset(): List<Int> {
@@ -39,21 +40,21 @@ class TrainingEnvironment {
     }
 
     @Suppress("unused") // Called by Py4J
-    fun getAllActions(): List<Int> = List(15) { it }
-
+    fun getActionSpaceSize() = ACTION_SPACE_SIZE
 
     @Suppress("unused") // Called by Py4J
-    fun getValidActions(): List<Int> = validActions.map {
-        when (it) {
-            is Pass -> ACTION_PASS
-            is CoinBet -> it.coins
+    fun getValidActions() = List(ACTION_SPACE_SIZE) { it }.map { action ->
+        when (action) {
+            0 -> ACTION_PASS
+            in validBids -> action
+            else -> INVALID_ACTION
         }
     }
 
     @Suppress("unused") // Called by Py4J
-    fun step(actionIndex: Int): List<Any> {
+    fun step(action: Int): List<Any> {
         val newState = runBlocking {
-            game.placeBetForHumanPlayer(validActions[actionIndex])
+            game.placeBetForHumanPlayer(action.toBid())
             game.getGameState()
         }
         updateActionSpace()
@@ -78,8 +79,7 @@ class TrainingEnvironment {
         val players = game.players
         val humanPlayer = players.value.find { it.isHuman } ?: throw IllegalStateException("Human player not found")
         val highestBetInCoins = players.value.getHighestBetInCoins()
-        val coinBids = IntRange(highestBetInCoins + 1, humanPlayer.coins).map { CoinBet(it) }
-        validActions = listOf(Pass) + coinBids
+        validBids = IntRange(highestBetInCoins + 1, humanPlayer.coins)
     }
 
     private fun GameEngine.getGameState(): GameState {
@@ -97,6 +97,8 @@ class TrainingEnvironment {
             speedMode = SpeedMode.INSTANTANEOUS
         )
     }
+
+    private fun Int.toBid() = if (this == ACTION_PASS) Pass else CoinBet(this)
 
 //    @Suppress("unused") // Called by Py4J
 //    fun start() {
