@@ -140,7 +140,9 @@ class GameEngine(
 
     private fun drawNewCard() {
         sounds.drawCard()
-        _card.value = cardDeck.drawCard()
+        val newCard = cardDeck.drawCard()
+        println(" - Card: ${newCard.displayValue}")
+        _card.value = newCard
     }
 
     private fun setNewFirstPlayer() {

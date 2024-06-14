@@ -67,7 +67,7 @@ fun List<Player>.allPlusOneCoin(): MutableList<Player> {
 
 fun List<Player>.placeBet(player: Player, bet: Bet): List<Player> {
     return if (player.isValid(bet)) {
-        println("Player ${player.name} bets $bet")
+        println("${player.name} bids $bet")
         toMutableList().apply {
             set(indexOf(player), player.copy(bet = bet))
         }

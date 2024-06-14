@@ -35,7 +35,7 @@ class Leaderboard(
     }
 
     fun updateLoserRating(loserName: String, loserRatingDelta: Double) {
-        println("Loser's rating update: $loserName $loserRatingDelta")
+        println("Loser's rating: $loserName $loserRatingDelta")
         val currentStats = playerStats(loserName)
         val updatedStats = currentStats.copy(
             rating = currentStats.rating + loserRatingDelta,
@@ -44,7 +44,7 @@ class Leaderboard(
     }
 
     fun updateWinnerRating(winnerName: String, winnerRatingDelta: Double) {
-        println("Winner's rating update: $winnerName $winnerRatingDelta")
+        println("Winner's rating: $winnerName $winnerRatingDelta\n")
         val currentStats = playerStats(winnerName)
         val updatedStats = currentStats.copy(
             rating = currentStats.rating + winnerRatingDelta,
