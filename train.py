@@ -23,15 +23,16 @@ except Py4JNetworkError as e:
 
 # Define state and action space
 state_size = env.getGameStateArraySize()
-action_size = len([int(x) for x in env.getAllActions()])
+action_size = env.getActionSpaceSize()
 
 
 # Build DNQ model
 model = keras.Sequential([
     layers.Input(shape=(state_size,)),  # Input layer with state size
-    # TODO Add masking layer
+    layers.Masking(mask_value=-1),  # Masking layer to handle variable-length input
     layers.Dense(64, activation='relu'),
     layers.Dense(64, activation='relu'),
+    # layers.LSTM(32), # Experiment with LSTM layer (hidden state that summarizes the information from prevous rounds)
     layers.Dense(action_size)  # Output layer with number of actions
 ])
 
@@ -45,7 +46,7 @@ epsilon_decay = 0.995 # Decay rate
 
 # Set up replay memory and target model
 replay_memory = []
-batch_size = 16
+batch_size = 6
 target_model = keras.models.clone_model(model)
 target_model.set_weights(model.get_weights())
 target_update_frequency = 20
@@ -53,7 +54,7 @@ gamma = 0.95  # Discount factor (for future rewards)
 
 
 # Training loop
-num_episodes = 100
+num_episodes = 20
 for episode in range(num_episodes):
     state = np.array(env.reset(), dtype=np.int32)  # Convert state to NumPy array
     done = False
@@ -61,11 +62,15 @@ for episode in range(num_episodes):
     while not done:
         # Choose action (e.g., epsilon-greedy)
         valid_actions = np.array(env.getValidActions(), dtype=np.int32)
-        action = valid_actions[0]
+        # Epsilon-greedy policy can't be in use until masking works as expected
         # if random.random() < epsilon:
         #     action = np.random.choice(valid_actions)
         # else:
-        #     action = np.argmax(model.predict(state.reshape(1, -1)) * np.isin(np.arange(action_size), valid_actions))
+        action_mask = np.zeros(action_size)
+        action_mask[valid_actions] = 1
+        q_values = model.predict(state.reshape(1, -1))
+        masked_q_values = np.isin(np.arange(action_size), valid_actions)
+        action = np.argmax(masked_q_values)
 
         # Take action and observe
         next_state, reward, done = env.step(int(action))
@@ -80,16 +85,16 @@ for episode in range(num_episodes):
             states, actions, rewards, next_states, dones = zip(*minibatch)
 
             # Calculate target Q-values using the target model
-            target_qs = rewards + gamma * np.amax(target_model.predict(np.array(next_states)), axis=1) * (1 - np.array(dones))
+            target_qs = (rewards + gamma * np.amax(target_model.predict(np.array(next_states)), axis=1) * (1 - np.array(dones))).reshape(-1, 1)
 
-            # # Apply masking to the target Q-values for invalid actions
-            # valid_actions_batch = [env.getValidActions() for _ in range(batch_size)]  
-            # masks = np.array([np.isin(np.arange(action_size), valid_actions) for valid_actions in valid_actions_batch])
-            # target_qs = target_qs * masks
+            # Apply masking to the target Q-values for invalid actions
+            valid_actions_batch = [env.getValidActions() for _ in range(batch_size)]  
+            masks = np.array([np.isin(np.arange(action_size), valid_actions) for valid_actions in valid_actions_batch])
+            target_qs = target_qs * masks
             
             target_f = model.predict(np.array(states))
             for i, action in enumerate(actions):
-                target_f[i][action] = target_qs[i]  # Set target for the chosen action
+                target_f[i][action] = target_qs[i][0]  # Set target for the chosen action
 
             model.fit(np.array(states), target_f, epochs=1, verbose=0)
 
