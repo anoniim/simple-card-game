@@ -14,6 +14,8 @@ import getHighestBetInCoins
 import kotlinx.coroutines.runBlocking
 import mocks.NoOpSoundPlayer
 
+private val gameDifficulty = GameDifficulty.EASY
+
 private const val ACTION_SPACE_SIZE = 15
 private const val INVALID_ACTION = -1
 private const val NO_ACTION = -1
@@ -69,7 +71,7 @@ class TrainingEnvironment {
         val playerWonLastRound = lastRound.roundWinner?.isHuman == true
 
         // Reward for winning losing the game
-        if (newState.gameEndState != null) return if (playerWonLastRound) 100 else -100
+        if (newState.gameEndState != null) return if (playerWonLastRound) newState.goalScore else -newState.goalScore
 
         // Reward for winning losing the round
         return if(playerWonLastRound) lastRound.cardValue + 1 else 1
@@ -87,7 +89,7 @@ class TrainingEnvironment {
     }
 
     private fun createNewGameEngine(modelName: String): GameEngine {
-        val settings = GameSettings.forDifficulty(GameDifficulty.HARD)
+        val settings = GameSettings.forDifficulty(gameDifficulty)
         val cardDeck = CardDeck(settings.numOfCardDecks)
         val ratingSystem = EloRatingSystem(Leaderboard(emptyMap()))
         val sounds = Sounds(NoOpSoundPlayer())
