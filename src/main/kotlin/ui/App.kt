@@ -31,7 +31,9 @@ fun AppComposable() {
         AppTheme {
             NavigationContent { newLocale -> locale = newLocale }
             val sounds = remember { get<Sounds>(Sounds::class.java) }
-            sounds.backgroundMusic()
+            LaunchedEffect(sounds) {
+                sounds.backgroundMusic()
+            }
         }
     }
 }
