@@ -23,12 +23,16 @@ dependencies {
     implementation(files("../venv/share/py4j/py4j0.10.9.7.jar"))
 
     // Test
-    testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(17)
 }
