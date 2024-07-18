@@ -21,6 +21,9 @@ private const val INVALID_ACTION = -1
 private const val NO_ACTION = -1
 private const val ACTION_PASS = 0
 
+private const val gameEndRewardMultiplier = 100
+private const val ratioBonus = 5
+
 class TrainingEnvironment {
 
     @Suppress("MemberVisibilityCanBePrivate")  // Called by Py4J
@@ -72,27 +75,28 @@ class TrainingEnvironment {
 
         // Reward for winning/losing the game
         if (newState.gameEndState != null) {
-            val gameEndReward = 2 * newState.goalScore.toFloat()
+            val gameEndReward = gameEndRewardMultiplier * newState.goalScore.toFloat()
             return if (playerWonLastRound) gameEndReward else -gameEndReward
         }
 
         // Reward for winning/losing the round
-        return if(playerWonLastRound) {
+        return if (playerWonLastRound) {
             val cardValue = lastRound.cardValue.toFloat()
             val cardPrice = (lastRound.roundWinner?.bet as CoinBet).coins.toFloat()
             val valuePriceRatio = cardValue / cardPrice
-            (cardValue + 1) * valuePriceRatio
+            cardValue + ratioBonus * valuePriceRatio
         } else {
             // Penalize for losing the round (low reward)
             0.5f
         }
     }
 
-    private fun updateActionSpace() {
+    private fun updateActionSpace() { // TODO Can this generate a list with -1 as a valid action?
         val players = game.players
         val humanPlayer = players.value.find { it.isHuman } ?: throw IllegalStateException("Human player not found")
-        val highestBetInCoins = players.value.getHighestBetInCoins()
-        validBids = IntRange(highestBetInCoins + 1, humanPlayer.coins)
+        val highestBidInCoins = players.value.getHighestBetInCoins()
+        val lowestPossibleBid = highestBidInCoins + 1
+        validBids = if (lowestPossibleBid < humanPlayer.coins) IntRange.EMPTY else IntRange(lowestPossibleBid, humanPlayer.coins)
     }
 
     private fun GameEngine.getGameState(): GameState {
@@ -111,55 +115,11 @@ class TrainingEnvironment {
         )
     }
 
-    private fun Int.toBid() = if (this == ACTION_PASS) Pass else CoinBet(this)
-
-//    @Suppress("unused") // Called by Py4J
-//    fun start() {
-//        println("Let's do some ML training!")
-//        runBlocking {
-//            val game = createNewGameEngine("CP1")
-//            val gameStateFlow = game.getGameStateFlow()
-//
-//            println("Setting collection")
-//            val stateCollectionJob = launch {
-//                gameStateFlow.collect { gameState ->
-//                    println("Game state: $gameState")
-//                    step(gameState, game)
-//                }
-//            }
-//            println("Starting game")
-//            game.startGame()
-//
-//            while (game.gameEndState.value == null) {
-//                println("Game is not over yet")
-//                delay(10)
-//            }
-//
-//            println("Game is over NOW")
-//            stateCollectionJob.cancel()
-//        }
-//        println("done")
-//    }
-
-//private fun GameEngine.getGameStateFlow(): Flow<GameState> {
-//    val cardFlow = card
-//    val playersFlow = players
-//    val gameEndStateFlow = gameEndState
-//
-//    return combine(cardFlow, playersFlow, gameEndStateFlow) { card, players, gameEndState ->
-//        GameState(players, card, gameEndState)
-//    }
-//}
-//
-//private suspend fun step(gameState: GameState, game: GameEngine) {
-//    val player = gameState.players.find { it.isHuman } ?: throw IllegalStateException("Human player not found")
-//    if (player.isHuman && player.isCurrentPlayer) {
-//        println("Human player's turn")
-//        val bet = player.generateBet(gameState.card!!.points, gameState.players)
-//        println("Human player's bet: $bet")
-//        game.placeBetForHumanPlayer(bet)
-//    }
-//}
+    private fun Int.toBid() = when (this) {
+        INVALID_ACTION -> throw IllegalArgumentException("Tried to bid invalid action ($this)")
+        ACTION_PASS -> Pass
+        else ->  CoinBet(this)
+    }
 }
 
 private data class GameState(
