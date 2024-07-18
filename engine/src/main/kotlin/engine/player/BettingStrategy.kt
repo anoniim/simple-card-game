@@ -68,13 +68,13 @@ abstract class RandomPlusOneBettingStrategy(
         if (cardValue >= goalScore - player.score && highestPossibleBet > highestBet) {
             return CoinBet(highestPossibleBet)
         }
-        // If the player has only one coin, bet it
-        if (highestPossibleBet == 1) return CoinBet(1)
         // If this is the first bet, pick a random bet
         if (highestBet == 0) {
-            val until = randomUntil(highestPossibleBet) + 1 // +1 because until is exclusive
-            val randomBet = Random.nextInt(lowestPossibleBet, until)
-            return CoinBet(randomBet)
+            val until = randomUntil(highestPossibleBet)
+            return if (lowestPossibleBet < until) {
+                val randomBet = Random.nextInt(lowestPossibleBet, until + 1) // until is exclusive
+                CoinBet(randomBet)
+            } else CoinBet(until)
         }
         // Otherwise bet plus one
         return if (lowestPossibleBet <= player.coins) {
