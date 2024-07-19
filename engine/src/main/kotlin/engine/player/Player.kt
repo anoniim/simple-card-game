@@ -1,5 +1,7 @@
 package engine.player
 
+import ENABLE_LOGS
+
 data class Player(
     val id: PlayerId,
     val name: String,
@@ -67,7 +69,7 @@ fun List<Player>.allPlusOneCoin(): MutableList<Player> {
 
 fun List<Player>.placeBet(player: Player, bet: Bet): List<Player> {
     return if (player.isValid(bet)) {
-        println("${player.name} bids $bet")
+        if (ENABLE_LOGS) println("${player.name} bids $bet")
         toMutableList().apply {
             set(indexOf(player), player.copy(bet = bet))
         }

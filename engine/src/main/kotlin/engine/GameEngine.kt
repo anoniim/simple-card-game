@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import net.solvetheriddle.cardgame.Sounds
 
+const val ENABLE_LOGS = false
+
 private const val ACTION_DELAY = 1000L
 
 class GameEngine(
@@ -88,6 +90,7 @@ class GameEngine(
             // Is there a winner?
             val overallWinner = getOverallWinner()
             if (overallWinner != null) {
+                println("Game over, winner: ${overallWinner.name}")
                 sounds.gameOver(overallWinner)
                 val updatedLeaderboard = ratingSystem.updateRatings(players.value, overallWinner)
                 _gameEndState.value = GameEndState(overallWinner, updatedLeaderboard)
@@ -141,7 +144,7 @@ class GameEngine(
     private fun drawNewCard() {
         sounds.drawCard()
         val newCard = cardDeck.drawCard()
-        println(" - Card: ${newCard.displayValue}")
+        if (ENABLE_LOGS) println(" - Card: ${newCard.displayValue}")
         _card.value = newCard
     }
 

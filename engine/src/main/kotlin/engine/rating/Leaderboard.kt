@@ -1,5 +1,7 @@
 package engine.rating
 
+import ENABLE_LOGS
+
 const val DEFAULT_RATING = 1000.0
 
 private const val NAME_DELIMITER = ":"
@@ -35,7 +37,7 @@ class Leaderboard(
     }
 
     fun updateLoserRating(loserName: String, loserRatingDelta: Double) {
-        println("Loser's rating: $loserName $loserRatingDelta")
+        if (ENABLE_LOGS) println("Loser's rating: $loserName $loserRatingDelta")
         val currentStats = playerStats(loserName)
         val updatedStats = currentStats.copy(
             rating = currentStats.rating + loserRatingDelta,
@@ -44,7 +46,7 @@ class Leaderboard(
     }
 
     fun updateWinnerRating(winnerName: String, winnerRatingDelta: Double) {
-        println("Winner's rating: $winnerName $winnerRatingDelta\n")
+        if (ENABLE_LOGS) println("Winner's rating: $winnerName $winnerRatingDelta\n")
         val currentStats = playerStats(winnerName)
         val updatedStats = currentStats.copy(
             rating = currentStats.rating + winnerRatingDelta,
@@ -54,7 +56,7 @@ class Leaderboard(
     }
 
     fun updateRating(player: String, playerRatingDelta: Double) {
-        println("Rating update: $player $playerRatingDelta")
+        if (ENABLE_LOGS) println("Rating update: $player $playerRatingDelta")
         val currentStats = playerStats(player)
         val updatedStats = currentStats.copy(rating = currentStats.rating + playerRatingDelta)
         stats[player] = updatedStats
