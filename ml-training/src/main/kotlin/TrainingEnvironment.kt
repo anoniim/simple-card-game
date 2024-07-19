@@ -91,12 +91,12 @@ class TrainingEnvironment {
         }
     }
 
-    private fun updateActionSpace() { // TODO Can this generate a list with -1 as a valid action?
+    private fun updateActionSpace() {
         val players = game.players
         val humanPlayer = players.value.find { it.isHuman } ?: throw IllegalStateException("Human player not found")
         val highestBidInCoins = players.value.getHighestBetInCoins()
         val lowestPossibleBid = highestBidInCoins + 1
-        validBids = if (lowestPossibleBid < humanPlayer.coins) IntRange.EMPTY else IntRange(lowestPossibleBid, humanPlayer.coins)
+        validBids = if (lowestPossibleBid > humanPlayer.coins) IntRange.EMPTY else IntRange(lowestPossibleBid, humanPlayer.coins)
     }
 
     private fun GameEngine.getGameState(): GameState {
