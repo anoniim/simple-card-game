@@ -21,8 +21,9 @@ private const val INVALID_ACTION = -1
 private const val NO_ACTION = -1
 private const val ACTION_PASS = 0
 
-private const val gameEndRewardMultiplier = 100
+private const val gameEndRewardMultiplier = 10
 private const val ratioBonus = 5
+private const val ratioPenalty = 3
 
 class TrainingEnvironment {
 
@@ -79,15 +80,16 @@ class TrainingEnvironment {
             return if (playerWonLastRound) gameEndReward else -gameEndReward
         }
 
+        val cardValue = lastRound.cardValue.toFloat()
+        val cardPrice = (lastRound.roundWinner?.bet as CoinBet).coins.toFloat()
+        val valuePriceRatio = cardValue / cardPrice
+
         // Reward for winning/losing the round
         return if (playerWonLastRound) {
-            val cardValue = lastRound.cardValue.toFloat()
-            val cardPrice = (lastRound.roundWinner?.bet as CoinBet).coins.toFloat()
-            val valuePriceRatio = cardValue / cardPrice
-            cardValue + ratioBonus * valuePriceRatio
+            cardValue * valuePriceRatio
         } else {
             // Penalize for losing the round (low reward)
-            0.5f
+            -ratioPenalty * valuePriceRatio
         }
     }
 

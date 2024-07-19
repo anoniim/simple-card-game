@@ -55,12 +55,12 @@ replay_memory = []
 batch_size = 16
 target_model = keras.models.clone_model(model)
 target_model.set_weights(model.get_weights())
-target_update_frequency = 50
+target_update_frequency = 20
 gamma = 0.95  # Discount factor (for future rewards)
 
 
 # Training loop
-num_episodes = 100
+num_episodes = 200
 for episode in range(num_episodes):
     if (enable_logs): print(f"Episode {episode + 1}/{num_episodes}")
     # Start a new game
