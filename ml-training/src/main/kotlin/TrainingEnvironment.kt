@@ -13,6 +13,13 @@ import engine.rating.Leaderboard
 import getHighestBetInCoins
 import kotlinx.coroutines.runBlocking
 import mocks.NoOpSoundPlayer
+import py4j.GatewayServer
+
+fun main() {
+    val gatewayServer = GatewayServer(TrainingEnvironment())
+    gatewayServer.start()
+    println("Gateway Server Started")
+}
 
 private val gameDifficulty = GameDifficulty.MEDIUM
 

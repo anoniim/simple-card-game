@@ -8,7 +8,7 @@ version = "1"
 
 tasks.shadowJar {
     manifest {
-        attributes["Main-Class"] = "net.solvetheriddle.cardgame.MainKt"
+        attributes["Main-Class"] = "net.solvetheriddle.cardgame.TrainingEnvironmentKt"
     }
 }
 

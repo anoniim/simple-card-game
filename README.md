@@ -111,7 +111,7 @@ endif
 @enduml
 ```
 
-# How to build and run
+# How to build and run the game
 
 Build a fat JAR with Gradle
 ```
