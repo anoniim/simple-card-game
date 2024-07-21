@@ -93,9 +93,10 @@ class TrainingEnvironment {
 
         // Reward for winning/losing the round
         return if (playerWonLastRound) {
+            // Reward for winning the round based on the value to price ratio of the card the player won
             cardValue * valuePriceRatio
         } else {
-            // Penalize for losing the round (low reward)
+            // Penalize for losing the round based on the value to price ratio of the card the player lost
             -ratioPenalty * valuePriceRatio
         }
     }

@@ -60,7 +60,7 @@ gamma = 0.95  # Discount factor (for future rewards)
 
 
 # Training loop
-num_episodes = 200
+num_episodes = 100
 for episode in range(num_episodes):
     if (enable_logs): print(f"Episode {episode + 1}/{num_episodes}")
     # Start a new game
