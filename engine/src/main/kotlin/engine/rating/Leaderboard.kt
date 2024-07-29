@@ -1,6 +1,7 @@
 package engine.rating
 
 import ENABLE_LOGS
+import kotlinx.serialization.Serializable
 
 const val DEFAULT_RATING = 1000.0
 
@@ -12,7 +13,7 @@ class Leaderboard(
     initialStats: Map<String, PlayerStats>
 ) {
 
-    private val stats: MutableMap<String, PlayerStats> = initialStats.toMutableMap()
+    val stats: MutableMap<String, PlayerStats> = initialStats.toMutableMap()
 
     fun getPlayerRating(playerName: String) = stats[playerName]?.rating ?: DEFAULT_RATING
 
@@ -88,6 +89,7 @@ class Leaderboard(
     }
 }
 
+@Serializable
 data class PlayerStats(
     val rating: Double,
     val totalGames: Int,

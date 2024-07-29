@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 group = "net.solvetheriddle.cardgame.engine"

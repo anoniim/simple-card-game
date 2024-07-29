@@ -33,4 +33,7 @@ val appModule = module {
         val players = playerFactory.createPlayers(playerName)
         GameEngine(players, get(), get(), get(), get())
     }
+    single {
+        LeaderboardRepository()
+    }
 }

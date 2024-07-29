@@ -52,6 +52,12 @@ dependencies {
     implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
     implementation("io.insert-koin:koin-core")
 
+    // Firebase
+    implementation("dev.gitlive:firebase-database:1.13.0")
+
+    // Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+
     // Test
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }

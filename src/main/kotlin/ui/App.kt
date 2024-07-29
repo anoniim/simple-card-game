@@ -4,6 +4,7 @@ import GameEngine
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
 import GamePrefs
+import LeaderboardRepository
 import engine.player.Player
 import net.solvetheriddle.cardgame.Sounds
 import org.koin.java.KoinJavaComponent.get
@@ -42,6 +43,7 @@ fun AppComposable() {
 private fun NavigationContent(onLocaleChange: (Locale) -> Unit) {
     var navigationState by remember { mutableStateOf<NavigationState>(NavigationState.MenuScreen) }
     val prefs = remember { get<GamePrefs>(GamePrefs::class.java) }
+    val leaderboardRepository = remember { get<LeaderboardRepository>(LeaderboardRepository::class.java) }
     val playerName = remember { mutableStateOf(prefs.loadPlayerName()) }
 
     when (val currentNavigationState = navigationState) {
@@ -66,12 +68,16 @@ private fun NavigationContent(onLocaleChange: (Locale) -> Unit) {
 
         is NavigationState.GameScreen -> GameScreen(newGameEngine(),
             exitToMenu = { updatedLeaderboard ->
-                updatedLeaderboard?.let { prefs.saveLeaderboard(it) }
+                updatedLeaderboard?.let {
+                    prefs.saveLeaderboard(it)
+                    leaderboardRepository.update(it)
+                }
                 navigationState = NavigationState.MenuScreen
             },
             announceWinner = {
                 println("WINNER: ${it.winner.name}")
                 prefs.saveLeaderboard(it.leaderboard)
+                leaderboardRepository.update(it.leaderboard)
                 navigationState = NavigationState.WinnerScreen(it.winner)
             })
 
@@ -88,6 +94,18 @@ private fun NavigationContent(onLocaleChange: (Locale) -> Unit) {
             closeLeaderboard = {
                 navigationState = NavigationState.MenuScreen
             })
+    }
+
+    UpdateLeaderboardFromServer(leaderboardRepository, prefs)
+}
+
+@Composable
+private fun UpdateLeaderboardFromServer(leaderboardRepository: LeaderboardRepository, prefs: GamePrefs) {
+    LaunchedEffect(leaderboardRepository) {
+        val currentLeaderboard = prefs.loadLeaderboard()
+        leaderboardRepository.load(currentLeaderboard) { updatedLeaderboard ->
+            prefs.saveLeaderboard(updatedLeaderboard)
+        }
     }
 }
 

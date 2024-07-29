@@ -7,7 +7,7 @@ private const val LEADERBOARD = "leaderboard"
 private const val DIFFICULTY = "difficulty"
 
 class GamePrefs {
-    private val prefs: Preferences = Preferences.userRoot().node(this::class.java.name)
+    private val prefs: Preferences = Preferences.userRoot().node(this::class.java.name) //.also { it.run { clear() } }
 
     fun savePlayerName(playerName: String) = prefs.put(PLAYER_NAME, playerName )
 
