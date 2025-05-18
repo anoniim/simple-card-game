@@ -31,28 +31,37 @@ object JavaXSoundPlayer : SoundPlayer {
     }
 
     private fun createClip(soundFileName: String): Clip {
-        val file = File("src/main/resources/sounds/$soundFileName.wav")
-        val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(file)
+        try {
+            // Try to load the resource as a URL instead of a File
+            val url = JavaXSoundPlayer::class.java.classLoader.getResource("sounds/$soundFileName.wav")
+                ?: throw IllegalArgumentException("Sound file not found: $soundFileName.wav")
 
-        // Get audio format and convert to a standard format that works on all platforms
-        val format = audioInputStream.format
-        val convertedFormat = javax.sound.sampled.AudioFormat(
-            javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED,
-            44100.0f, // Standard sample rate
-            16, // Sample size in bits
-            format.channels,
-            format.channels * 2, // Frame size (channels * sample size in bytes)
-            44100.0f,
-            false // Little endian (works better on Windows)
-        )
+            val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(url)
 
-        // Convert the stream before getting the clip
-        val convertedStream = AudioSystem.getAudioInputStream(convertedFormat, audioInputStream)
+            // Get audio format and convert to a standard format that works on all platforms
+            val format = audioInputStream.format
+            val convertedFormat = javax.sound.sampled.AudioFormat(
+                javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED,
+                44100.0f, // Standard sample rate
+                16, // Sample size in bits
+                format.channels,
+                format.channels * 2, // Frame size (channels * sample size in bytes)
+                44100.0f,
+                false // Little endian (works better on Windows)
+            )
 
-        // Now get the clip with a format that should be supported
-        val clip = AudioSystem.getClip()
-        clip.open(convertedStream)
+            // Convert the stream before getting the clip
+            val convertedStream = AudioSystem.getAudioInputStream(convertedFormat, audioInputStream)
 
-        return clip
+            // Now get the clip with a format that should be supported
+            val clip = AudioSystem.getClip()
+            clip.open(convertedStream)
+
+            return clip
+        } catch (e: Exception) {
+            println("Error loading sound: $soundFileName - ${e.message}")
+            e.printStackTrace()
+            throw e
+        }
     }
 }
