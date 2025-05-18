@@ -31,9 +31,32 @@ object JavaXSoundPlayer : SoundPlayer {
     }
 
     private fun createClip(soundFileName: String): Clip {
-        val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(File("src/main/resources/sounds/$soundFileName.wav"))
-        return AudioSystem.getClip().apply {
-            open(audioInputStream)
+        val file = File("src/main/resources/sounds/$soundFileName.wav")
+        val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(file)
+
+        // Get audio format and convert if needed
+        val format = audioInputStream.format
+        val clip = AudioSystem.getClip()
+
+        // Check if the format is supported
+        if (AudioSystem.isLineSupported(clip.lineInfo)) {
+            clip.open(audioInputStream)
+        } else {
+            // Convert to a supported format
+            val convertedFormat = javax.sound.sampled.AudioFormat(
+                javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED,
+                44100.0f, // Standard sample rate
+                16, // Sample size in bits
+                format.channels,
+                format.channels * 2, // Frame size (channels * sample size in bytes)
+                44100.0f,
+                false // Little endian
+            )
+
+            val convertedStream = AudioSystem.getAudioInputStream(convertedFormat, audioInputStream)
+            clip.open(convertedStream)
         }
+
+        return clip
     }
 }
