@@ -113,9 +113,22 @@ endif
 
 # How to build and run the game
 
+## Add local properties
+
+If it doesn't exist alredy, create `local.properties` file and set your Firebase project details
+
+```properties
+firebase.projectId=
+firebase.apiKey=
+firebase.appId=
+firebase.storageBucket=
+```
+
+## Build
+
 Build a fat JAR with Gradle
 ```
-./gradlew shadowJar
+./gradlew :shadowJar
 ```
 
 and run it with Java
