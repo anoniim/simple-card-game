@@ -1,4 +1,7 @@
 import android.app.Application
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.res.loadImageBitmap
+import androidx.compose.ui.res.useResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
@@ -22,7 +25,8 @@ fun main() = application {
     Window(
         title = "Simple card game",
         state = WindowState(width = 960.dp, height = 540.dp),
-        onCloseRequest = ::exitApplication
+        onCloseRequest = ::exitApplication,
+        icon = appIcon
     ) {
         AppComposable()
     }
@@ -101,3 +105,5 @@ private fun loadProperties(): Properties {
 
     return localProperties
 }
+
+private val appIcon = BitmapPainter(useResource("img/K.png", ::loadImageBitmap)) // Load from resources

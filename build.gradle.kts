@@ -7,7 +7,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-group = "net.solvetheriddle.cardgame"
+group = "net.solvetheriddle.bidtowin"
 version = project.properties["applicationVersion"] as String
 
 compose.desktop {
@@ -16,11 +16,10 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe)
-            packageName = "simple-card-game"
+            packageName = "bid-to-win"
             packageVersion = project.properties["applicationVersion"] as String
 //            icon("src/main/resources/icon.png") // Not supported by Compose yet
 
-            // Configure Windows-specific options
             windows {
                 // Ensure the application has enough memory to run
                 jvmArgs += listOf("-Xms256m", "-Xmx1g")
@@ -35,6 +34,13 @@ compose.desktop {
                 upgradeUuid = "5d7b8dce-0d7a-4f32-9d5b-a3c0e8c8d5f1"
                 dirChooser = true
                 perUserInstall = true
+                iconFile.set(project.file("src/main/resources/icons/icon-win.ico"))
+            }
+
+            macOS {
+                bundleID = "net.solvetheriddle.bidtowin"
+                iconFile.set(project.file("src/main/resources/icons/icon-mac.icns"))
+                // You might also need to set Info.plist properties if not handled by compose plugin
             }
 
             // Configure JVM options for all platforms
