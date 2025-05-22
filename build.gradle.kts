@@ -19,6 +19,34 @@ compose.desktop {
             packageName = "simple-card-game"
             packageVersion = project.properties["applicationVersion"] as String
 //            icon("src/main/resources/icon.png") // Not supported by Compose yet
+
+            // Configure Windows-specific options
+            windows {
+                // Ensure the application has enough memory to run
+                jvmArgs += listOf("-Xms256m", "-Xmx1g")
+
+                // Include the JVM with the application
+                includeAllModules = true
+
+                // Configure menu shortcuts
+                menu = true
+
+                // Configure installer options
+                upgradeUuid = "5d7b8dce-0d7a-4f32-9d5b-a3c0e8c8d5f1"
+                dirChooser = true
+                perUserInstall = true
+            }
+
+            // Configure JVM options for all platforms
+            jvmArgs += listOf(
+                "-Dfile.encoding=UTF-8",
+                "-Djava.awt.headless=false"
+            )
+
+            // Ensure resources are properly included
+            modules("java.sql")
+            modules("java.naming")
+            modules("jdk.unsupported")
         }
     }
 }
@@ -27,6 +55,20 @@ tasks.shadowJar {
     manifest {
         attributes["Main-Class"] = "DesktopAppKt"
     }
+}
+
+// Copy local.properties to resources directory
+tasks.register<Copy>("copyLocalPropertiesToResources") {
+    from("local.properties")
+    into("src/main/resources")
+    doFirst {
+        mkdir("src/main/resources")
+    }
+}
+
+// Make sure the resources are processed before compilation
+tasks.named("processResources") {
+    dependsOn("copyLocalPropertiesToResources")
 }
 
 apply(from = "gradle/customTasks.gradle.kts")

@@ -75,11 +75,29 @@ fun findFile(fileName: String): File? {
 
 private fun loadProperties(): Properties {
     val localProperties = Properties()
+
+    // First try to load from resources (for packaged application)
+    val resourceStream = Thread.currentThread().contextClassLoader.getResourceAsStream("local.properties")
+    if (resourceStream != null) {
+        localProperties.load(resourceStream)
+        println("Loaded local.properties from resources")
+        return localProperties
+    }
+
+    // If not found in resources, try to find the file in the filesystem
     val localPropertiesFile = findFile("local.properties")
     if (localPropertiesFile != null && localPropertiesFile.exists()) {
         localProperties.load(FileInputStream(localPropertiesFile))
+        println("Loaded local.properties from file: ${localPropertiesFile.absolutePath}")
     } else {
-        println("local.properties file not found")
+        println("Warning: local.properties file not found")
+        // Set default values for Firebase configuration to prevent crashes
+        localProperties.setProperty("firebase.projectId", "bid-to-win")
+        localProperties.setProperty("firebase.apiKey", "AIzaSyBQIRMs3D3QtewEtLutkVBVUb6Db0FjUt0")
+        localProperties.setProperty("firebase.appId", "1:960684824400:web:ab5f8b5b5d9a4c1e17fe55")
+        localProperties.setProperty("firebase.storageBucket", "bid-to-win.appspot.com")
+        println("Using default Firebase configuration")
     }
+
     return localProperties
 }

@@ -24,6 +24,8 @@ val buildWindowsExecutable = tasks.register("buildWindowsExecutable") {
 
     // This task depends on the packageExe task which is provided by the Compose plugin
     dependsOn("packageExe")
+    // Make sure local.properties is copied to resources
+    dependsOn("copyLocalPropertiesToResources")
 
     doLast {
         println("Building Windows executable...")
