@@ -3,7 +3,7 @@ val setExecutablePermissionTask = tasks.register<Copy>("setExecutablePermission"
     doLast {
         val osName = System.getProperty("os.name")
         if (osName.startsWith("Mac OS")) {
-            val appBundle = file("${layout.buildDirectory}/compose/binaries/main/app/simple-card-game.app")
+            val appBundle = file("${project.layout.buildDirectory.get()}/compose/binaries/main/app/simple-card-game.app")
             if (appBundle.exists()) {
                 val executableFile = file("${appBundle}/Contents/MacOS/simple-card-game")
                 executableFile.setExecutable(true, false)
@@ -31,7 +31,7 @@ val buildWindowsExecutable = tasks.register("buildWindowsExecutable") {
         println("Building Windows executable...")
 
         // Check for the standalone .exe file
-        val exeFile = file("${layout.buildDirectory}/compose/binaries/main/exe/simple-card-game-${project.version}.exe")
+        val exeFile = file("${project.layout.buildDirectory.get()}/compose/binaries/main/exe/simple-card-game-${project.version}.exe")
         if (exeFile.exists()) {
             println("Windows executable (.exe) created successfully at: ${exeFile.absolutePath}")
             println("This is a standalone executable file that can be run directly on Windows.")
@@ -40,7 +40,7 @@ val buildWindowsExecutable = tasks.register("buildWindowsExecutable") {
         }
 
         // Also check for the MSI installer which might be useful for distribution
-        val msiFile = file("${layout.buildDirectory}/compose/binaries/main/msi/simple-card-game-${project.version}.msi")
+        val msiFile = file("${project.layout.buildDirectory.get()}/compose/binaries/main/msi/simple-card-game-${project.version}.msi")
         if (msiFile.exists()) {
             println("Windows MSI installer package also available at: ${msiFile.absolutePath}")
             println("The MSI installer can be used for system-wide installation.")
