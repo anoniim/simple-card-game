@@ -17,6 +17,35 @@ val setExecutablePermissionTask = tasks.register<Copy>("setExecutablePermission"
     }
 }
 
+// Task to build Windows executable
+val buildWindowsExecutable = tasks.register("buildWindowsExecutable") {
+    description = "Builds a Windows executable (.exe) file"
+    group = "build"
+
+    // This task depends on the packageExe task which is provided by the Compose plugin
+    dependsOn("packageExe")
+
+    doLast {
+        println("Building Windows executable...")
+
+        // Check for the standalone .exe file
+        val exeFile = file("${layout.buildDirectory}/compose/binaries/main/exe/simple-card-game-${project.version}.exe")
+        if (exeFile.exists()) {
+            println("Windows executable (.exe) created successfully at: ${exeFile.absolutePath}")
+            println("This is a standalone executable file that can be run directly on Windows.")
+        } else {
+            throw GradleException("Failed to create Windows executable. EXE file not found at: ${exeFile.absolutePath}")
+        }
+
+        // Also check for the MSI installer which might be useful for distribution
+        val msiFile = file("${layout.buildDirectory}/compose/binaries/main/msi/simple-card-game-${project.version}.msi")
+        if (msiFile.exists()) {
+            println("Windows MSI installer package also available at: ${msiFile.absolutePath}")
+            println("The MSI installer can be used for system-wide installation.")
+        }
+    }
+}
+
 afterEvaluate {
     tasks.named("createDistributable") {
         finalizedBy(setExecutablePermissionTask)

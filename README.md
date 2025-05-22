@@ -107,7 +107,7 @@ else (no)
     #pink:update state;
     note left: updated round
 endif
- 
+
 @enduml
 ```
 
@@ -126,6 +126,8 @@ firebase.storageBucket=
 
 ## Build
 
+### Build a fat JAR
+
 Build a fat JAR with Gradle
 ```
 ./gradlew :shadowJar
@@ -135,3 +137,27 @@ and run it with Java
 ```
 java -jar build/libs/simple-card-game-[version]-all.jar
 ```
+
+### Build a Windows executable
+
+To build a Windows executable (.exe) file, run:
+```
+./gradlew buildWindowsExecutable
+```
+
+This will create:
+1. A standalone Windows executable (.exe) file at `build/compose/binaries/main/exe/simple-card-game-[version].exe`
+2. A Windows MSI installer package at `build/compose/binaries/main/msi/simple-card-game-[version].msi`
+
+#### Using the standalone .exe file
+The .exe file is a standalone executable that can be run directly on Windows without installation:
+1. Copy the .exe file to a Windows system
+2. Double-click the .exe file to run the application
+
+#### Using the MSI installer
+The MSI package provides a system-wide installation:
+1. Copy the MSI file to a Windows system
+2. Double-click the MSI file to install the application
+3. After installation, you can run the application from the Start menu
+
+Note: You can build the Windows executable from any platform (Windows, macOS, Linux), but the resulting executable will only run on Windows.

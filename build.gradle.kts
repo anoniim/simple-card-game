@@ -15,7 +15,7 @@ compose.desktop {
         mainClass = "DesktopAppKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe)
             packageName = "simple-card-game"
             packageVersion = project.properties["applicationVersion"] as String
 //            icon("src/main/resources/icon.png") // Not supported by Compose yet
